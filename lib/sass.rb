@@ -24,7 +24,12 @@ module Sass
   end
 
   def self.render(options)
-    @compiler ||= Sass::Embedded::Compiler.new
+    unless defined? @compiler
+      @compiler = Sass::Embedded::Compiler.new
+      at_exit do
+        @compiler.close
+      end
+    end
     @compiler.render options
   end
 end

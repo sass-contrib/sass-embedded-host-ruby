@@ -5,7 +5,6 @@ module Sass
     class Compiler
       def initialize
         @transport = Transport.new
-        @pwd = Dir.pwd
         @id_semaphore = Mutex.new
         @id = 0
       end
@@ -14,10 +13,6 @@ module Sass
         start = Sass::Util.now
 
         raise Sass::NotRenderedError, 'Either :data or :file must be set.' if options[:file].nil? && options[:data].nil?
-
-        if options[:file].nil? && Dir.pwd != @pwd
-          raise Sass::NotRenderedError, 'Working directory changed after launching `dart-sass-embedded`.'
-        end
 
         string = if options[:data]
                    Sass::EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
