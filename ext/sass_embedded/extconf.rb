@@ -9,13 +9,13 @@ require_relative '../../lib/sass/platform'
 def api(url)
   headers = {}
   headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-  URI.open(url, headers) do |file|
+  URI.parse(url).open(headers) do |file|
     JSON.parse file.read
   end
 end
 
 def download(url)
-  URI.open(url) do |source|
+  URI.parse(url).open do |source|
     File.open(File.absolute_path(File.basename(url), __dir__), 'wb') do |destination|
       destination.write source.read
     end
@@ -63,7 +63,7 @@ end
 def download_protoc
   repo = 'protocolbuffers/protobuf'
 
-  tag = URI.open("https://github.com/#{repo}/releases/latest") do |file|
+  tag = URI.parse("https://github.com/#{repo}/releases/latest").open do |file|
     File.basename file.base_uri.to_s
   end
 
