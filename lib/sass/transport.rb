@@ -110,28 +110,28 @@ module Sass
         @stdin.write proto
       end
     end
-  end
 
-  class MessageObserver
-    def initialize(obs, id, &block)
-      @obs = obs
-      @id = id
-      @block = block
-      @obs.add_observer self
-    end
+    class MessageObserver
+      def initialize(obs, id, &block)
+        @obs = obs
+        @id = id
+        @block = block
+        @obs.add_observer self
+      end
 
-    def update(error, message)
-      if error
-        @obs.delete_observer self
-        @block.call error, nil
-      elsif message.error&.id == Sass::Transport::PROTOCOL_ERROR_ID
-        @obs.delete_observer self
-        @block.call Sass::ProtocolError.new(message.error.message), nil
-      else
-        res = message[message.message.to_s]
-        if (res['compilation_id'] || res['id']) == @id
+      def update(error, message)
+        if error
           @obs.delete_observer self
-          @block.call error, res
+          @block.call error, nil
+        elsif message.error&.id == Sass::Transport::PROTOCOL_ERROR_ID
+          @obs.delete_observer self
+          @block.call Sass::ProtocolError.new(message.error.message), nil
+        else
+          res = message[message.message.to_s]
+          if (res['compilation_id'] || res['id']) == @id
+            @obs.delete_observer self
+            @block.call error, res
+          end
         end
       end
     end
