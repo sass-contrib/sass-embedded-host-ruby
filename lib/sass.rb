@@ -4,8 +4,8 @@ module Sass
   # The global include_paths for Sass files. This is meant for plugins and
   # libraries to register the paths to their Sass stylesheets to that they may
   # be `@imported`. This include path is used by every instance of
-  # {Sass::Embedded::embedded}. They are lower-precedence than any include
-  # paths passed in via the `:include_paths` option.
+  # {Sass::Embedded}. They are lower-precedence than any include paths passed
+  # in via the `:include_paths` option.
   #
   # If the `SASS_PATH` environment variable is set,
   # the initial value of `include_paths` will be initialized based on that.
