@@ -7,15 +7,15 @@ module Sass
     include TempFileTest
 
     def setup
-      @compiler = Embedded::Compiler.new
+      @embedded = Embedded.new
     end
 
     def teardown
-      @compiler.close
+      @embedded.close
     end
 
     def render(data, importer)
-      @compiler.render({ data: data, importer: importer })[:css]
+      @embedded.render({ data: data, importer: importer })[:css]
     end
 
     def test_custom_importer_works
@@ -116,7 +116,7 @@ module Sass
     end
 
     def test_parent_path_is_accessible
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: "@import 'parent.scss';",
                                   file: 'import-parent-filename.scss',
                                   importer: [
@@ -133,13 +133,13 @@ module Sass
       CSS
     end
 
-    def test_call_compiler_importer
-      output = @compiler.render({
+    def test_call_embedded_importer
+      output = @embedded.render({
                                   data: "@import 'parent.scss';",
                                   importer: [
                                     lambda { |_url, _prev|
                                       {
-                                        contents: @compiler.render({
+                                        contents: @embedded.render({
                                                                      data: "@import 'parent-parent.scss'",
                                                                      importer: [
                                                                        lambda { |_url, _prev|

@@ -5,15 +5,15 @@ require_relative 'test_helper'
 module Sass
   class FunctionsTest < MiniTest::Test
     def setup
-      @compiler = Embedded::Compiler.new
+      @embedded = Embedded.new
     end
 
     def teardown
-      @compiler.close
+      @embedded.close
     end
 
     def render(sass)
-      @compiler.render({
+      @embedded.render({
                          data: sass,
                          functions: {
                            'javascript_path($path)': lambda { |path|
@@ -322,7 +322,7 @@ module Sass
         threads = []
         10.times do |i|
           threads << Thread.new(i) do |id|
-            output = @compiler.render({
+            output = @embedded.render({
                                         data: 'div { url: test-function() }',
                                         functions: {
                                           'test_function()': lambda {
@@ -346,7 +346,7 @@ module Sass
     end
 
     def test_pass_custom_functions_as_a_parameter
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: 'div { url: test-function(); }',
                                   functions: {
                                     'test_function()': lambda {
@@ -365,7 +365,7 @@ module Sass
 
     def test_pass_incompatible_type_to_custom_functions
       assert_raises(CompilationError) do
-        @compiler.render({
+        @embedded.render({
                            data: 'div { url: test-function(); }',
                            functions: {
                              'test_function()': lambda {

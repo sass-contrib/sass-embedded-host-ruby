@@ -3,19 +3,19 @@
 require_relative 'test_helper'
 
 module Sass
-  class CompilerTest < MiniTest::Test
+  class EmbeddedTest < MiniTest::Test
     include TempFileTest
 
     def setup
-      @compiler = Embedded::Compiler.new
+      @embedded = Embedded.new
     end
 
     def teardown
-      @compiler.close
+      @embedded.close
     end
 
     def render(data)
-      @compiler.render({ data: data })[:css]
+      @embedded.render({ data: data })[:css]
     end
 
     def test_line_comments
@@ -31,7 +31,7 @@ module Sass
           baz: bang;
         }
       CSS
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: template,
                                   source_comments: true
                                 })
@@ -97,7 +97,7 @@ module Sass
           baz: 0.33333333;
         }
       CSS
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: template,
                                   precision: 8
                                 })
@@ -134,7 +134,7 @@ module Sass
                   padding: 20px;
                 }
       SCSS
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: File.read('style.scss'),
                                   source_map: 'style.scss.map'
                                 })
@@ -143,7 +143,7 @@ module Sass
     end
 
     def test_no_source_map
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: '$size: 30px;'
                                 })
       assert_equal '', output[:map]
@@ -157,7 +157,7 @@ module Sass
       temp_file('included_2/import.scss', "@use 'import_parent' as *; $size: $s;")
       temp_file('styles.scss', "@use 'import.scss' as *; .hi { width: $size; }")
 
-      assert_equal ".hi {\n  width: 30px;\n}", @compiler.render({
+      assert_equal ".hi {\n  width: 30px;\n}", @embedded.render({
                                                                   data: File.read('styles.scss'),
                                                                   include_paths: %w[
                                                                     included_1 included_2
@@ -216,9 +216,9 @@ module Sass
         }
       CSS
 
-      assert_equal css, @compiler.render({ data: sass, indented_syntax: true })[:css]
+      assert_equal css, @embedded.render({ data: sass, indented_syntax: true })[:css]
       assert_raises(CompilationError) do
-        @compiler.render({ data: sass, indented_syntax: false })
+        @embedded.render({ data: sass, indented_syntax: false })
       end
     end
 
@@ -230,7 +230,7 @@ module Sass
           baz: bang; }
       SCSS
 
-      output = @compiler.render({
+      output = @embedded.render({
                                   data: template,
                                   source_map: '.',
                                   source_map_embed: true,
@@ -263,7 +263,7 @@ module Sass
         threads = []
         10.times do |i|
           threads << Thread.new(i) do |id|
-            output = @compiler.render({
+            output = @embedded.render({
                                         data: "div { width: #{id} }"
                                       })[:css]
             assert_match(/#{id}/, output)

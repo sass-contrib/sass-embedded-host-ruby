@@ -4,7 +4,7 @@ module Sass
   # The global include_paths for Sass files. This is meant for plugins and
   # libraries to register the paths to their Sass stylesheets to that they may
   # be `@imported`. This include path is used by every instance of
-  # {Sass::Embedded::Compiler}. They are lower-precedence than any include
+  # {Sass::Embedded::embedded}. They are lower-precedence than any include
   # paths passed in via the `:include_paths` option.
   #
   # If the `SASS_PATH` environment variable is set,
@@ -24,13 +24,13 @@ module Sass
   end
 
   def self.render(options)
-    unless defined? @compiler
-      @compiler = Sass::Embedded::Compiler.new
+    unless defined? @embedded
+      @embedded = Sass::Embedded.new
       at_exit do
-        @compiler.close
+        @embedded.close
       end
     end
-    @compiler.render options
+    @embedded.render options
   end
 end
 
@@ -38,5 +38,5 @@ require_relative 'sass/version'
 require_relative 'sass/error'
 require_relative 'sass/platform'
 require_relative 'sass/util'
-require_relative 'sass/embedded/transport'
-require_relative 'sass/embedded/compiler'
+require_relative 'sass/transport'
+require_relative 'sass/embedded'

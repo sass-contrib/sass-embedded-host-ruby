@@ -5,11 +5,11 @@ require_relative 'test_helper'
 module Sass
   class ErrorTest < MiniTest::Test
     def setup
-      @compiler = Embedded::Compiler.new
+      @embedded = Embedded.new
     end
 
     def teardown
-      @compiler.close
+      @embedded.close
     end
 
     def test_first_backtrace_is_sass
@@ -20,7 +20,7 @@ module Sass
         }
       SCSS
 
-      @compiler.render({
+      @embedded.render({
                          data: template
                        })
     rescue Sass::CompilationError => e
