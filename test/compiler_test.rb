@@ -163,14 +163,12 @@ SCSS
     end
 
     def test_global_include_paths
-      skip 'race condition in test'
-
       temp_dir("included_1")
       temp_dir("included_2")
 
       temp_file("included_1/import_parent.scss", "$s: 30px;")
-      temp_file("included_2/import.scss", "@use 'import_parent'; $size: $s;")
-      temp_file("styles.scss", "@use 'import.scss'; .hi { width: $size; }")
+      temp_file("included_2/import.scss", "@use 'import_parent' as *; $size: $s;")
+      temp_file("styles.scss", "@use 'import.scss' as *; .hi { width: $size; }")
 
       ::Sass.include_paths << "included_1"
       ::Sass.include_paths << "included_2"
@@ -179,12 +177,14 @@ SCSS
     end
 
     def test_env_include_paths
-      skip 'race condition in test'
-
       expected_include_paths = [ "included_3", "included_4" ]
+
       ::Sass.instance_eval { @include_paths = nil }
+
       ENV['SASS_PATH'] = expected_include_paths.join(File::PATH_SEPARATOR)
-      assert_equal expected_include_paths, ::Sass.include_paths
+
+      assert_equal expected_include_paths, Sass.include_paths
+
       ::Sass.include_paths.clear
     end
 
@@ -192,8 +192,8 @@ SCSS
       temp_dir("included_5")
       temp_dir("included_6")
       temp_file("included_5/import_parent.scss", "$s: 30px;")
-      temp_file("included_6/import.scss", "@use 'import_parent'; $size: $s;")
-      temp_file("styles.scss", "@use 'import.scss'; .hi { width: $size; }")
+      temp_file("included_6/import.scss", "@use 'import_parent' as *; $size: $s;")
+      temp_file("styles.scss", "@use 'import.scss' as *; .hi { width: $size; }")
 
       assert_raises(CompilationError) do
         render(File.read("styles.scss"))

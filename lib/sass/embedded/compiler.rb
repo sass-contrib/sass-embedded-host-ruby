@@ -60,7 +60,7 @@ module Sass
         importers = (options[:importer] ? [
           Sass::EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new( :importer_id => 0 )
         ] : []).concat(
-          Sass.include_paths.concat(options[:include_paths] || [])
+          (options[:include_paths] || []).concat(Sass.include_paths)
           .map { |path| Sass::EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
             :path => File.absolute_path(path)
           )}
