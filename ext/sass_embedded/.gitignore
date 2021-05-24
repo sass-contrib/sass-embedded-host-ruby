@@ -1,2 +1,3 @@
+/embedded_sass*
 /sass_embedded*
-/embedded_sass_pb.*
+/protoc*

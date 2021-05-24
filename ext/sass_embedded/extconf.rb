@@ -46,7 +46,6 @@ def download_sass_embedded
            raise "Unsupported Arch: #{Sass::Platform::ARCH}"
          end
 
-
   ext = case os
         when "windows"
           "zip"
@@ -63,8 +62,68 @@ def download_sass_embedded
   end
 end
 
+def download_protoc
+  repo = "protocolbuffers/protobuf"
+
+  tag = URI.open('https://github.com/protocolbuffers/protobuf/releases/latest') { |file|
+    File.basename file.base_uri.to_s
+  }
+
+  release = tag[1..-1]
+
+  os = case Sass::Platform::OS
+       when "darwin"
+         "osx"
+       when "linux"
+         "linux"
+       when "windows"
+         "win"
+       else
+         raise "Unsupported OS: #{Sass::Platform::OS}"
+       end
+
+  arch = case Sass::Platform::ARCH
+         when "aarch64"
+           "aarch_64"
+         when "sparcv9"
+           "s390"
+         when "i386"
+           "x86_32"
+         when "x86_64"
+           "x86_64"
+         when "powerpc64"
+           "ppcle_64"
+         else
+           raise "Unsupported Arch: #{Sass::Platform::ARCH}"
+         end
+
+  os_arch = case os
+            when "win"
+              os + arch.split('_').last
+            else
+              os + '-' + arch
+            end
+
+  ext = "zip"
+
+  url = "https://github.com/#{repo}/releases/download/#{tag}/protoc-#{release}-#{os_arch}.#{ext}"
+
+  begin
+    download url
+  rescue
+    raise "Failed to download: #{url}"
+  end
+end
+
+def download_embedded_sass_proto
+  url = "https://raw.githubusercontent.com/sass/embedded-protocol/HEAD/embedded_sass.proto"
+  download url
+end
+
 system("make", "-C", __dir__, "distclean")
 download_sass_embedded
+download_protoc
+download_embedded_sass_proto
 system("make", "-C", __dir__, "install")
 
 File.open(File.absolute_path("sass_embedded.#{RbConfig::CONFIG['DLEXT']}", __dir__), "w") {}
