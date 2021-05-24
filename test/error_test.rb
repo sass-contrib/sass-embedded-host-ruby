@@ -8,7 +8,9 @@ module Sass
       @compiler = Embedded::Compiler.new
     end
 
-    def teardown; end
+    def teardown
+      @compiler.close
+    end
 
     def test_first_backtrace_is_sass
       template = <<~SCSS

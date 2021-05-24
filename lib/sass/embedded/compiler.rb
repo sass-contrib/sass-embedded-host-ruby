@@ -4,17 +4,10 @@ module Sass
   module Embedded
     class Compiler
       def initialize
-        if defined? @@pwd
-          return if @@pwd == Dir.pwd
-
-          @@transport.close
-        end
-
-        @@transport = Transport.new
-        @@pwd = Dir.pwd
-
-        @@id_semaphore = Mutex.new
-        @@id = 0
+        @transport = Transport.new
+        @pwd = Dir.pwd
+        @id_semaphore = Mutex.new
+        @id = 0
       end
 
       def render(options)
@@ -22,7 +15,7 @@ module Sass
 
         raise Sass::NotRenderedError, 'Either :data or :file must be set.' if options[:file].nil? && options[:data].nil?
 
-        if options[:file].nil? && Dir.pwd != @@pwd
+        if options[:file].nil? && Dir.pwd != @pwd
           raise Sass::NotRenderedError, 'Working directory changed after launching `dart-sass-embedded`.'
         end
 
@@ -90,7 +83,7 @@ module Sass
           alert_ascii: true
         )
 
-        response = @@transport.send compile_request, compilation_id
+        response = @transport.send compile_request, compilation_id
 
         file = options[:file] || 'stdin'
         canonicalizations = {}
@@ -160,7 +153,7 @@ module Sass
               end
             end
 
-            response = @@transport.send canonicalizations[url], compilation_id
+            response = @transport.send canonicalizations[url], compilation_id
           when Sass::EmbeddedProtocol::OutboundMessage::ImportRequest
             url = response.url
 
@@ -173,7 +166,7 @@ module Sass
               )
             end
 
-            response = @@transport.send imports[url], compilation_id
+            response = @transport.send imports[url], compilation_id
           when Sass::EmbeddedProtocol::OutboundMessage::FunctionCallRequest
             begin
               message = Sass::EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
@@ -187,7 +180,7 @@ module Sass
               )
             end
 
-            response = @@transport.send message, compilation_id
+            response = @transport.send message, compilation_id
           when Sass::EmbeddedProtocol::ProtocolError
             raise Sass::ProtocolError, response.message
           else
@@ -220,10 +213,14 @@ module Sass
         }
       end
 
+      def close
+        @transport.close
+      end
+
       private
 
       def info
-        version_response = @@transport.send Sass::EmbeddedProtocol::InboundMessage::VersionRequest.new(
+        version_response = @transport.send Sass::EmbeddedProtocol::InboundMessage::VersionRequest.new(
           id: next_id
         )
         {
@@ -235,16 +232,11 @@ module Sass
       end
 
       def next_id
-        @@id_semaphore.synchronize do
-          @@id += 1
-          @@id = 0 if @@id == Transport::PROTOCOL_ERROR_ID
-          @@id
+        @id_semaphore.synchronize do
+          @id += 1
+          @id = 0 if @id == Transport::PROTOCOL_ERROR_ID
+          @id
         end
-      end
-
-      def restart
-        @@transport.close
-        @@transport = Transport.new
       end
     end
   end

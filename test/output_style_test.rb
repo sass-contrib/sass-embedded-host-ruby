@@ -8,7 +8,9 @@ module Sass
       @compiler = Embedded::Compiler.new
     end
 
-    def teardown; end
+    def teardown
+      @compiler.close
+    end
 
     def input_scss
       <<~CSS
