@@ -13,7 +13,7 @@ module Sass
   # (semicolon-separated on Windows).
   #
   # @example
-  #   Sass.include_paths << File.dirname(__FILE__ + '/sass')
+  #   Sass.include_paths << File.dirname(__FILE__) + '/sass'
   # @return [Array<String, Pathname>]
   def self.include_paths
     @include_paths ||= if ENV['SASS_PATH']
