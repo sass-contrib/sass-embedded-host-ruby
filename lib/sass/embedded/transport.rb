@@ -1,18 +1,19 @@
 # frozen_string_literal: true
 
-require "open3"
-require "observer"
-require_relative "../../../ext/sass_embedded/embedded_sass_pb.rb"
+require 'open3'
+require 'observer'
+require_relative '../../../ext/sass_embedded/embedded_sass_pb'
 
 module Sass
   module Embedded
     class Transport
-
       include Observable
 
-      DART_SASS_EMBEDDED = File.absolute_path("../../../ext/sass_embedded/sass_embedded/dart-sass-embedded#{Sass::Platform::OS == 'windows' ? '.bat' : ''}", __dir__)
+      DART_SASS_EMBEDDED = File.absolute_path(
+        "../../../ext/sass_embedded/sass_embedded/dart-sass-embedded#{Sass::Platform::OS == 'windows' ? '.bat' : ''}", __dir__
+      )
 
-      PROTOCOL_ERROR_ID = 4294967295
+      PROTOCOL_ERROR_ID = 4_294_967_295
 
       def initialize
         @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
@@ -21,113 +22,106 @@ module Sass
 
         Thread.new do
           loop do
-            begin
-              bits = length = 0
-              loop do
-                byte = @stdout.readbyte
-                length += (byte & 0x7f) << bits
-                bits += 7
-                break if byte <= 0x7f
-              end
-              changed
-              payload = @stdout.read length
-              @observerable_semaphore.synchronize {
-                notify_observers nil, Sass::EmbeddedProtocol::OutboundMessage.decode(payload)
-              }
-            rescue Interrupt
-              break
-            rescue IOError, EOFError => error
-              notify_observers error, nil
-              close
-              break
+            bits = length = 0
+            loop do
+              byte = @stdout.readbyte
+              length += (byte & 0x7f) << bits
+              bits += 7
+              break if byte <= 0x7f
             end
+            changed
+            payload = @stdout.read length
+            @observerable_semaphore.synchronize do
+              notify_observers nil, Sass::EmbeddedProtocol::OutboundMessage.decode(payload)
+            end
+          rescue Interrupt
+            break
+          rescue IOError, EOFError => e
+            notify_observers e, nil
+            close
+            break
           end
         end
 
         Thread.new do
           loop do
-            begin
-              $stderr.puts @stderr.read
-            rescue Interrupt
-              break
-            rescue IOError, EOFErrorr => error
-              @observerable_semaphore.synchronize {
-                notify_observers error, nil
-              }
-              close
-              break
+            warn @stderr.read
+          rescue Interrupt
+            break
+          rescue IOError, EOFErrorr => e
+            @observerable_semaphore.synchronize do
+              notify_observers e, nil
             end
+            close
+            break
           end
         end
       end
 
-      def send req, id
+      def send(req, id)
         mutex = Mutex.new
         resource = ConditionVariable.new
 
-        req_name = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, "_").downcase
+        req_name = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
 
         message = Sass::EmbeddedProtocol::InboundMessage.new(req_name.to_sym => req)
 
         error = nil
         res = nil
 
-        @observerable_semaphore.synchronize {
+        @observerable_semaphore.synchronize do
           MessageObserver.new self, id do |_error, _res|
-            mutex.synchronize {
+            mutex.synchronize do
               error = _error
               res = _res
 
               resource.signal
-            }
+            end
           end
-        }
+        end
 
-        mutex.synchronize {
+        mutex.synchronize do
           write message.to_proto
 
           resource.wait(mutex)
-        }
+        end
 
         raise error if error
+
         res
       end
 
       def close
-        begin
-          delete_observers
-          @stdin.close
-          @stdout.close
-          @stderr.close
-        rescue
-        end
+        delete_observers
+        @stdin.close
+        @stdout.close
+        @stderr.close
+      rescue StandardError
       end
 
       private
 
-      def write proto
-        @stdin_semaphore.synchronize {
+      def write(proto)
+        @stdin_semaphore.synchronize do
           length = proto.length
-          while length > 0
+          while length.positive?
             @stdin.write ((length > 0x7f ? 0x80 : 0) | (length & 0x7f)).chr
             length >>= 7
           end
           @stdin.write proto
-        }
+        end
       end
     end
 
-    private
-
     class MessageObserver
-      def initialize obs, id, &block
+      def initialize(obs, id, &block)
         @obs = obs
         @id = id
         @block = block
         @obs.add_observer self
       end
 
-      def update error, message
+      def update(error, message)
         if error
           @obs.delete_observer self
           @block.call error, nil
@@ -136,7 +130,7 @@ module Sass
           @block.call Sass::ProtocolError.new(message.error.message), nil
         else
           res = message[message.message.to_s]
-          if (res['compilation_id'] == @id || res['id'] == @id)
+          if res['compilation_id'] == @id || res['id'] == @id
             @obs.delete_observer self
             @block.call error, res
           end

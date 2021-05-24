@@ -23,15 +23,15 @@ module Sass
                        end
   end
 
-  def self.render options
+  def self.render(options)
     @compiler ||= Sass::Embedded::Compiler.new
     @compiler.render options
   end
 end
 
-require_relative "sass/version"
-require_relative "sass/error"
-require_relative "sass/platform"
-require_relative "sass/util"
-require_relative "sass/embedded/transport"
-require_relative "sass/embedded/compiler"
+require_relative 'sass/version'
+require_relative 'sass/error'
+require_relative 'sass/platform'
+require_relative 'sass/util'
+require_relative 'sass/embedded/transport'
+require_relative 'sass/embedded/compiler'

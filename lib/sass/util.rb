@@ -2,18 +2,18 @@
 
 module Sass
   module Util
-    extend self
+    module_function
 
-    def file_uri path
+    def file_uri(path)
       absolute_path = File.absolute_path(path)
 
-      if !absolute_path.start_with?('/')
+      unless absolute_path.start_with?('/')
         components = absolute_path.split File::SEPARATOR
         components[0] = components[0].split(':').first.downcase
         absolute_path = components.join File::SEPARATOR
       end
 
-      'file://' + absolute_path
+      "file://#{absolute_path}"
     end
 
     def now

@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 module Sass
-
   class BaseError < StandardError; end
+
   class ProtocolError < BaseError; end
+
   class NotRenderedError < BaseError; end
+
   class InvalidStyleError < BaseError; end
+
   class UnsupportedValue < BaseError; end
 
   class CompilationError < BaseError
-
     attr_accessor :formatted, :file, :line, :column, :status
 
     def initialize(message, formatted, file, line, column, status)
@@ -23,6 +25,7 @@ module Sass
 
     def backtrace
       return nil if super.nil?
+
       ["#{@file}:#{@line}:#{@column}"] + super
     end
   end

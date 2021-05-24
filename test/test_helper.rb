@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require "minitest/autorun"
-require "minitest/pride"
-require "minitest/around/unit"
+require 'minitest/autorun'
+require 'minitest/pride'
+require 'minitest/around/unit'
 
-require_relative "../lib/sass"
+require_relative '../lib/sass'
 
 module TempFileTest
   def around
@@ -18,7 +18,7 @@ module TempFileTest
   end
 
   def temp_file(filename, contents)
-    File.open(filename, "w",) do |file|
+    File.open(filename, 'w') do |file|
       file.write(contents)
     end
   end
