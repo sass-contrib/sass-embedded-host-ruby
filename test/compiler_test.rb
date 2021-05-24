@@ -227,11 +227,6 @@ module Sass
         .foo {
           baz: bang; }
       SCSS
-      expected_output = <<~CSS
-        /* line 1, stdin */
-        .foo {
-          baz: bang; }
-      CSS
 
       output = @compiler.render({
                                   data: template,

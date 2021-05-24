@@ -36,7 +36,7 @@ module Sass
             end
           rescue Interrupt
             break
-          rescue IOError, EOFError => e
+          rescue IOError => e
             notify_observers e, nil
             close
             break
@@ -48,7 +48,7 @@ module Sass
             warn @stderr.read
           rescue Interrupt
             break
-          rescue IOError, EOFErrorr => e
+          rescue IOError => e
             @observerable_semaphore.synchronize do
               notify_observers e, nil
             end
@@ -70,10 +70,10 @@ module Sass
         res = nil
 
         @observerable_semaphore.synchronize do
-          MessageObserver.new self, id do |_error, _res|
+          MessageObserver.new self, id do |e, r|
             mutex.synchronize do
-              error = _error
-              res = _res
+              error = e
+              res = r
 
               resource.signal
             end
@@ -93,10 +93,9 @@ module Sass
 
       def close
         delete_observers
-        @stdin.close
-        @stdout.close
-        @stderr.close
-      rescue StandardError
+        @stdin.close unless @stdin.closed?
+        @stdout.close unless @stdout.closed?
+        @stderr.close unless @stderr.closed?
       end
 
       private

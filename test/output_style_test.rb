@@ -11,7 +11,7 @@ module Sass
     def teardown; end
 
     def input_scss
-      input_scss = <<~CSS
+      <<~CSS
         $color: #fff;
 
         #main {

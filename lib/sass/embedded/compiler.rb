@@ -5,11 +5,9 @@ module Sass
     class Compiler
       def initialize
         if defined? @@pwd
-          if @@pwd == Dir.pwd
-            return
-          else
-            @@transport.close
-          end
+          return if @@pwd == Dir.pwd
+
+          @@transport.close
         end
 
         @@transport = Transport.new
@@ -49,7 +47,7 @@ module Sass
                   raise Sass::InvalidStyleError, "#{options[:output_style]} is not a valid :output_style"
                 end
 
-        source_map = options[:source_map].is_a? String || (options[:source_map] == true && !options[:out_file].nil?)
+        source_map = options[:source_map].is_a?(String) || (options[:source_map] == true && !options[:out_file].nil?)
 
         # 1. Loading a file relative to the file in which the @use or @import appeared.
         # 2. Each custom importer.
@@ -64,9 +62,9 @@ module Sass
                        []
                      end).concat(
                        (options[:include_paths] || []).concat(Sass.include_paths)
-                       .map do |path|
+                       .map do |include_path|
                          Sass::EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-                           path: File.absolute_path(path)
+                           path: File.absolute_path(include_path)
                          )
                        end
                      )
@@ -112,7 +110,7 @@ module Sass
               options[:importer].each do |importer|
                 begin
                   resolved = importer.call response.url, file
-                rescue Exception => e
+                rescue StandardError => e
                   resolved = e
                 end
                 break if resolved
@@ -122,7 +120,7 @@ module Sass
                   id: response.id,
                   url: url
                 )
-              elsif resolved.is_a? Exception
+              elsif resolved.is_a? StandardError
                 canonicalizations[url] = Sass::EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
                   id: response.id,
                   error: resolved.message
@@ -182,7 +180,7 @@ module Sass
                 id: response.id,
                 success: functions[response.name].call(*response.arguments)
               )
-            rescue Exception => e
+            rescue StandardError => e
               message = Sass::EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
                 id: response.id,
                 error: e.message

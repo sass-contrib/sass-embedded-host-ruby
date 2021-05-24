@@ -85,31 +85,31 @@ module Sass
 
     def test_custom_importer_that_does_not_resolve
       assert_raises(CompilationError) do
-        output = render("@import 'test.scss';", [
-                          lambda { |_url, _prev|
-                            return nil
-                          }
-                        ])
+        render("@import 'test.scss';", [
+                 lambda { |_url, _prev|
+                   return nil
+                 }
+               ])
       end
     end
 
     def test_custom_importer_that_returns_error
       assert_raises(CompilationError) do
-        output = render("@import 'test.scss';", [
-                          lambda { |_url, _prev|
-                            IOError.new 'test error'
-                          }
-                        ])
+        render("@import 'test.scss';", [
+                 lambda { |_url, _prev|
+                   IOError.new 'test error'
+                 }
+               ])
       end
     end
 
     def test_custom_importer_that_raises_error
       assert_raises(CompilationError) do
-        output = render("@import 'test.scss';", [
-                          lambda { |_url, _prev|
-                            raise IOError, 'test error'
-                          }
-                        ])
+        render("@import 'test.scss';", [
+                 lambda { |_url, _prev|
+                   raise IOError, 'test error'
+                 }
+               ])
       end
     end
 

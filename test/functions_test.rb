@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
-require 'stringio'
 
 module Sass
   class FunctionsTest < MiniTest::Test
@@ -269,7 +268,7 @@ module Sass
     end
 
     def test_function_with_error
-      exception = assert_raises(Sass::CompilationError) do
+      assert_raises(Sass::CompilationError) do
         render('div {url: function_that_raises_errors();}')
       end
     end
@@ -365,14 +364,14 @@ module Sass
 
     def test_pass_incompatible_type_to_custom_functions
       assert_raises(CompilationError) do
-        output = @compiler.render({
-                                    data: 'div { url: test-function(); }',
-                                    functions: {
-                                      'test_function()': lambda {
-                                        Class.new
-                                      }
-                                    }
-                                  })[:css]
+        @compiler.render({
+                           data: 'div { url: test-function(); }',
+                           functions: {
+                             'test_function()': lambda {
+                               Class.new
+                             }
+                           }
+                         })[:css]
       end
     end
 
