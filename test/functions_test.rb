@@ -318,10 +318,9 @@ module Sass
     end
 
     def test_concurrency
-      skip 'ProtocolError: Bad state: Future already completed'
       10.times do
         threads = []
-        2.times do |i|
+        10.times do |i|
           threads << Thread.new(i) do |id|
             output = @compiler.render({
                                         data: 'div { url: test-function() }',

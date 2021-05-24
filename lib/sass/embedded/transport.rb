@@ -129,7 +129,7 @@ module Sass
           @block.call Sass::ProtocolError.new(message.error.message), nil
         else
           res = message[message.message.to_s]
-          if res['compilation_id'] == @id || res['id'] == @id
+          if (res['compilation_id'] ? res['compilation_id'] : res['id']) == @id
             @obs.delete_observer self
             @block.call error, res
           end
