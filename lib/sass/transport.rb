@@ -95,6 +95,7 @@ module Sass
       @stdin.close unless @stdin.closed?
       @stdout.close unless @stdout.closed?
       @stderr.close unless @stderr.closed?
+      nil
     end
 
     private

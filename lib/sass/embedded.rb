@@ -209,6 +209,7 @@ module Sass
 
     def close
       @transport.close
+      nil
     end
 
     private
