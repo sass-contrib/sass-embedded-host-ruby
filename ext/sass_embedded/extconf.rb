@@ -14,10 +14,14 @@ def api url
 end
 
 def download url
-  URI.open(url) do |source|
-    File.open(File.absolute_path(File.basename(url), __dir__), "wb") do |destination|
-      destination.write source.read
+  begin
+    URI.open(url) do |source|
+      File.open(File.absolute_path(File.basename(url), __dir__), "wb") do |destination|
+        destination.write source.read
+      end
     end
+  rescue
+    raise "Failed to download: #{url}"
   end
 end
 
@@ -54,12 +58,7 @@ def download_sass_embedded
         end
 
   url = "https://github.com/#{repo}/releases/download/#{release}/sass_embedded-#{release}-#{os}-#{arch}.#{ext}"
-
-  begin
-    download url
-  rescue
-    raise "Failed to download: #{url}"
-  end
+  download url
 end
 
 def download_protoc
@@ -107,12 +106,7 @@ def download_protoc
   ext = "zip"
 
   url = "https://github.com/#{repo}/releases/download/#{tag}/protoc-#{release}-#{os_arch}.#{ext}"
-
-  begin
-    download url
-  rescue
-    raise "Failed to download: #{url}"
-  end
+  download url
 end
 
 def download_embedded_sass_proto
