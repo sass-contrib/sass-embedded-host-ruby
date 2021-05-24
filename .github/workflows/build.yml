@@ -27,7 +27,7 @@ jobs:
         bundler-cache: true
 
     - name: Download dart-sass-embedded
-      run: bundle exec rake download
+      run: bundle exec rake extconf
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

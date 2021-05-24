@@ -5,7 +5,7 @@ require 'bundler/gem_tasks'
 task default: :test
 
 desc 'Download dart-sass-embedded'
-task :download do
+task :extconf do
   require_relative 'ext/sass_embedded/extconf'
 end
 

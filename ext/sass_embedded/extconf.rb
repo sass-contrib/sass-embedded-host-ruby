@@ -15,10 +15,6 @@ module Sass
       download_protoc
       download_embedded_sass_proto
       system('make', '-C', __dir__, 'install')
-
-      File.open(File.absolute_path("sass_embedded.#{RbConfig::CONFIG['DLEXT']}", __dir__), 'w') {}
-
-      $makefile_created = true
     end
 
     private
