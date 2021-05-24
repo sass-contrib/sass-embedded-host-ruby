@@ -34,9 +34,6 @@ jobs:
     - name: Test
       run: bundle exec rake
 
-    - name: Build Gem
-      run: rake build
-
     - name: Install Gem
       run: rake install
       env:
