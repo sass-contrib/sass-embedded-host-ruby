@@ -65,7 +65,7 @@ end
 def download_protoc
   repo = "protocolbuffers/protobuf"
 
-  tag = URI.open('https://github.com/protocolbuffers/protobuf/releases/latest') { |file|
+  tag = URI.open("https://github.com/#{repo}/releases/latest") { |file|
     File.basename file.base_uri.to_s
   }
 
