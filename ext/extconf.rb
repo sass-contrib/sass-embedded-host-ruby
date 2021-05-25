@@ -3,7 +3,7 @@
 
 require 'json'
 require 'open-uri'
-require_relative '../../lib/sass/platform'
+require_relative '../lib/sass/platform'
 
 module Sass
   class Extconf

@@ -2,14 +2,14 @@
 
 require 'open3'
 require 'observer'
-require_relative '../../ext/sass_embedded/embedded_sass_pb'
+require_relative '../../ext/embedded_sass_pb'
 
 module Sass
   class Transport
     include Observable
 
     DART_SASS_EMBEDDED = File.absolute_path(
-      "../../ext/sass_embedded/sass_embedded/dart-sass-embedded#{Sass::Platform::OS == 'windows' ? '.bat' : ''}", __dir__
+      "../../ext/sass_embedded/dart-sass-embedded#{Sass::Platform::OS == 'windows' ? '.bat' : ''}", __dir__
     )
 
     PROTOCOL_ERROR_ID = 4_294_967_295
