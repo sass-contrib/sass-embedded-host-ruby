@@ -3,21 +3,13 @@ RM = cmd /c del /f /q /s
 else
 RM = rm -fr
 endif
+EXTCONF = ruby -- extconf.rb --without-sass-embedded --without-sass-embedded-protocol --without-protoc
 
 .PHONY: all
-all:
+all: sass_embedded embedded_sass_pb.rb
 
 .PHONY: install
 install:
-ifeq ($(OS),Windows_NT)
-	powershell -Command "Get-Item sass_embedded-*.zip | Expand-Archive -DestinationPath . -Force"
-	powershell -Command "Get-Item protoc-*.zip | Expand-Archive -DestinationPath protoc -Force"
-	./protoc/bin/protoc --ruby_out=. embedded_sass.proto
-else
-	tar -vxzf sass_embedded-*.tar.gz
-	unzip -od protoc protoc-*.zip
-	./protoc/bin/protoc --ruby_out=. embedded_sass.proto
-endif
 
 .PHONY: clean
 clean:
@@ -26,3 +18,34 @@ clean:
 .PHONY: distclean
 distclean: clean
 	$(RM) embedded_sass.proto protoc-*.zip sass_embedded-*.tar.gz
+
+ifeq ($(OS),Windows_NT)
+sass_embedded-*.zip:
+else
+sass_embedded-*.tar.gz:
+endif
+	$(EXTCONF) --with-sass-embedded
+
+ifeq ($(OS),Windows_NT)
+sass_embedded: sass_embedded-*.zip
+	powershell -c "Get-Item $< | Expand-Archive -DestinationPath . -Force"
+else
+sass_embedded: sass_embedded-*.tar.gz
+	tar -vxzf $<
+endif
+
+protoc-*.zip:
+	$(EXTCONF) --with-protoc
+
+protoc: protoc-*.zip
+ifeq ($(OS),Windows_NT)
+	powershell -c "Get-Item $< | Expand-Archive -DestinationPath $@ -Force"
+else
+	unzip -od $@ $<
+endif
+
+embedded_sass.proto:
+	$(EXTCONF) --with-sass-embedded-protocol
+
+%_pb.rb: %.proto protoc
+	./protoc/bin/protoc --ruby_out=. $<

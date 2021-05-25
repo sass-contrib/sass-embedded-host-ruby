@@ -1,29 +1,52 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'mkmf'
 require 'json'
 require 'open-uri'
+require 'fileutils'
 require_relative '../lib/sass/platform'
 
 module Sass
   class Extconf
 
     def initialize
-      get latest_sass_embedded
-      get latest_protoc
-      get latest_embedded_sass_proto
+      get_with_config('sass-embedded', true) do latest_sass_embedded; end
+      get_with_config('sass-embedded-protocol', true) do latest_sass_embedded_protocol; end
+      get_with_config('protoc', true) do latest_protoc; end
     end
 
     private
 
-    def get(url)
-      URI.parse(url).open do |source|
-        File.open(File.absolute_path(File.basename(url), __dir__), 'wb') do |destination|
-          destination.write source.read
+    def get_with_config(config, default)
+      val = with_config(config, default)
+      case val
+      when true
+        if block_given?
+          get yield
+        else
+          get default
+        end
+      when false
+      else
+        get val
+      end
+    end
+
+    def get(uri_s)
+      uri = URI.parse(uri_s)
+      path = File.absolute_path(File.basename(uri.path), __dir__)
+      if uri.is_a? URI::File
+        FileUtils.copy_file uri.path, path
+      else
+        uri.open do |source|
+          File.open(path, 'wb') do |destination|
+            destination.write source.read
+          end
         end
       end
     rescue StandardError
-      raise "Failed to get: #{url}"
+      raise "Failed to get: #{uri}"
     end
 
     def latest_release(repo, include_prerelease = false)
@@ -119,7 +142,7 @@ module Sass
       "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name[1..-1]}-#{os_arch}.#{ext}"
     end
 
-    def latest_embedded_sass_proto
+    def latest_sass_embedded_protocol
       repo = 'sass/embedded-protocol'
 
       # TODO: use latest release once available

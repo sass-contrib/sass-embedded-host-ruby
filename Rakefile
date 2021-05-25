@@ -8,7 +8,7 @@ desc 'Download dart-sass-embedded'
 task :extconf do
   system('make', '-C', 'ext', 'distclean')
   require_relative 'ext/extconf'
-  system('make', '-C', 'ext', 'install')
+  system('make', '-C', 'ext')
 end
 
 desc 'Run all tests'
