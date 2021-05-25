@@ -9,35 +9,42 @@ module Sass
   class Extconf
 
     def initialize
-      download_sass_embedded
-      download_protoc
-      download_embedded_sass_proto
+      get latest_sass_embedded
+      get latest_protoc
+      get latest_embedded_sass_proto
     end
 
     private
 
-    def api(url)
-      headers = {}
-      headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-      URI.parse(url).open(headers) do |file|
-        JSON.parse file.read
-      end
-    end
-
-    def download(url)
+    def get(url)
       URI.parse(url).open do |source|
         File.open(File.absolute_path(File.basename(url), __dir__), 'wb') do |destination|
           destination.write source.read
         end
       end
     rescue StandardError
-      raise "Failed to download: #{url}"
+      raise "Failed to get: #{url}"
     end
 
-    def download_sass_embedded
+    def latest_release(repo, include_prerelease = false)
+      if include_prerelease
+        headers = {}
+        headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
+        URI.parse("https://api.github.com/repos/#{repo}/releases").open(headers) do |file|
+          JSON.parse(file.read)[0]['tag_name']
+        end
+      else
+        URI.parse("https://github.com/#{repo}/releases/latest").open do |file|
+          File.basename file.base_uri.to_s
+        end
+      end
+    end
+
+    def latest_sass_embedded
       repo = 'sass/dart-sass-embedded'
 
-      release = api("https://api.github.com/repos/#{repo}/releases")[0]['tag_name']
+      # TODO, don't use prerelease once a release is available
+      tag_name = latest_release repo, true
 
       os = case Sass::Platform::OS
            when 'darwin'
@@ -66,18 +73,13 @@ module Sass
               'tar.gz'
             end
 
-      url = "https://github.com/#{repo}/releases/download/#{release}/sass_embedded-#{release}-#{os}-#{arch}.#{ext}"
-      download url
+      "https://github.com/#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{arch}.#{ext}"
     end
 
-    def download_protoc
+    def latest_protoc
       repo = 'protocolbuffers/protobuf'
 
-      tag = URI.parse("https://github.com/#{repo}/releases/latest").open do |file|
-        File.basename file.base_uri.to_s
-      end
-
-      release = tag[1..-1]
+      tag_name = latest_release repo
 
       os = case Sass::Platform::OS
            when 'darwin'
@@ -114,15 +116,18 @@ module Sass
 
       ext = 'zip'
 
-      url = "https://github.com/#{repo}/releases/download/#{tag}/protoc-#{release}-#{os_arch}.#{ext}"
-      download url
+      "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name[1..-1]}-#{os_arch}.#{ext}"
     end
 
-    def download_embedded_sass_proto
-      url = 'https://raw.githubusercontent.com/sass/embedded-protocol/HEAD/embedded_sass.proto'
-      download url
-    end
+    def latest_embedded_sass_proto
+      repo = 'sass/embedded-protocol'
 
+      # TODO: use latest release once available
+      # tag_name = latest_release repo
+      tag_name = 'HEAD'
+
+      "https://raw.githubusercontent.com/#{repo}/#{tag_name}/embedded_sass.proto"
+    end
   end
 end
 
