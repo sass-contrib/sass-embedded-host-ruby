@@ -9,11 +9,10 @@ require_relative '../lib/sass/platform'
 
 module Sass
   class Extconf
-
     def initialize
-      get_with_config('sass-embedded', true) do latest_sass_embedded; end
-      get_with_config('sass-embedded-protocol', true) do latest_sass_embedded_protocol; end
-      get_with_config('protoc', true) do latest_protoc; end
+      get_with_config('sass-embedded', true) { latest_sass_embedded }
+      get_with_config('sass-embedded-protocol', true) { latest_sass_embedded_protocol }
+      get_with_config('protoc', true) { latest_protoc }
     end
 
     private
@@ -28,6 +27,7 @@ module Sass
           get default
         end
       when false
+        nil
       else
         get val
       end
@@ -36,21 +36,23 @@ module Sass
     def get(uri_s)
       uri = URI.parse(uri_s)
       path = File.absolute_path(File.basename(uri.path), __dir__)
-      if uri.is_a? URI::File
+      if uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
         FileUtils.copy_file uri.path, path
-      else
+      elsif uri.respond_to? :open
         uri.open do |source|
           File.open(path, 'wb') do |destination|
             destination.write source.read
           end
         end
+      else
+        raise
       end
     rescue StandardError
       raise "Failed to get: #{uri}"
     end
 
-    def latest_release(repo, include_prerelease = false)
-      if include_prerelease
+    def latest_release(repo, prerelease: false)
+      if prerelease
         headers = {}
         headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
         URI.parse("https://api.github.com/repos/#{repo}/releases").open(headers) do |file|
@@ -67,7 +69,7 @@ module Sass
       repo = 'sass/dart-sass-embedded'
 
       # TODO, don't use prerelease once a release is available
-      tag_name = latest_release repo, true
+      tag_name = latest_release repo, prerelease: true
 
       os = case Sass::Platform::OS
            when 'darwin'
