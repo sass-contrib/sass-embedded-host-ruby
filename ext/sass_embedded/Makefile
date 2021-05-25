@@ -1,7 +1,7 @@
 ifeq ($(OS),Windows_NT)
-RM = cmd /c del /f /q
+RM = cmd /c del /f /q /s
 else
-RM = rm -f
+RM = rm -fr
 endif
 
 .PHONY: install
@@ -18,11 +18,7 @@ endif
 
 .PHONY: clean
 clean:
-ifeq ($(OS),Windows_NT)
-	$(RM) /s sass_embedded protoc embedded_sass_pb.rb
-else
-	$(RM) -r sass_embedded protoc embedded_sass_pb.rb
-endif
+	$(RM) embedded_sass_pb.rb protoc sass_embedded
 
 .PHONY: distclean
 distclean: clean
