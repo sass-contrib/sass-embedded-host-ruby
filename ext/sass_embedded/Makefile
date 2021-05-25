@@ -4,6 +4,9 @@ else
 RM = rm -fr
 endif
 
+.PHONY: all
+all:
+
 .PHONY: install
 install:
 ifeq ($(OS),Windows_NT)

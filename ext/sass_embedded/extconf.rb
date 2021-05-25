@@ -9,11 +9,9 @@ module Sass
   class Extconf
 
     def initialize
-      system('make', '-C', __dir__, 'distclean')
       download_sass_embedded
       download_protoc
       download_embedded_sass_proto
-      system('make', '-C', __dir__, 'install')
     end
 
     private
