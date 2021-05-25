@@ -2,7 +2,7 @@
 
 require 'bundler/gem_tasks'
 
-task default: :test
+task default: %i[rubocop test]
 
 desc 'Download dart-sass-embedded'
 task :extconf do
@@ -10,7 +10,14 @@ task :extconf do
 end
 
 desc 'Run all tests'
-task test: :extconf  do
+task test: :extconf do
   $LOAD_PATH.unshift('lib', 'test')
   Dir.glob('./test/**/*_test.rb').sort.each { |f| require f }
+end
+
+begin
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+rescue LoadError
+  nil
 end

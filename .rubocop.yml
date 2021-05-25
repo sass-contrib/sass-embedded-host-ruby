@@ -1,0 +1,14 @@
+AllCops:
+  Exclude:
+    - '**/*_pb.rb'
+    - 'vendor/**/*'
+
+  TargetRubyVersion: 2.6
+
+  NewCops: enable
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics:
+  Enabled: false

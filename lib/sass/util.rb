@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
+  # Utilities functions
   module Util
     module_function
 

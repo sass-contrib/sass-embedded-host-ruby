@@ -5,6 +5,9 @@ require 'observer'
 require_relative '../../ext/embedded_sass_pb'
 
 module Sass
+  # The interface for communicating with dart-sass-embedded.
+  # It handles message serialization and deserialization as well as
+  # tracking concurrent request and response
   class Transport
     include Observable
 
@@ -15,55 +18,20 @@ module Sass
     PROTOCOL_ERROR_ID = 4_294_967_295
 
     def initialize
-      @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
       @stdin_semaphore = Mutex.new
       @observerable_semaphore = Mutex.new
-
-      Thread.new do
-        loop do
-          bits = length = 0
-          loop do
-            byte = @stdout.readbyte
-            length += (byte & 0x7f) << bits
-            bits += 7
-            break if byte <= 0x7f
-          end
-          changed
-          payload = @stdout.read length
-          @observerable_semaphore.synchronize do
-            notify_observers nil, Sass::EmbeddedProtocol::OutboundMessage.decode(payload)
-          end
-        rescue Interrupt
-          break
-        rescue IOError => e
-          notify_observers e, nil
-          close
-          break
-        end
-      end
-
-      Thread.new do
-        loop do
-          warn @stderr.read
-        rescue Interrupt
-          break
-        rescue IOError => e
-          @observerable_semaphore.synchronize do
-            notify_observers e, nil
-          end
-          close
-          break
-        end
-      end
+      @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
+      watch_stdout
+      watch_stderr
     end
 
     def send(req, id)
       mutex = Mutex.new
       resource = ConditionVariable.new
 
-      req_name = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
+      req_kind = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
 
-      message = Sass::EmbeddedProtocol::InboundMessage.new(req_name.to_sym => req)
+      message = Sass::EmbeddedProtocol::InboundMessage.new(req_kind => req)
 
       error = nil
       res = nil
@@ -100,6 +68,47 @@ module Sass
 
     private
 
+    def watch_stdout
+      Thread.new do
+        loop do
+          bits = length = 0
+          loop do
+            byte = @stdout.readbyte
+            length += (byte & 0x7f) << bits
+            bits += 7
+            break if byte <= 0x7f
+          end
+          changed
+          payload = @stdout.read length
+          @observerable_semaphore.synchronize do
+            notify_observers nil, Sass::EmbeddedProtocol::OutboundMessage.decode(payload)
+          end
+        rescue Interrupt
+          break
+        rescue IOError => e
+          notify_observers e, nil
+          close
+          break
+        end
+      end
+    end
+
+    def watch_stderr
+      Thread.new do
+        loop do
+          warn @stderr.read
+        rescue Interrupt
+          break
+        rescue IOError => e
+          @observerable_semaphore.synchronize do
+            notify_observers e, nil
+          end
+          close
+          break
+        end
+      end
+    end
+
     def write(proto)
       @stdin_semaphore.synchronize do
         length = proto.length
@@ -111,6 +120,8 @@ module Sass
       end
     end
 
+    # The observer used to listen on messages from stdout, check if id
+    # matches the given request id, and yield back to the given block.
     class MessageObserver
       def initialize(obs, id, &block)
         @obs = obs

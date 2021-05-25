@@ -8,6 +8,7 @@ require 'fileutils'
 require_relative '../lib/sass/platform'
 
 module Sass
+  # Install dependencies for sass-embedded during gem install
   class Extconf
     def initialize
       get_with_config('sass-embedded', true) { latest_sass_embedded }
@@ -141,7 +142,7 @@ module Sass
 
       ext = 'zip'
 
-      "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name[1..-1]}-#{os_arch}.#{ext}"
+      "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name[1..]}-#{os_arch}.#{ext}"
     end
 
     def latest_sass_embedded_protocol

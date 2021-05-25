@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
+  # The interface for using dart-sass-embedded
   class Embedded
     def initialize
       @transport = Transport.new

@@ -89,7 +89,6 @@ module Sass
       assert_raises(CompilationError) do
         render("@import 'test.scss';", [
                  lambda { |_url, _prev|
-                   return nil
                  }
                ])
       end

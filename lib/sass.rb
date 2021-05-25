@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# The Sass module
 module Sass
   # The global include_paths for Sass files. This is meant for plugins and
   # libraries to register the paths to their Sass stylesheets to that they may
@@ -23,6 +24,13 @@ module Sass
                        end
   end
 
+  # The global render methods. This method automatically instantiates a
+  # global {Sass::Embedded} instance when invoked the first time and call
+  # `:render` method on the instance thereafter. The global {Sass::Embedded}
+  # is automatically closed via {Kernel.at_exit}.
+  # @example
+  #   Sass.render(options)
+  # @return [Hash]
   def self.render(options)
     unless defined? @embedded
       @embedded = Sass::Embedded.new
