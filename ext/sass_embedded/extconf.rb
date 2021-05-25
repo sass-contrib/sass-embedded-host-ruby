@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'mkmf'
 require 'json'
 require 'open-uri'
 require_relative '../../lib/sass/platform'
