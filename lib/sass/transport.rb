@@ -25,7 +25,7 @@ module Sass
       receive
     end
 
-    def send(req, res_id)
+    def send(req, id)
       mutex = Mutex.new
       resource = ConditionVariable.new
 
@@ -37,7 +37,7 @@ module Sass
       res = nil
 
       @observerable_semaphore.synchronize do
-        MessageObserver.new self, res_id do |e, r|
+        MessageObserver.new self, id do |e, r|
           mutex.synchronize do
             error = e
             res = r
