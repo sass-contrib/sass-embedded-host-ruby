@@ -176,7 +176,7 @@ module Sass
 
       ENV['SASS_PATH'] = expected_include_paths.join(File::PATH_SEPARATOR)
 
-      assert_equal expected_include_paths, Sass.include_paths
+      assert_equal expected_include_paths, ::Sass.include_paths
 
       ::Sass.include_paths.clear
     end

@@ -21,7 +21,7 @@ module Sass
       SCSS
 
       @embedded.render(data: template)
-    rescue Sass::RenderError => e
+    rescue RenderError => e
       expected = 'stdin:3:20'
       assert_equal expected, e.backtrace.first
     end

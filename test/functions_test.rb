@@ -27,13 +27,13 @@ module Sass
                                                       path
                                                     },
                          'no_return_path($path)': lambda { |_path|
-                                                    Sass::EmbeddedProtocol::Value.new(
-                                                      singleton: Sass::EmbeddedProtocol::SingletonValue::NULL
+                                                    EmbeddedProtocol::Value.new(
+                                                      singleton: EmbeddedProtocol::SingletonValue::NULL
                                                     )
                                                   },
                          'optional_arguments($path, $optional: null)': lambda { |path, optional|
-                                                                         Sass::EmbeddedProtocol::Value.new(
-                                                                           string: Sass::EmbeddedProtocol::Value::String.new(
+                                                                         EmbeddedProtocol::Value.new(
+                                                                           string: EmbeddedProtocol::Value::String.new(
                                                                              text: "#{path.string.text}/#{optional.singleton == :NULL ? 'bar' : optional.string.text}",
                                                                              quoted: true
                                                                            )
@@ -47,8 +47,8 @@ module Sass
                                                           color
                                                         },
                          'returns_a_color()': lambda {
-                                                Sass::EmbeddedProtocol::Value.new(
-                                                  rgb_color: Sass::EmbeddedProtocol::Value::RgbColor.new(
+                                                EmbeddedProtocol::Value.new(
+                                                  rgb_color: EmbeddedProtocol::Value::RgbColor.new(
                                                     red: 0,
                                                     green: 0,
                                                     blue: 0,
@@ -57,53 +57,53 @@ module Sass
                                                 )
                                               },
                          'returns_a_number()': lambda {
-                                                 Sass::EmbeddedProtocol::Value.new(
-                                                   number: Sass::EmbeddedProtocol::Value::Number.new(
+                                                 EmbeddedProtocol::Value.new(
+                                                   number: EmbeddedProtocol::Value::Number.new(
                                                      value: -312,
                                                      numerators: ['rem']
                                                    )
                                                  )
                                                },
                          'returns_a_bool()': lambda {
-                                               Sass::EmbeddedProtocol::Value.new(
-                                                 singleton: Sass::EmbeddedProtocol::SingletonValue::TRUE
+                                               EmbeddedProtocol::Value.new(
+                                                 singleton: EmbeddedProtocol::SingletonValue::TRUE
                                                )
                                              },
                          'inspect_bool($argument)': lambda { |argument|
                                                       unless argument&.singleton == :TRUE || argument.singleton == :FALSE
                                                         raise StandardError,
-                                                              'passed value is not a Sass::EmbeddedProtocol::SingletonValue::TRUE or Sass::EmbeddedProtocol::SingletonValue::FALSE'
+                                                              'passed value is not a EmbeddedProtocol::SingletonValue::TRUE or EmbeddedProtocol::SingletonValue::FALSE'
                                                       end
 
                                                       argument
                                                     },
                          'inspect_number($argument)': lambda { |argument|
-                                                        unless argument&.number.is_a? Sass::EmbeddedProtocol::Value::Number
+                                                        unless argument&.number.is_a? EmbeddedProtocol::Value::Number
                                                           raise StandardError,
-                                                                'passed value is not a Sass::EmbeddedProtocol::Value::Number'
+                                                                'passed value is not a EmbeddedProtocol::Value::Number'
                                                         end
 
                                                         argument
                                                       },
                          'inspect_map($argument)': lambda { |argument|
-                                                     unless argument&.map.is_a? Sass::EmbeddedProtocol::Value::Map
+                                                     unless argument&.map.is_a? EmbeddedProtocol::Value::Map
                                                        raise StandardError,
-                                                             'passed value is not a Sass::EmbeddedProtocol::Value::Map'
+                                                             'passed value is not a EmbeddedProtocol::Value::Map'
                                                      end
 
                                                      argument
                                                    },
                          'inspect_list($argument)': lambda { |argument|
-                                                      unless argument&.list.is_a? Sass::EmbeddedProtocol::Value::List
+                                                      unless argument&.list.is_a? EmbeddedProtocol::Value::List
                                                         raise StandardError,
-                                                              'passed value is not a Sass::EmbeddedProtocol::Value::List'
+                                                              'passed value is not a EmbeddedProtocol::Value::List'
                                                       end
 
                                                       argument
                                                     },
                          'returns_sass_value()': lambda {
-                                                   Sass::EmbeddedProtocol::Value.new(
-                                                     rgb_color: Sass::EmbeddedProtocol::Value::RgbColor.new(
+                                                   EmbeddedProtocol::Value.new(
+                                                     rgb_color: EmbeddedProtocol::Value::RgbColor.new(
                                                        red: 0,
                                                        green: 0,
                                                        blue: 0,
@@ -112,18 +112,18 @@ module Sass
                                                    )
                                                  },
                          'returns_sass_map()': lambda {
-                                                 Sass::EmbeddedProtocol::Value.new(
-                                                   map: Sass::EmbeddedProtocol::Value::Map.new(
+                                                 EmbeddedProtocol::Value.new(
+                                                   map: EmbeddedProtocol::Value::Map.new(
                                                      entries: [
-                                                       Sass::EmbeddedProtocol::Value::Map::Entry.new(
-                                                         key: Sass::EmbeddedProtocol::Value.new(
-                                                           string: Sass::EmbeddedProtocol::Value::String.new(
+                                                       EmbeddedProtocol::Value::Map::Entry.new(
+                                                         key: EmbeddedProtocol::Value.new(
+                                                           string: EmbeddedProtocol::Value::String.new(
                                                              text: 'color',
                                                              quoted: true
                                                            )
                                                          ),
-                                                         value: Sass::EmbeddedProtocol::Value.new(
-                                                           rgb_color: Sass::EmbeddedProtocol::Value::RgbColor.new(
+                                                         value: EmbeddedProtocol::Value.new(
+                                                           rgb_color: EmbeddedProtocol::Value::RgbColor.new(
                                                              red: 0,
                                                              green: 0,
                                                              blue: 0,
@@ -136,23 +136,23 @@ module Sass
                                                  )
                                                },
                          'returns_sass_list()': lambda {
-                                                  Sass::EmbeddedProtocol::Value.new(
-                                                    list: Sass::EmbeddedProtocol::Value::List.new(
-                                                      separator: Sass::EmbeddedProtocol::ListSeparator::COMMA,
+                                                  EmbeddedProtocol::Value.new(
+                                                    list: EmbeddedProtocol::Value::List.new(
+                                                      separator: EmbeddedProtocol::ListSeparator::COMMA,
                                                       has_brackets: true,
                                                       contents: [
-                                                        Sass::EmbeddedProtocol::Value.new(
-                                                          number: Sass::EmbeddedProtocol::Value::Number.new(
+                                                        EmbeddedProtocol::Value.new(
+                                                          number: EmbeddedProtocol::Value::Number.new(
                                                             value: 10
                                                           )
                                                         ),
-                                                        Sass::EmbeddedProtocol::Value.new(
-                                                          number: Sass::EmbeddedProtocol::Value::Number.new(
+                                                        EmbeddedProtocol::Value.new(
+                                                          number: EmbeddedProtocol::Value::Number.new(
                                                             value: 20
                                                           )
                                                         ),
-                                                        Sass::EmbeddedProtocol::Value.new(
-                                                          number: Sass::EmbeddedProtocol::Value::Number.new(
+                                                        EmbeddedProtocol::Value.new(
+                                                          number: EmbeddedProtocol::Value::Number.new(
                                                             value: 30
                                                           )
                                                         )
@@ -268,7 +268,7 @@ module Sass
     end
 
     def test_function_with_error
-      assert_raises(Sass::RenderError) do
+      assert_raises(RenderError) do
         render('div {url: function_that_raises_errors();}')
       end
     end
@@ -323,8 +323,8 @@ module Sass
             output = @embedded.render(data: 'div { url: test-function() }',
                                       functions: {
                                         'test_function()': lambda {
-                                          Sass::EmbeddedProtocol::Value.new(
-                                            string: Sass::EmbeddedProtocol::Value::String.new(
+                                          EmbeddedProtocol::Value.new(
+                                            string: EmbeddedProtocol::Value::String.new(
                                               text: "{test_key1: 'test_value', test_key2: #{id}}",
                                               quoted: true
                                             )
@@ -345,8 +345,8 @@ module Sass
       output = @embedded.render(data: 'div { url: test-function(); }',
                                 functions: {
                                   'test_function()': lambda {
-                                    Sass::EmbeddedProtocol::Value.new(
-                                      string: Sass::EmbeddedProtocol::Value::String.new(
+                                    EmbeddedProtocol::Value.new(
+                                      string: EmbeddedProtocol::Value::String.new(
                                         text: 'custom_function',
                                         quoted: true
                                       )

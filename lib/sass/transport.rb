@@ -12,7 +12,7 @@ module Sass
     include Observable
 
     DART_SASS_EMBEDDED = File.absolute_path(
-      "../../ext/sass_embedded/dart-sass-embedded#{Sass::Platform::OS == 'windows' ? '.bat' : ''}", __dir__
+      "../../ext/sass_embedded/dart-sass-embedded#{Platform::OS == 'windows' ? '.bat' : ''}", __dir__
     )
 
     PROTOCOL_ERROR_ID = 4_294_967_295
@@ -31,7 +31,7 @@ module Sass
 
       req_kind = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
 
-      message = Sass::EmbeddedProtocol::InboundMessage.new(req_kind => req)
+      message = EmbeddedProtocol::InboundMessage.new(req_kind => req)
 
       error = nil
       res = nil
@@ -81,7 +81,7 @@ module Sass
           changed
           payload = @stdout.read length
           @observerable_semaphore.synchronize do
-            notify_observers nil, Sass::EmbeddedProtocol::OutboundMessage.decode(payload)
+            notify_observers nil, EmbeddedProtocol::OutboundMessage.decode(payload)
           end
         rescue Interrupt
           break
@@ -134,9 +134,9 @@ module Sass
         if error
           @obs.delete_observer self
           @block.call error, nil
-        elsif message.error&.id == Sass::Transport::PROTOCOL_ERROR_ID
+        elsif message.error&.id == Transport::PROTOCOL_ERROR_ID
           @obs.delete_observer self
-          @block.call Sass::ProtocolError.new(message.error.message), nil
+          @block.call ProtocolError.new(message.error.message), nil
         else
           res = message[message.message.to_s]
           if (res['compilation_id'] || res['id']) == @id
