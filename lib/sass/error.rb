@@ -1,18 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class BaseError < StandardError; end
+  class SassError < StandardError; end
 
-  class ProtocolError < BaseError; end
-
-  class NotRenderedError < BaseError; end
-
-  class InvalidStyleError < BaseError; end
-
-  class UnsupportedValue < BaseError; end
+  class ProtocolError < SassError; end
 
   # The error returned by {Sass.render}
-  class RenderError < BaseError
+  class RenderError < SassError
     attr_accessor :formatted, :file, :line, :column, :status
 
     def initialize(message, formatted, file, line, column, status)

@@ -131,7 +131,7 @@ module Sass
                      out_file:,
                      functions:,
                      importer:)
-        raise NotRenderedError, 'Either :data or :file must be set.' if file.nil? && data.nil?
+        raise ArgumentError, 'Either :data or :file must be set.' if file.nil? && data.nil?
 
         @data = data
         @file = file
@@ -277,9 +277,9 @@ module Sass
         when :compressed
           EmbeddedProtocol::OutputStyle::COMPRESSED
         when :nested, :compact
-          raise UnsupportedValue, "#{@output_style} is not a supported output_style"
+          raise ArgumentError, "#{@output_style} is not a supported output_style"
         else
-          raise InvalidStyleError, "#{@output_style} is not a valid utput_style"
+          raise ArgumentError, "#{@output_style} is not a valid utput_style"
         end
       end
 

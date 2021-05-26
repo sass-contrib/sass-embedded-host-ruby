@@ -61,17 +61,17 @@ module Sass
     end
 
     def test_invalid_output_style
-      assert_raises(InvalidStyleError) do
+      assert_raises(ArgumentError) do
         @embedded.render(data: input_scss, output_style: :totally_wrong)[:css]
       end
     end
 
     def test_unsupported_output_style
-      assert_raises(UnsupportedValue) do
+      assert_raises(ArgumentError) do
         @embedded.render(data: input_scss, output_style: :nested)[:css]
       end
 
-      assert_raises(UnsupportedValue) do
+      assert_raises(ArgumentError) do
         @embedded.render(data: input_scss, output_style: :compact)[:css]
       end
     end
