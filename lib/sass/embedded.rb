@@ -157,8 +157,8 @@ module Sass
           source_map: source_map,
           importers: importers,
           global_functions: global_functions,
-          alert_color: true,
-          alert_ascii: true
+          alert_color: $stderr.tty?,
+          alert_ascii: Platform::OS == 'windows'
         )
       end
 
