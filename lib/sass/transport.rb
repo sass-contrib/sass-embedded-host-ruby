@@ -109,14 +109,14 @@ module Sass
       end
     end
 
-    def write(proto)
+    def write(payload)
       @stdin_semaphore.synchronize do
-        length = proto.length
+        length = payload.length
         while length.positive?
           @stdin.write ((length > 0x7f ? 0x80 : 0) | (length & 0x7f)).chr
           length >>= 7
         end
-        @stdin.write proto
+        @stdin.write payload
       end
     end
 
