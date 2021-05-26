@@ -28,7 +28,7 @@ module Sass
                functions: {},
                importer: [])
       raise NotImplementedError, 'precision is not implemented' if precision != 5
-      raise ArgumentError, 'indent_type must be :space or :tab' unless %i[space tab].include?(indent_type)
+      raise ArgumentError, 'indent_type must be :space or :tab' unless %i[space tab].include?(indent_type.to_sym)
       raise RangeError, 'indent_width must be integer in between between 0 and 10 (inclusive)' unless indent_width.is_a?(Integer) && indent_width.between?(0, 10)
       raise NotImplementedError, 'linefeed is not implemented' if linefeed != :lf
       raise NotImplementedError, 'source_comments is not implemented' if source_comments == true
@@ -85,10 +85,25 @@ module Sass
         )
       end
 
+      css = +response.success.css
+
+      if indent_width != 2 || indent_type.to_sym != :space
+        indent = case indent_type.to_sym
+                 when :space
+                   ' ' * indent_width
+                 when :tab
+                   "\t" * indent_width
+                 end
+
+        css.gsub!(/^ +/) do |space|
+          space.gsub '  ', indent
+        end
+      end
+
       finish = Util.now
 
       {
-        css: response.success.css,
+        css: -css,
         map: response.success.source_map,
         stats: {
           entry: file.nil? ? 'data' : file,
