@@ -9,8 +9,6 @@ module Sass
       @id = 0
     end
 
-    # rubocop:disable Lint/UnusedMethodArgument
-
     def render(data: nil,
                file: nil,
                indented_syntax: false,
@@ -29,7 +27,15 @@ module Sass
                source_map_root: '',
                functions: {},
                importer: [])
-      # rubocop:enable Lint/UnusedMethodArgument
+      raise NotImplementedError, 'precision is not implemented' if precision != 5
+      raise ArgumentError, 'indent_type must be :space or :tab' unless %i[space tab].include?(indent_type)
+      raise RangeError, 'indent_width must be integer in between between 0 and 10 (inclusive)' unless indent_width.is_a?(Integer) && indent_width.between?(0, 10)
+      raise NotImplementedError, 'linefeed is not implemented' if linefeed != :lf
+      raise NotImplementedError, 'source_comments is not implemented' if source_comments == true
+      raise NotImplementedError, 'omit_source_map_url is not implemented' if omit_source_map_url == true
+      raise NotImplementedError, 'source_map_contents is not implemented' if source_map_contents == true
+      raise NotImplementedError, 'source_map_embed is not implemented' if source_map_embed == true
+      raise NotImplementedError, 'source_map_root is not implemented' if source_map_root != ''
 
       start = Util.now
 
@@ -131,7 +137,7 @@ module Sass
                      out_file:,
                      functions:,
                      importer:)
-        raise ArgumentError, 'Either :data or :file must be set.' if file.nil? && data.nil?
+        raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
 
         @data = data
         @file = file
