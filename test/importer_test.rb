@@ -3,7 +3,7 @@
 require_relative 'test_helper'
 
 module Sass
-  class CustomImporterTest < MiniTest::Test
+  class ImporterTest < MiniTest::Test
     include TempFileTest
 
     def setup

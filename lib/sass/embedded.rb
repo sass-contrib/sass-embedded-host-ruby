@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'json'
+require 'base64'
+
 module Sass
   # The interface for using dart-sass-embedded
   class Embedded
@@ -20,30 +23,24 @@ module Sass
                indented_syntax: false,
                include_paths: [],
                output_style: :expanded,
-               precision: 5,
+               # precision: 5,
                indent_type: :space,
                indent_width: 2,
                linefeed: :lf,
-               source_comments: false,
+               # source_comments: false,
                source_map: false,
                out_file: nil,
                omit_source_map_url: false,
-               source_map_contents: false,
+               # source_map_contents: false,
                source_map_embed: false,
                source_map_root: '',
                functions: {},
                importer: [])
-      raise NotImplementedError, 'precision is not implemented' if precision != 5
-      raise NotImplementedError, 'source_comments is not implemented' if source_comments == true
-      raise NotImplementedError, 'omit_source_map_url is not implemented' if omit_source_map_url == true
-      raise NotImplementedError, 'source_map_contents is not implemented' if source_map_contents == true
-      raise NotImplementedError, 'source_map_embed is not implemented' if source_map_embed == true
-      raise NotImplementedError, 'source_map_root is not implemented' if source_map_root != ''
-
-      indent = parse_indent(indent_type, indent_width)
-      linefeed = parse_linefeed(linefeed)
-
       start = Util.now
+
+      indent_type = parse_indent_type(indent_type)
+      indent_width = parse_indent_width(indent_width)
+      linefeed = parse_linefeed(linefeed)
 
       compilation_id = next_id
 
@@ -82,8 +79,10 @@ module Sass
         raise RenderError.new(
           response.failure.message,
           response.failure.formatted,
-          if response.failure.span
-            response.failure.span.url == '' ? 'stdin' : URI.parse(response.failure.span.url).path
+          if response.failure.span&.url == ''
+            'stdin'
+          else
+            Util.path(response.failure.span.url)
           end,
           response.failure.span ? response.failure.span.start.line + 1 : nil,
           response.failure.span ? response.failure.span.start.column + 1 : nil,
@@ -91,21 +90,27 @@ module Sass
         )
       end
 
-      css = +response.success.css
+      map, source_map = post_process_map(map: response.success.source_map,
+                                         file: file,
+                                         out_file: out_file,
+                                         source_map: source_map,
+                                         source_map_root: source_map_root)
 
-      if indent_width != 2 || indent_type.to_sym != :space
-        css.gsub!(/^ +/) do |space|
-          indent * (space.length / 2)
-        end
-      end
-
-      css.gsub!("\n", linefeed) if linefeed != "\n"
+      css = post_process_css(css: response.success.css,
+                             indent_type: indent_type,
+                             indent_width: indent_width,
+                             linefeed: linefeed,
+                             map: map,
+                             out_file: out_file,
+                             omit_source_map_url: omit_source_map_url,
+                             source_map: source_map,
+                             source_map_embed: source_map_embed)
 
       finish = Util.now
 
       {
-        css: -css,
-        map: response.success.source_map,
+        css: css,
+        map: map,
         stats: {
           entry: file.nil? ? 'data' : file,
           start: start,
@@ -122,17 +127,93 @@ module Sass
 
     private
 
-    def parse_indent(indent_type, indent_width)
-      raise RangeError, 'indent_width must be integer in between between 0 and 10 (inclusive)' unless indent_width.is_a?(Integer) && indent_width.between?(0, 10)
+    def post_process_map(map:,
+                         file:,
+                         out_file:,
+                         source_map:,
+                         source_map_root:)
+      return if map.nil? || map.empty?
 
+      map_data = JSON.parse(map)
+
+      map_data['sourceRoot'] = source_map_root
+
+      source_map_path = if source_map.is_a? String
+                          source_map
+                        else
+                          "#{out_file}.map"
+                        end
+
+      source_map_dir = File.dirname(source_map_path)
+
+      if out_file
+        map_data['file'] = Util.relative(source_map_dir, out_file)
+      elsif file
+        ext = File.extname(file)
+        map_data['file'] = "#{file[0..(ext.empty? ? -1 : -ext.length - 1)]}.css"
+      else
+        map_data['file'] = 'stdin.css'
+      end
+
+      map_data['sources'].map! do |source|
+        if source.start_with? Util::FILE_PROTOCOL
+          Util.relative(source_map_dir, Util.path(source))
+        else
+          source
+        end
+      end
+
+      [-JSON.generate(map_data), source_map_path]
+    end
+
+    def post_process_css(css:,
+                         indent_type:,
+                         indent_width:,
+                         linefeed:,
+                         map:,
+                         omit_source_map_url:,
+                         out_file:,
+                         source_map:,
+                         source_map_embed:)
+      css = +css
+      if indent_width != 2 || indent_type.to_sym != :space
+        indent = indent_type * indent_width
+        css.gsub!(/^ +/) do |space|
+          indent * (space.length / 2)
+        end
+      end
+      css.gsub!("\n", linefeed) if linefeed != "\n"
+
+      unless map.nil? || omit_source_map_url == true
+        url = if source_map_embed
+                "data:application/json;base64,#{Base64.strict_encode64(map)}"
+              elsif out_file
+                Util.relative(File.dirname(out_file), source_map)
+              else
+                source_map
+              end
+        css += "#{linefeed}/*# sourceMappingURL=#{url} */"
+      end
+
+      -css
+    end
+
+    def parse_indent_type(indent_type)
       case indent_type.to_sym
       when :space
-        ' ' * indent_width
+        ' '
       when :tab
-        "\t" * indent_width
+        "\t"
       else
         raise ArgumentError, 'indent_type must be :space or :tab'
       end
+    end
+
+    def parse_indent_width(indent_width)
+      raise ArgumentError, 'indent_width must be an integer' unless indent_width.is_a? Integer
+      raise RangeError, 'indent_width must be in between 0 and 10 (inclusive)' unless indent_width.between? 0, 10
+
+      indent_width
     end
 
     def parse_linefeed(linefeed)
@@ -291,7 +372,7 @@ module Sass
       def url
         return if @file.nil?
 
-        Util.file_uri(@file)
+        Util.file_uri @file
       end
 
       def string
@@ -309,7 +390,7 @@ module Sass
       end
 
       def style
-        case @output_style.to_sym
+        case @output_style&.to_sym
         when :expanded
           EmbeddedProtocol::OutputStyle::EXPANDED
         when :compressed
