@@ -21,11 +21,11 @@ module Sass
       @stdin_semaphore = Mutex.new
       @observerable_semaphore = Mutex.new
       @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
-      watch_stdout
-      watch_stderr
+      pipe @stderr, $stderr
+      receive
     end
 
-    def send(req, id)
+    def send(req, res_id)
       mutex = Mutex.new
       resource = ConditionVariable.new
 
@@ -37,7 +37,7 @@ module Sass
       res = nil
 
       @observerable_semaphore.synchronize do
-        MessageObserver.new self, id do |e, r|
+        MessageObserver.new self, res_id do |e, r|
           mutex.synchronize do
             error = e
             res = r
@@ -68,7 +68,7 @@ module Sass
 
     private
 
-    def watch_stdout
+    def receive
       Thread.new do
         loop do
           bits = length = 0
@@ -93,10 +93,10 @@ module Sass
       end
     end
 
-    def watch_stderr
+    def pipe(readable, writeable)
       Thread.new do
         loop do
-          warn @stderr.read
+          writeable.write readable.read
         rescue Interrupt
           break
         rescue IOError => e

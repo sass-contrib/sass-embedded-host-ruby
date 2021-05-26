@@ -15,7 +15,7 @@ module Sass
     end
 
     def render(data)
-      @embedded.render({ data: data })[:css]
+      @embedded.render(data: data)[:css]
     end
 
     def test_line_comments
@@ -31,10 +31,8 @@ module Sass
           baz: bang;
         }
       CSS
-      output = @embedded.render({
-                                  data: template,
-                                  source_comments: true
-                                })
+      output = @embedded.render(data: template,
+                                source_comments: true)
       assert_equal expected_output, output[:css]
     end
 
@@ -97,10 +95,8 @@ module Sass
           baz: 0.33333333;
         }
       CSS
-      output = @embedded.render({
-                                  data: template,
-                                  precision: 8
-                                })
+      output = @embedded.render(data: template,
+                                precision: 8)
       assert_equal expected_output, output
     end
 
@@ -134,18 +130,14 @@ module Sass
                   padding: 20px;
                 }
       SCSS
-      output = @embedded.render({
-                                  data: File.read('style.scss'),
-                                  source_map: 'style.scss.map'
-                                })
+      output = @embedded.render(data: File.read('style.scss'),
+                                source_map: 'style.scss.map')
 
       assert output[:map].start_with? '{"version":3,'
     end
 
     def test_no_source_map
-      output = @embedded.render({
-                                  data: '$size: 30px;'
-                                })
+      output = @embedded.render(data: '$size: 30px;')
       assert_equal '', output[:map]
     end
 
@@ -157,12 +149,10 @@ module Sass
       temp_file('included_2/import.scss', "@use 'import_parent' as *; $size: $s;")
       temp_file('styles.scss', "@use 'import.scss' as *; .hi { width: $size; }")
 
-      assert_equal ".hi {\n  width: 30px;\n}", @embedded.render({
-                                                                  data: File.read('styles.scss'),
-                                                                  include_paths: %w[
-                                                                    included_1 included_2
-                                                                  ]
-                                                                })[:css]
+      assert_equal ".hi {\n  width: 30px;\n}", @embedded.render(data: File.read('styles.scss'),
+                                                                include_paths: %w[
+                                                                  included_1 included_2
+                                                                ])[:css]
     end
 
     def test_global_include_paths
@@ -198,7 +188,7 @@ module Sass
       temp_file('included_6/import.scss', "@use 'import_parent' as *; $size: $s;")
       temp_file('styles.scss', "@use 'import.scss' as *; .hi { width: $size; }")
 
-      assert_raises(CompilationError) do
+      assert_raises(RenderError) do
         render(File.read('styles.scss'))
       end
     end
@@ -216,9 +206,9 @@ module Sass
         }
       CSS
 
-      assert_equal css, @embedded.render({ data: sass, indented_syntax: true })[:css]
-      assert_raises(CompilationError) do
-        @embedded.render({ data: sass, indented_syntax: false })
+      assert_equal css, @embedded.render(data: sass, indented_syntax: true)[:css]
+      assert_raises(RenderError) do
+        @embedded.render(data: sass, indented_syntax: false)
       end
     end
 
@@ -230,12 +220,10 @@ module Sass
           baz: bang; }
       SCSS
 
-      output = @embedded.render({
-                                  data: template,
-                                  source_map: '.',
-                                  source_map_embed: true,
-                                  source_map_contents: true
-                                })[:css]
+      output = @embedded.render(data: template,
+                                source_map: '.',
+                                source_map_embed: true,
+                                source_map_contents: true)[:css]
 
       assert_match(/sourceMappingURL/, output)
       assert_match(/.foo/, output)
@@ -263,9 +251,7 @@ module Sass
         threads = []
         10.times do |i|
           threads << Thread.new(i) do |id|
-            output = @embedded.render({
-                                        data: "div { width: #{id} }"
-                                      })[:css]
+            output = @embedded.render(data: "div { width: #{id} }")[:css]
             assert_match(/#{id}/, output)
           end
         end

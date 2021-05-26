@@ -11,8 +11,8 @@ module Sass
 
   class UnsupportedValue < BaseError; end
 
-  # The compliation error returned by {Sass.render}
-  class CompilationError < BaseError
+  # The error returned by {Sass.render}
+  class RenderError < BaseError
     attr_accessor :formatted, :file, :line, :column, :status
 
     def initialize(message, formatted, file, line, column, status)

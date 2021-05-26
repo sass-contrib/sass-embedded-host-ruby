@@ -15,7 +15,7 @@ module Sass
     end
 
     def render(data, importer)
-      @embedded.render({ data: data, importer: importer })[:css]
+      @embedded.render(data: data, importer: importer)[:css]
     end
 
     def test_custom_importer_works
@@ -86,7 +86,7 @@ module Sass
     end
 
     def test_custom_importer_that_does_not_resolve
-      assert_raises(CompilationError) do
+      assert_raises(RenderError) do
         render("@import 'test.scss';", [
                  lambda { |_url, _prev|
                  }
@@ -95,7 +95,7 @@ module Sass
     end
 
     def test_custom_importer_that_returns_error
-      assert_raises(CompilationError) do
+      assert_raises(RenderError) do
         render("@import 'test.scss';", [
                  lambda { |_url, _prev|
                    IOError.new 'test error'
@@ -105,7 +105,7 @@ module Sass
     end
 
     def test_custom_importer_that_raises_error
-      assert_raises(CompilationError) do
+      assert_raises(RenderError) do
         render("@import 'test.scss';", [
                  lambda { |_url, _prev|
                    raise IOError, 'test error'
@@ -115,15 +115,13 @@ module Sass
     end
 
     def test_parent_path_is_accessible
-      output = @embedded.render({
-                                  data: "@import 'parent.scss';",
-                                  file: 'import-parent-filename.scss',
-                                  importer: [
-                                    lambda { |_url, prev|
-                                      { contents: ".#{prev} { color: red; }" }
-                                    }
-                                  ]
-                                })[:css]
+      output = @embedded.render(data: "@import 'parent.scss';",
+                                file: 'import-parent-filename.scss',
+                                importer: [
+                                  lambda { |_url, prev|
+                                    { contents: ".#{prev} { color: red; }" }
+                                  }
+                                ])[:css]
 
       assert_equal <<~CSS.chomp, output
         .import-parent-filename.scss {
@@ -133,23 +131,19 @@ module Sass
     end
 
     def test_call_embedded_importer
-      output = @embedded.render({
-                                  data: "@import 'parent.scss';",
-                                  importer: [
-                                    lambda { |_url, _prev|
-                                      {
-                                        contents: @embedded.render({
-                                                                     data: "@import 'parent-parent.scss'",
-                                                                     importer: [
-                                                                       lambda { |_url, _prev|
-                                                                         { contents: 'h1 { color: black; }' }
-                                                                       }
-                                                                     ]
-                                                                   })[:css]
-                                      }
+      output = @embedded.render(data: "@import 'parent.scss';",
+                                importer: [
+                                  lambda { |_url, _prev|
+                                    {
+                                      contents: @embedded.render(data: "@import 'parent-parent.scss'",
+                                                                 importer: [
+                                                                   lambda { |_url, _prev|
+                                                                     { contents: 'h1 { color: black; }' }
+                                                                   }
+                                                                 ])[:css]
                                     }
-                                  ]
-                                })[:css]
+                                  }
+                                ])[:css]
 
       assert_equal <<~CSS.chomp, output
         h1 {

@@ -11,9 +11,7 @@ It exposes a Ruby API for Sass that's backed by a native [Dart Sass](https://sas
 ``` ruby
 require "sass"
 
-Sass.render({
-  file: "style.scss"
-})
+Sass.render(file: "style.scss")
 ```
 
 ---

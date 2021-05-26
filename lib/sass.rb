@@ -31,14 +31,14 @@ module Sass
   # @example
   #   Sass.render(options)
   # @return [Hash]
-  def self.render(options)
+  def self.render(**kwargs)
     unless defined? @embedded
       @embedded = Sass::Embedded.new
       at_exit do
         @embedded.close
       end
     end
-    @embedded.render options
+    @embedded.render(**kwargs)
   end
 end
 
