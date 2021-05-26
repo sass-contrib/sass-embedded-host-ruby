@@ -85,5 +85,18 @@ module Sass
         }
       CSS
     end
+
+    def test_linefeed
+      template = <<~SCSS
+        .foo {
+          baz: bang;
+        }
+      SCSS
+
+      assert_equal ".foo {\n  baz: bang;\n}", @embedded.render(data: template, linefeed: :lf)[:css]
+      assert_equal ".foo {\n\r  baz: bang;\n\r}", @embedded.render(data: template, linefeed: :lfcr)[:css]
+      assert_equal ".foo {\r  baz: bang;\r}", @embedded.render(data: template, linefeed: :cr)[:css]
+      assert_equal ".foo {\r\n  baz: bang;\r\n}", @embedded.render(data: template, linefeed: :crlf)[:css]
+    end
   end
 end

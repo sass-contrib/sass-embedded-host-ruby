@@ -9,6 +9,12 @@ module Sass
       @id = 0
     end
 
+    def info
+      @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(
+        id: next_id
+      )
+    end
+
     def render(data: nil,
                file: nil,
                indented_syntax: false,
@@ -28,14 +34,14 @@ module Sass
                functions: {},
                importer: [])
       raise NotImplementedError, 'precision is not implemented' if precision != 5
-      raise ArgumentError, 'indent_type must be :space or :tab' unless %i[space tab].include?(indent_type.to_sym)
-      raise RangeError, 'indent_width must be integer in between between 0 and 10 (inclusive)' unless indent_width.is_a?(Integer) && indent_width.between?(0, 10)
-      raise NotImplementedError, 'linefeed is not implemented' if linefeed != :lf
       raise NotImplementedError, 'source_comments is not implemented' if source_comments == true
       raise NotImplementedError, 'omit_source_map_url is not implemented' if omit_source_map_url == true
       raise NotImplementedError, 'source_map_contents is not implemented' if source_map_contents == true
       raise NotImplementedError, 'source_map_embed is not implemented' if source_map_embed == true
       raise NotImplementedError, 'source_map_root is not implemented' if source_map_root != ''
+
+      indent = parse_indent(indent_type, indent_width)
+      linefeed = parse_linefeed(linefeed)
 
       start = Util.now
 
@@ -88,17 +94,12 @@ module Sass
       css = +response.success.css
 
       if indent_width != 2 || indent_type.to_sym != :space
-        indent = case indent_type.to_sym
-                 when :space
-                   ' ' * indent_width
-                 when :tab
-                   "\t" * indent_width
-                 end
-
         css.gsub!(/^ +/) do |space|
-          space.gsub '  ', indent
+          indent * (space.length / 2)
         end
       end
+
+      css.gsub!("\n", linefeed) if linefeed != "\n"
 
       finish = Util.now
 
@@ -121,16 +122,32 @@ module Sass
 
     private
 
-    def info
-      version_response = @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(
-        id: next_id
-      )
-      {
-        compiler_version: version_response.compiler_version,
-        protocol_version: version_response.protocol_version,
-        implementation_name: version_response.implementation_name,
-        implementation_version: version_response.implementation_version
-      }
+    def parse_indent(indent_type, indent_width)
+      raise RangeError, 'indent_width must be integer in between between 0 and 10 (inclusive)' unless indent_width.is_a?(Integer) && indent_width.between?(0, 10)
+
+      case indent_type.to_sym
+      when :space
+        ' ' * indent_width
+      when :tab
+        "\t" * indent_width
+      else
+        raise ArgumentError, 'indent_type must be :space or :tab'
+      end
+    end
+
+    def parse_linefeed(linefeed)
+      case linefeed.to_sym
+      when :lf
+        "\n"
+      when :lfcr
+        "\n\r"
+      when :cr
+        "\r"
+      when :crlf
+        "\r\n"
+      else
+        raise ArgumentError, 'linefeed must be one of :lf, :lfcr, :cr, :crlf'
+      end
     end
 
     def next_id
