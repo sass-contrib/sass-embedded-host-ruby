@@ -44,7 +44,7 @@ module Sass
 
       compilation_id = next_id
 
-      renderer = Renderer.new(
+      renderer = RenderContext.new(
         data: data,
         file: file,
         indented_syntax: indented_syntax,
@@ -240,7 +240,7 @@ module Sass
     end
 
     # Helper class that maintains render state
-    class Renderer
+    class RenderContext
       def initialize(data:,
                      file:,
                      indented_syntax:,
