@@ -42,9 +42,9 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      compilation_id = next_id
-
-      renderer = RenderContext.new(
+      error, response = RenderContext.new(
+        transport: @transport,
+        id: next_id,
         data: data,
         file: file,
         indented_syntax: indented_syntax,
@@ -54,26 +54,9 @@ module Sass
         out_file: out_file,
         functions: functions,
         importer: importer
-      )
+      ).render
 
-      response = @transport.send renderer.compile_request(compilation_id), compilation_id
-
-      loop do
-        case response
-        when EmbeddedProtocol::OutboundMessage::CompileResponse
-          break
-        when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
-          response = @transport.send renderer.canonicalize_response(response), compilation_id
-        when EmbeddedProtocol::OutboundMessage::ImportRequest
-          response = @transport.send renderer.import_response(response), compilation_id
-        when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
-          response = @transport.send renderer.function_call_response(response), compilation_id
-        when EmbeddedProtocol::ProtocolError
-          raise ProtocolError, response.message
-        else
-          raise ProtocolError, "Unexpected packet received: #{response}"
-        end
-      end
+      raise error if error
 
       if response.failure
         raise RenderError.new(
@@ -241,7 +224,9 @@ module Sass
 
     # Helper class that maintains render state
     class RenderContext
-      def initialize(data:,
+      def initialize(transport:,
+                     id:,
+                     data:,
                      file:,
                      indented_syntax:,
                      include_paths:,
@@ -265,6 +250,67 @@ module Sass
         end
         @importer = importer
         @import_responses = {}
+
+        @transport = transport
+        @id = id
+        @mutex = Mutex.new
+        @condition_variable = ConditionVariable.new
+        @response = nil
+        @error = nil
+        @transport.add_observer self
+        @transport.send compile_request @id
+      end
+
+      def render
+        @mutex.synchronize do
+          @condition_variable.wait(@mutex) if @error.nil? && @response.nil?
+        end
+        [@error, @response]
+      end
+
+      def update(error, message)
+        raise error unless error.nil?
+
+        response = message[message.message.to_s]
+
+        case response
+        when EmbeddedProtocol::ProtocolError
+          raise ProtocolError, response.message
+        when EmbeddedProtocol::OutboundMessage::CompileResponse
+          return unless response.id == @id
+
+          @transport.delete_observer self
+          @mutex.synchronize do
+            @response = response
+            @condition_variable.broadcast
+          end
+        when EmbeddedProtocol::OutboundMessage::LogEvent
+          # not implemented yet
+        when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
+          return unless response['compilation_id'] == @id
+
+          Thread.new do
+            @transport.send canonicalize_response(response)
+          end
+        when EmbeddedProtocol::OutboundMessage::ImportRequest
+          return unless response['compilation_id'] == @id
+
+          @transport.send import_response(response)
+        when EmbeddedProtocol::OutboundMessage::FileImportRequest
+          raise NotImplementedError, 'FileImportRequest is not implemented'
+        when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
+          return unless response['compilation_id'] == @id
+
+          Thread.new do
+            @transport.send function_call_response(response)
+          end
+        end
+      rescue StandardError => e
+        @transport.delete_observer self
+        @mutex.synchronize do
+          @error = e
+          @condition_variable.broadcast
+        end
       end
 
       def compile_request(id)

@@ -25,37 +25,16 @@ module Sass
       receive
     end
 
-    def send(req, id)
-      mutex = Mutex.new
-      resource = ConditionVariable.new
-
-      req_kind = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
-
-      message = EmbeddedProtocol::InboundMessage.new(req_kind => req)
-
-      error = nil
-      res = nil
-
+    def add_observer(*args)
       @observerable_semaphore.synchronize do
-        MessageObserver.new self, id do |e, r|
-          mutex.synchronize do
-            error = e
-            res = r
-
-            resource.signal
-          end
-        end
+        super(*args)
       end
+    end
 
-      mutex.synchronize do
-        write message.to_proto
-
-        resource.wait(mutex)
-      end
-
-      raise error if error
-
-      res
+    def send(req)
+      req_kind = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
+      message = EmbeddedProtocol::InboundMessage.new(req_kind => req)
+      write message.to_proto
     end
 
     def close
@@ -80,8 +59,9 @@ module Sass
           end
           changed
           payload = @stdout.read length
+          message = EmbeddedProtocol::OutboundMessage.decode payload
           @observerable_semaphore.synchronize do
-            notify_observers nil, EmbeddedProtocol::OutboundMessage.decode(payload)
+            notify_observers nil, message
           end
         rescue Interrupt
           break
@@ -117,33 +97,6 @@ module Sass
           length >>= 7
         end
         @stdin.write payload
-      end
-    end
-
-    # The observer used to listen on messages from stdout, check if id
-    # matches the given request id, and yield back to the given block.
-    class MessageObserver
-      def initialize(obs, id, &block)
-        @obs = obs
-        @id = id
-        @block = block
-        @obs.add_observer self
-      end
-
-      def update(error, message)
-        if error
-          @obs.delete_observer self
-          @block.call error, nil
-        elsif message.error&.id == Transport::PROTOCOL_ERROR_ID
-          @obs.delete_observer self
-          @block.call ProtocolError.new(message.error.message), nil
-        else
-          res = message[message.message.to_s]
-          if (res['compilation_id'] || res['id']) == @id
-            @obs.delete_observer self
-            @block.call error, res
-          end
-        end
       end
     end
   end
