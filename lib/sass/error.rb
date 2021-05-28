@@ -5,7 +5,7 @@ module Sass
 
   class ProtocolError < SassError; end
 
-  # The error returned by {Sass.render}
+  # The error returned by {Embedded#render}.
   class RenderError < SassError
     attr_accessor :formatted, :file, :line, :column, :status
 

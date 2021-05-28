@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# The Sass module
+# The Sass module. This module will communicate with Embedded Dart Sass using
+# the Embedded Sass protocol.
 module Sass
   class << self
     # The global include_paths for Sass files. This is meant for plugins and
@@ -31,9 +32,12 @@ module Sass
 
     # The global render method. This method automatically instantiates a
     # global {Sass::Embedded} instance when invoked the first time and call
-    # `:render` method on the instance thereafter.
+    # `:render` method on the instance thereafter. See {Sass::Embedded#render}
+    # for supported options.
     # @example
-    #   Sass.render(options)
+    #   Sass.render(data: 'h1 { font-size: 40px; }')
+    # @example
+    #   Sass.render(file: 'style.css')
     # @return [Hash]
     def render(**kwargs)
       embedded.render(**kwargs)
@@ -54,5 +58,7 @@ require_relative 'sass/error'
 require_relative 'sass/platform'
 require_relative 'sass/util'
 require_relative 'sass/transport'
-require_relative 'sass/context'
+require_relative 'sass/observer'
+require_relative 'sass/info'
+require_relative 'sass/render'
 require_relative 'sass/embedded'

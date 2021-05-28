@@ -3,7 +3,7 @@
 require 'pathname'
 
 module Sass
-  # Utilities functions
+  # The utilitiy module.
   module Util
     module_function
 

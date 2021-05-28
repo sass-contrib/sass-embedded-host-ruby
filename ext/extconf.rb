@@ -8,12 +8,24 @@ require 'fileutils'
 require_relative '../lib/sass/platform'
 
 module Sass
-  # Install dependencies for sass-embedded during gem install
+  # The dependency downloader. This will download all the dependencies
+  # during gem installation, and the Makefile will unpack all downloaded
+  # dependencies. By default it will download the latest release of each
+  # dependency from GitHub releases.
+  #
+  # It is possible to specify an alternative source or version of each
+  # dependency. Local sources can be used for offline installation.
+  #
+  # @example
+  #   gem install sass-embedded -- \
+  #     --with-protoc=file:///path/to/protoc-*.zip
+  #     --with-sass-embedded=file:///path/to/sass_embedded-*.(tar.gz|zip) \
+  #     --with-sass-embedded-protocol=file:///path/to/embedded_sass.proto \
   class Extconf
     def initialize
+      get_with_config('protoc', true) { latest_protoc }
       get_with_config('sass-embedded', true) { latest_sass_embedded }
       get_with_config('sass-embedded-protocol', true) { latest_sass_embedded_protocol }
-      get_with_config('protoc', true) { latest_protoc }
     end
 
     private

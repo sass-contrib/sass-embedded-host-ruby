@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'base64'
+require 'json'
 
 module Sass
-  # The interface for using dart-sass-embedded
+  # The {Embedded} user interface for using dart-sass-embedded. Each instance
+  # will create its own {Transport}.
+  # @example
+  #   embedded = Sass::Embedded.new
+  #   result = embedded.render(data: 'h1 { font-size: 40px; }')
+  #   result = embedded.render(file: 'style.css')
+  #   embedded.close
   class Embedded
     def initialize
       @transport = Transport.new
@@ -13,7 +19,7 @@ module Sass
     end
 
     def info
-      @info ||= InfoContext.new(@transport, next_id).fetch
+      @info ||= Info.new(@transport, next_id).fetch
     end
 
     def render(data: nil,
@@ -40,16 +46,16 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      result = RenderContext.new(@transport, next_id,
-                                 data: data,
-                                 file: file,
-                                 indented_syntax: indented_syntax,
-                                 include_paths: include_paths,
-                                 output_style: output_style,
-                                 source_map: source_map,
-                                 out_file: out_file,
-                                 functions: functions,
-                                 importer: importer).fetch
+      result = Render.new(@transport, next_id,
+                          data: data,
+                          file: file,
+                          indented_syntax: indented_syntax,
+                          include_paths: include_paths,
+                          output_style: output_style,
+                          source_map: source_map,
+                          out_file: out_file,
+                          functions: functions,
+                          importer: importer).fetch
 
       if result.failure
         raise RenderError.new(
@@ -217,271 +223,6 @@ module Sass
         @id += 1
         @id = 0 if @id == Transport::PROTOCOL_ERROR_ID
         @id
-      end
-    end
-
-    # InfoContext
-    class InfoContext < Context
-      def initialize(transport, id)
-        super(transport, id)
-        @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
-      end
-
-      def update(error, message)
-        raise error unless error.nil?
-
-        case message
-        when EmbeddedProtocol::ProtocolError
-          raise ProtocolError, message.message
-        when EmbeddedProtocol::OutboundMessage::VersionResponse
-          return unless message.id == @id
-
-          Thread.new do
-            super(nil, message)
-          end
-        end
-      rescue StandardError => e
-        Thread.new do
-          super(e, nil)
-        end
-      end
-    end
-
-    # RenderContext
-    class RenderContext < Context
-      def initialize(transport, id,
-                     data:,
-                     file:,
-                     indented_syntax:,
-                     include_paths:,
-                     output_style:,
-                     source_map:,
-                     out_file:,
-                     functions:,
-                     importer:)
-        raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
-
-        super(transport, id)
-
-        @data = data
-        @file = file
-        @indented_syntax = indented_syntax
-        @include_paths = include_paths
-        @output_style = output_style
-        @source_map = source_map
-        @out_file = out_file
-        @global_functions = functions.keys
-        @functions = functions.transform_keys do |key|
-          key.to_s.split('(')[0].chomp
-        end
-        @importer = importer
-        @import_responses = {}
-
-        @transport.send compile_request
-      end
-
-      def update(error, message)
-        raise error unless error.nil?
-
-        case message
-        when EmbeddedProtocol::ProtocolError
-          raise ProtocolError, message.message
-        when EmbeddedProtocol::OutboundMessage::CompileResponse
-          return unless message.id == @id
-
-          Thread.new do
-            super(nil, message)
-          end
-        when EmbeddedProtocol::OutboundMessage::LogEvent
-          # not implemented yet
-        when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
-          return unless message['compilation_id'] == @id
-
-          Thread.new do
-            @transport.send canonicalize_response message
-          end
-        when EmbeddedProtocol::OutboundMessage::ImportRequest
-          return unless message['compilation_id'] == @id
-
-          Thread.new do
-            @transport.send import_response message
-          end
-        when EmbeddedProtocol::OutboundMessage::FileImportRequest
-          raise NotImplementedError, 'FileImportRequest is not implemented'
-        when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
-          return unless message['compilation_id'] == @id
-
-          Thread.new do
-            @transport.send function_call_response message
-          end
-        end
-      rescue StandardError => e
-        Thread.new do
-          super(e, nil)
-        end
-      end
-
-      private
-
-      def compile_request
-        EmbeddedProtocol::InboundMessage::CompileRequest.new(
-          id: @id,
-          string: string,
-          path: path,
-          style: style,
-          source_map: source_map,
-          importers: importers,
-          global_functions: global_functions,
-          alert_color: $stderr.tty?,
-          alert_ascii: Platform::OS == 'windows'
-        )
-      end
-
-      def canonicalize_response(canonicalize_request)
-        url = Util.file_uri(File.absolute_path(canonicalize_request.url, (@file.nil? ? 'stdin' : @file)))
-
-        begin
-          result = @importer[canonicalize_request.importer_id].call canonicalize_request.url, @file
-          raise result if result.is_a? StandardError
-        rescue StandardError => e
-          return EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
-            id: canonicalize_request.id,
-            error: e.message
-          )
-        end
-
-        if result&.key? :contents
-          @import_responses[url] = EmbeddedProtocol::InboundMessage::ImportResponse.new(
-            id: canonicalize_request.id,
-            success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
-              contents: result[:contents],
-              syntax: EmbeddedProtocol::Syntax::SCSS,
-              source_map_url: nil
-            )
-          )
-          EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
-            id: canonicalize_request.id,
-            url: url
-          )
-        elsif result&.key? :file
-          canonicalized_url = Util.file_uri(result[:file])
-
-          # TODO: FileImportRequest is not supported yet.
-          # Workaround by reading contents and return it when server asks
-          @import_responses[canonicalized_url] = EmbeddedProtocol::InboundMessage::ImportResponse.new(
-            id: canonicalize_request.id,
-            success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
-              contents: File.read(result[:file]),
-              syntax: EmbeddedProtocol::Syntax::SCSS,
-              source_map_url: nil
-            )
-          )
-
-          EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
-            id: canonicalize_request.id,
-            url: canonicalized_url
-          )
-        else
-          EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
-            id: canonicalize_request.id
-          )
-        end
-      end
-
-      def import_response(import_request)
-        url = import_request.url
-
-        if @import_responses.key? url
-          @import_responses[url].id = import_request.id
-        else
-          @import_responses[url] = EmbeddedProtocol::InboundMessage::ImportResponse.new(
-            id: import_request.id,
-            error: "Failed to import: #{url}"
-          )
-        end
-
-        @import_responses[url]
-      end
-
-      def function_call_response(function_call_request)
-        EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
-          id: function_call_request.id,
-          success: @functions[function_call_request.name].call(*function_call_request.arguments)
-        )
-      rescue StandardError => e
-        EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
-          id: function_call_request.id,
-          error: e.message
-        )
-      end
-
-      def syntax
-        if @indented_syntax == true
-          EmbeddedProtocol::Syntax::INDENTED
-        else
-          EmbeddedProtocol::Syntax::SCSS
-        end
-      end
-
-      def url
-        return if @file.nil?
-
-        Util.file_uri @file
-      end
-
-      def string
-        return if @data.nil?
-
-        EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
-          source: @data,
-          url: url,
-          syntax: syntax
-        )
-      end
-
-      def path
-        @file if @data.nil?
-      end
-
-      def style
-        case @output_style&.to_sym
-        when :expanded
-          EmbeddedProtocol::OutputStyle::EXPANDED
-        when :compressed
-          EmbeddedProtocol::OutputStyle::COMPRESSED
-        else
-          raise ArgumentError, 'output_style must be one of :expanded, :compressed'
-        end
-      end
-
-      def source_map
-        @source_map.is_a?(String) || (@source_map == true && !@out_file.nil?)
-      end
-
-      attr_reader :global_functions
-
-      # Order
-      # 1. Loading a file relative to the file in which the @use or @import appeared.
-      # 2. Each custom importer.
-      # 3. Loading a file relative to the current working directory.
-      # 4. Each load path in includePaths
-      # 5. Each load path specified in the SASS_PATH environment variable, which should be semicolon-separated on Windows and colon-separated elsewhere.
-      def importers
-        custom_importers = @importer.map.with_index do |_, id|
-          EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-            importer_id: id
-          )
-        end
-
-        include_path_importers = @include_paths
-                                 .concat(Sass.include_paths)
-                                 .map do |include_path|
-          EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-            path: File.absolute_path(include_path)
-          )
-        end
-
-        custom_importers.concat include_path_importers
       end
     end
   end

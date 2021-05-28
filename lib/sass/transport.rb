@@ -5,8 +5,9 @@ require 'observer'
 require_relative '../../ext/embedded_sass_pb'
 
 module Sass
-  # The interface for communicating with dart-sass-embedded.
-  # It handles message serialization and deserialization
+  # The {Observable} {Transport} for low level communication with
+  # dart-sass-embedded using protocol buffers via stdio. Received messages
+  # can be observed by an {Observer}.
   class Transport
     include Observable
 

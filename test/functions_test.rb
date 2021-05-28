@@ -12,6 +12,8 @@ module Sass
       @embedded.close
     end
 
+    # rubocop:disable Layout/LineLength
+
     def render(sass)
       @embedded.render(data: sass,
                        functions: {
@@ -162,6 +164,8 @@ module Sass
                                                 }
                        })[:css]
     end
+
+    # rubocop:enable Layout/LineLength
 
     def test_functions_may_return_sass_string_type
       assert_sass <<-SCSS, <<-CSS

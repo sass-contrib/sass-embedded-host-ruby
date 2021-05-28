@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 module Sass
-  # An abstract context for maintaining state and observing transport
-  class Context
+  # The abstract {Observer} for tracking state and observing messages
+  # from {Transport}.
+  class Observer
     def initialize(transport, id)
-      raise NotImplementedError if instance_of? Context
+      raise NotImplementedError if instance_of? Observer
 
       @transport = transport
       @id = id
