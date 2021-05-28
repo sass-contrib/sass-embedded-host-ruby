@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['i@ntk.me']
   spec.summary       = 'Use dart-sass with Ruby!'
   spec.description   = 'Use dart-sass with Ruby!'
-  spec.homepage      = 'https://github.com/ntkme/embedded-host-ruby'
+  spec.homepage      = 'https://github.com/ntkme/sass-embedded-host-ruby'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
