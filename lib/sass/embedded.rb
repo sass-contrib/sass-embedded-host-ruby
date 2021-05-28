@@ -100,7 +100,10 @@ module Sass
 
     def close
       @transport.close
-      nil
+    end
+
+    def closed?
+      @transport.closed?
     end
 
     private

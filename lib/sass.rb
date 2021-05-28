@@ -43,13 +43,9 @@ module Sass
     private
 
     def embedded
-      unless defined? @embedded
-        @embedded = Sass::Embedded.new
-        at_exit do
-          @embedded.close
-        end
-      end
-      @embedded
+      return @embedded if defined?(@embedded) && !@embedded.closed?
+
+      @embedded = Sass::Embedded.new
     end
   end
 end

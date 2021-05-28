@@ -45,6 +45,10 @@ module Sass
       nil
     end
 
+    def closed?
+      @stdin.closed?
+    end
+
     private
 
     def receive
