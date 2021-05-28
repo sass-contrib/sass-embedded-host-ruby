@@ -23,7 +23,7 @@ module Sass
     #
     # @raise [ProtocolError]
     def info
-      @info ||= Version.new(@transport, next_id).fetch
+      @info ||= Version.new(@transport, next_id).message
     end
 
     # The {Embedded#render} method.
@@ -64,7 +64,7 @@ module Sass
                            source_map: source_map,
                            out_file: out_file,
                            functions: functions,
-                           importer: importer).fetch
+                           importer: importer).message
 
       if message.failure
         raise RenderError.new(
