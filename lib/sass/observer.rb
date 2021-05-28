@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  # The abstract {Observer} for tracking state and observing messages
-  # from {Transport}.
+  # The {Observer} for receiving messages from {Transport}.
   class Observer
     def initialize(transport, id)
       raise NotImplementedError if instance_of? Observer

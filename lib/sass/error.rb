@@ -1,21 +1,23 @@
 # frozen_string_literal: true
 
 module Sass
-  class SassError < StandardError; end
+  class Error < StandardError; end
 
-  class ProtocolError < SassError; end
+  class ProtocolError < Error; end
 
-  # The error returned by {Embedded#render}.
-  class RenderError < SassError
-    attr_accessor :formatted, :file, :line, :column, :status
+  # The {Error} raised by {Embedded#render}.
+  class RenderError < Error
+    include Struct
+
+    attr_reader :formatted, :file, :line, :column, :status
 
     def initialize(message, formatted, file, line, column, status)
+      super(message)
       @formatted = formatted
       @file = file
       @line = line
       @column = column
       @status = status
-      super(message)
     end
 
     def backtrace

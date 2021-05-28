@@ -6,6 +6,12 @@ This is a Ruby library that implements the host side of the [Embedded Sass proto
 
 It exposes a Ruby API for Sass that's backed by a native [Dart Sass](https://sass-lang.com/dart-sass) executable.
 
+## Install
+
+``` sh
+gem install sass-embedded
+```
+
 ## Usage
 
 ``` ruby
@@ -13,6 +19,26 @@ require "sass"
 
 Sass.render(file: "style.scss")
 ```
+
+## Options
+
+`Sass.render()` support the following options:
+
+- [`data`](https://sass-lang.com/documentation/js-api#data)
+- [`file`](https://sass-lang.com/documentation/js-api#file)
+- [`indented_syntax`](https://sass-lang.com/documentation/js-api#indentedsyntax)
+- [`include_paths`](https://sass-lang.com/documentation/js-api#includepaths)
+- [`output_style`](https://sass-lang.com/documentation/js-api#outputstyle)
+- [`indent_type`](https://sass-lang.com/documentation/js-api#indenttype)
+- [`indent_width`](https://sass-lang.com/documentation/js-api#indentwidth)
+- [`linefeed`](https://sass-lang.com/documentation/js-api#linefeed)
+- [`source_map`](https://sass-lang.com/documentation/js-api#sourcemap)
+- [`out_file`](https://sass-lang.com/documentation/js-api#outfile)
+- [`omit_source_map_url`](https://sass-lang.com/documentation/js-api#omitsourcemapurl)
+- [`source_map_embed`](https://sass-lang.com/documentation/js-api#sourcemapembed)
+- [`source_map_root`](https://sass-lang.com/documentation/js-api#sourcemaproot)
+- [`functions`](https://sass-lang.com/documentation/js-api#functions)
+- [`importer`](https://sass-lang.com/documentation/js-api#importer)
 
 ---
 

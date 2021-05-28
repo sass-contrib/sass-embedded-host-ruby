@@ -8,9 +8,9 @@ require 'fileutils'
 require_relative '../lib/sass/platform'
 
 module Sass
-  # The dependency downloader. This will download all the dependencies
-  # during gem installation, and the Makefile will unpack all downloaded
-  # dependencies. By default it will download the latest release of each
+  # The dependency downloader. This downloads all the dependencies during gem
+  # installation. The companion Makefile then unpacks all downloaded
+  # dependencies. By default it downloads the latest release of each
   # dependency from GitHub releases.
   #
   # It is possible to specify an alternative source or version of each

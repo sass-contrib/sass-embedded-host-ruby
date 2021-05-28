@@ -4,8 +4,9 @@ require 'base64'
 require 'json'
 
 module Sass
-  # The {Embedded} user interface for using dart-sass-embedded. Each instance
-  # will create its own {Transport}.
+  # The {Embedded} host for using dart-sass-embedded. Each instance creates
+  # its own {Transport}.
+  #
   # @example
   #   embedded = Sass::Embedded.new
   #   result = embedded.render(data: 'h1 { font-size: 40px; }')
@@ -18,20 +19,28 @@ module Sass
       @id = 0
     end
 
+    # The {Embedded#info} method.
+    #
+    # @raise [ProtocolError]
     def info
-      @info ||= Info.new(@transport, next_id).fetch
+      @info ||= Version.new(@transport, next_id).fetch
     end
 
+    # The {Embedded#render} method.
+    #
+    # See {file:README.md#options} for supported options.
+    #
+    # @return [Result]
+    # @raise [ProtocolError]
+    # @raise [RenderError]
     def render(data: nil,
                file: nil,
                indented_syntax: false,
                include_paths: [],
                output_style: :expanded,
-               # precision: 5,
                indent_type: :space,
                indent_width: 2,
                linefeed: :lf,
-               # source_comments: false,
                source_map: false,
                out_file: nil,
                omit_source_map_url: false,
@@ -46,41 +55,41 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      result = Render.new(@transport, next_id,
-                          data: data,
-                          file: file,
-                          indented_syntax: indented_syntax,
-                          include_paths: include_paths,
-                          output_style: output_style,
-                          source_map: source_map,
-                          out_file: out_file,
-                          functions: functions,
-                          importer: importer).fetch
+      message = Render.new(@transport, next_id,
+                           data: data,
+                           file: file,
+                           indented_syntax: indented_syntax,
+                           include_paths: include_paths,
+                           output_style: output_style,
+                           source_map: source_map,
+                           out_file: out_file,
+                           functions: functions,
+                           importer: importer).fetch
 
-      if result.failure
+      if message.failure
         raise RenderError.new(
-          result.failure.message,
-          result.failure.formatted,
-          if result.failure.span.nil?
+          message.failure.message,
+          message.failure.formatted,
+          if message.failure.span.nil?
             nil
-          elsif result.failure.span.url == ''
+          elsif message.failure.span.url == ''
             'stdin'
           else
-            Util.path(result.failure.span.url)
+            Util.path(message.failure.span.url)
           end,
-          result.failure.span ? result.failure.span.start.line + 1 : nil,
-          result.failure.span ? result.failure.span.start.column + 1 : nil,
+          message.failure.span ? message.failure.span.start.line + 1 : nil,
+          message.failure.span ? message.failure.span.start.column + 1 : nil,
           1
         )
       end
 
-      map, source_map = post_process_map(map: result.success.source_map,
+      map, source_map = post_process_map(map: message.success.source_map,
                                          file: file,
                                          out_file: out_file,
                                          source_map: source_map,
                                          source_map_root: source_map_root)
 
-      css = post_process_css(css: result.success.css,
+      css = post_process_css(css: message.success.css,
                              indent_type: indent_type,
                              indent_width: indent_width,
                              linefeed: linefeed,
@@ -92,16 +101,9 @@ module Sass
 
       finish = Util.now
 
-      {
-        css: css,
-        map: map,
-        stats: {
-          entry: file.nil? ? 'data' : file,
-          start: start,
-          end: finish,
-          duration: finish - start
-        }
-      }
+      stats = Result::Stats.new(file.nil? ? 'data' : file, start, finish, finish - start)
+
+      Result.new(css, map, stats)
     end
 
     def close
