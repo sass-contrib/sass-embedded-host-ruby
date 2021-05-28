@@ -18,9 +18,9 @@ module Sass
   #
   # @example
   #   gem install sass-embedded -- \
-  #     --with-protoc=file:///path/to/protoc-*.zip
+  #     --with-protoc=file:///path/to/protoc-*.zip \
   #     --with-sass-embedded=file:///path/to/sass_embedded-*.(tar.gz|zip) \
-  #     --with-sass-embedded-protocol=file:///path/to/embedded_sass.proto \
+  #     --with-sass-embedded-protocol=file:///path/to/embedded_sass.proto
   class Extconf
     def initialize
       get_with_config('protoc', true) { latest_protoc }
