@@ -40,41 +40,41 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      response = RenderContext.new(@transport, next_id,
-                                   data: data,
-                                   file: file,
-                                   indented_syntax: indented_syntax,
-                                   include_paths: include_paths,
-                                   output_style: output_style,
-                                   source_map: source_map,
-                                   out_file: out_file,
-                                   functions: functions,
-                                   importer: importer).fetch
+      result = RenderContext.new(@transport, next_id,
+                                 data: data,
+                                 file: file,
+                                 indented_syntax: indented_syntax,
+                                 include_paths: include_paths,
+                                 output_style: output_style,
+                                 source_map: source_map,
+                                 out_file: out_file,
+                                 functions: functions,
+                                 importer: importer).fetch
 
-      if response.failure
+      if result.failure
         raise RenderError.new(
-          response.failure.message,
-          response.failure.formatted,
-          if response.failure.span.nil?
+          result.failure.message,
+          result.failure.formatted,
+          if result.failure.span.nil?
             nil
-          elsif response.failure.span.url == ''
+          elsif result.failure.span.url == ''
             'stdin'
           else
-            Util.path(response.failure.span.url)
+            Util.path(result.failure.span.url)
           end,
-          response.failure.span ? response.failure.span.start.line + 1 : nil,
-          response.failure.span ? response.failure.span.start.column + 1 : nil,
+          result.failure.span ? result.failure.span.start.line + 1 : nil,
+          result.failure.span ? result.failure.span.start.column + 1 : nil,
           1
         )
       end
 
-      map, source_map = post_process_map(map: response.success.source_map,
+      map, source_map = post_process_map(map: result.success.source_map,
                                          file: file,
                                          out_file: out_file,
                                          source_map: source_map,
                                          source_map_root: source_map_root)
 
-      css = post_process_css(css: response.success.css,
+      css = post_process_css(css: result.success.css,
                              indent_type: indent_type,
                              indent_width: indent_width,
                              linefeed: linefeed,
@@ -227,17 +227,17 @@ module Sass
         @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
       end
 
-      def update(error, response)
+      def update(error, message)
         raise error unless error.nil?
 
-        case response
+        case message
         when EmbeddedProtocol::ProtocolError
-          raise ProtocolError, response.message
+          raise ProtocolError, message.message
         when EmbeddedProtocol::OutboundMessage::VersionResponse
-          return unless response.id == @id
+          return unless message.id == @id
 
           Thread.new do
-            super(nil, response)
+            super(nil, message)
           end
         end
       rescue StandardError => e
@@ -280,39 +280,39 @@ module Sass
         @transport.send compile_request
       end
 
-      def update(error, response)
+      def update(error, message)
         raise error unless error.nil?
 
-        case response
+        case message
         when EmbeddedProtocol::ProtocolError
-          raise ProtocolError, response.message
+          raise ProtocolError, message.message
         when EmbeddedProtocol::OutboundMessage::CompileResponse
-          return unless response.id == @id
+          return unless message.id == @id
 
           Thread.new do
-            super(nil, response)
+            super(nil, message)
           end
         when EmbeddedProtocol::OutboundMessage::LogEvent
           # not implemented yet
         when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
-          return unless response['compilation_id'] == @id
+          return unless message['compilation_id'] == @id
 
           Thread.new do
-            @transport.send canonicalize_response(response)
+            @transport.send canonicalize_response message
           end
         when EmbeddedProtocol::OutboundMessage::ImportRequest
-          return unless response['compilation_id'] == @id
+          return unless message['compilation_id'] == @id
 
           Thread.new do
-            @transport.send import_response(response)
+            @transport.send import_response message
           end
         when EmbeddedProtocol::OutboundMessage::FileImportRequest
           raise NotImplementedError, 'FileImportRequest is not implemented'
         when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
-          return unless response['compilation_id'] == @id
+          return unless message['compilation_id'] == @id
 
           Thread.new do
-            @transport.send function_call_response(response)
+            @transport.send function_call_response message
           end
         end
       rescue StandardError => e

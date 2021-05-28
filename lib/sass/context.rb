@@ -10,26 +10,26 @@ module Sass
       @id = id
       @mutex = Mutex.new
       @condition_variable = ConditionVariable.new
-      @response = nil
       @error = nil
+      @message = nil
       @transport.add_observer self
     end
 
     def fetch
       @mutex.synchronize do
-        @condition_variable.wait(@mutex) if @error.nil? && @response.nil?
+        @condition_variable.wait(@mutex) if @error.nil? && @message.nil?
       end
 
       raise @error unless @error.nil?
 
-      @response
+      @message
     end
 
     def update(error, message)
       @transport.delete_observer self
       @mutex.synchronize do
         @error = error
-        @response = message
+        @message = message
         @condition_variable.broadcast
       end
     end

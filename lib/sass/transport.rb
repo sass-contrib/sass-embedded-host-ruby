@@ -6,8 +6,7 @@ require_relative '../../ext/embedded_sass_pb'
 
 module Sass
   # The interface for communicating with dart-sass-embedded.
-  # It handles message serialization and deserialization as well as
-  # tracking concurrent request and response
+  # It handles message serialization and deserialization
   class Transport
     include Observable
 
@@ -18,20 +17,22 @@ module Sass
     PROTOCOL_ERROR_ID = 4_294_967_295
 
     ONEOF_MESSAGE = EmbeddedProtocol::InboundMessage
-                    .descriptor.lookup_oneof('message').collect do |field_descriptor|
+                    .descriptor
+                    .lookup_oneof('message')
+                    .collect do |field_descriptor|
       [field_descriptor.subtype, field_descriptor.name]
     end.to_h
 
     def initialize
-      @stdin_semaphore = Mutex.new
-      @observerable_semaphore = Mutex.new
+      @observerable_mutex = Mutex.new
+      @stdin_mutex = Mutex.new
       @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
       pipe @stderr, $stderr
       receive
     end
 
     def add_observer(*args)
-      @observerable_semaphore.synchronize do
+      @observerable_mutex.synchronize do
         super(*args)
       end
     end
@@ -68,7 +69,7 @@ module Sass
           end
           payload = @stdout.read length
           message = EmbeddedProtocol::OutboundMessage.decode payload
-          @observerable_semaphore.synchronize do
+          @observerable_mutex.synchronize do
             changed
             notify_observers nil, message[message.message.to_s]
           end
@@ -89,7 +90,7 @@ module Sass
         rescue Interrupt
           break
         rescue IOError => e
-          @observerable_semaphore.synchronize do
+          @observerable_mutex.synchronize do
             notify_observers e, nil
           end
           close
@@ -99,7 +100,7 @@ module Sass
     end
 
     def write(payload)
-      @stdin_semaphore.synchronize do
+      @stdin_mutex.synchronize do
         length = payload.length
         while length.positive?
           @stdin.write ((length > 0x7f ? 0x80 : 0) | (length & 0x7f)).chr
