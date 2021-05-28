@@ -17,6 +17,11 @@ module Sass
 
     PROTOCOL_ERROR_ID = 4_294_967_295
 
+    ONEOF_MESSAGE = EmbeddedProtocol::InboundMessage
+                    .descriptor.lookup_oneof('message').collect do |field_descriptor|
+      [field_descriptor.subtype, field_descriptor.name]
+    end.to_h
+
     def initialize
       @stdin_semaphore = Mutex.new
       @observerable_semaphore = Mutex.new
@@ -31,10 +36,10 @@ module Sass
       end
     end
 
-    def send(req)
-      req_kind = req.class.name.split('::').last.gsub(/\B(?=[A-Z])/, '_').downcase
-      message = EmbeddedProtocol::InboundMessage.new(req_kind => req)
-      write message.to_proto
+    def send(message)
+      write EmbeddedProtocol::InboundMessage.new(
+        ONEOF_MESSAGE[message.class.descriptor] => message
+      ).to_proto
     end
 
     def close
@@ -65,7 +70,7 @@ module Sass
           message = EmbeddedProtocol::OutboundMessage.decode payload
           @observerable_semaphore.synchronize do
             changed
-            notify_observers nil, message
+            notify_observers nil, message[message.message.to_s]
           end
         rescue Interrupt
           break

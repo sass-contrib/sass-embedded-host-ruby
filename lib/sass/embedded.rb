@@ -186,7 +186,7 @@ module Sass
       when :tab
         "\t"
       else
-        raise ArgumentError, 'indent_type must be :space or :tab'
+        raise ArgumentError, 'indent_type must be one of :space, :tab'
       end
     end
 
@@ -227,10 +227,8 @@ module Sass
         @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
       end
 
-      def update(error, message)
+      def update(error, response)
         raise error unless error.nil?
-
-        response = message[message.message.to_s]
 
         case response
         when EmbeddedProtocol::ProtocolError
@@ -282,10 +280,8 @@ module Sass
         @transport.send compile_request
       end
 
-      def update(error, message)
+      def update(error, response)
         raise error unless error.nil?
-
-        response = message[message.message.to_s]
 
         case response
         when EmbeddedProtocol::ProtocolError
@@ -453,10 +449,8 @@ module Sass
           EmbeddedProtocol::OutputStyle::EXPANDED
         when :compressed
           EmbeddedProtocol::OutputStyle::COMPRESSED
-        when :nested, :compact
-          raise ArgumentError, "#{@output_style} is not a supported output_style"
         else
-          raise ArgumentError, "#{@output_style} is not a valid utput_style"
+          raise ArgumentError, 'output_style must be one of :expanded, :compressed'
         end
       end
 
