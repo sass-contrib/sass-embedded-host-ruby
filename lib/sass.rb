@@ -29,10 +29,9 @@ module Sass
       embedded.info
     end
 
-    # The global render methods. This method automatically instantiates a
+    # The global render method. This method automatically instantiates a
     # global {Sass::Embedded} instance when invoked the first time and call
-    # `:render` method on the instance thereafter. The global {Sass::Embedded}
-    # is automatically closed via {Kernel.at_exit}.
+    # `:render` method on the instance thereafter.
     # @example
     #   Sass.render(options)
     # @return [Hash]
