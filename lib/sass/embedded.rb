@@ -13,9 +13,7 @@ module Sass
     end
 
     def info
-      @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(
-        id: next_id
-      )
+      @info ||= InfoContext.new(@transport, next_id).fetch
     end
 
     def render(data: nil,
@@ -42,27 +40,24 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      error, response = RenderContext.new(
-        transport: @transport,
-        id: next_id,
-        data: data,
-        file: file,
-        indented_syntax: indented_syntax,
-        include_paths: include_paths,
-        output_style: output_style,
-        source_map: source_map,
-        out_file: out_file,
-        functions: functions,
-        importer: importer
-      ).render
-
-      raise error if error
+      response = RenderContext.new(@transport, next_id,
+                                   data: data,
+                                   file: file,
+                                   indented_syntax: indented_syntax,
+                                   include_paths: include_paths,
+                                   output_style: output_style,
+                                   source_map: source_map,
+                                   out_file: out_file,
+                                   functions: functions,
+                                   importer: importer).fetch
 
       if response.failure
         raise RenderError.new(
           response.failure.message,
           response.failure.formatted,
-          if response.failure.span&.url == ''
+          if response.failure.span.nil?
+            nil
+          elsif response.failure.span.url == ''
             'stdin'
           else
             Util.path(response.failure.span.url)
@@ -222,10 +217,38 @@ module Sass
       end
     end
 
-    # Helper class that maintains render state
-    class RenderContext
-      def initialize(transport:,
-                     id:,
+    # InfoContext
+    class InfoContext < Context
+      def initialize(transport, id)
+        super(transport, id)
+        @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
+      end
+
+      def update(error, message)
+        raise error unless error.nil?
+
+        response = message[message.message.to_s]
+
+        case response
+        when EmbeddedProtocol::ProtocolError
+          raise ProtocolError, response.message
+        when EmbeddedProtocol::OutboundMessage::VersionResponse
+          return unless response.id == @id
+
+          Thread.new do
+            super(nil, response)
+          end
+        end
+      rescue StandardError => e
+        Thread.new do
+          super(e, nil)
+        end
+      end
+    end
+
+    # RenderContext
+    class RenderContext < Context
+      def initialize(transport, id,
                      data:,
                      file:,
                      indented_syntax:,
@@ -236,6 +259,8 @@ module Sass
                      functions:,
                      importer:)
         raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
+
+        super(transport, id)
 
         @data = data
         @file = file
@@ -251,21 +276,7 @@ module Sass
         @importer = importer
         @import_responses = {}
 
-        @transport = transport
-        @id = id
-        @mutex = Mutex.new
-        @condition_variable = ConditionVariable.new
-        @response = nil
-        @error = nil
-        @transport.add_observer self
-        @transport.send compile_request @id
-      end
-
-      def render
-        @mutex.synchronize do
-          @condition_variable.wait(@mutex) if @error.nil? && @response.nil?
-        end
-        [@error, @response]
+        @transport.send compile_request
       end
 
       def update(error, message)
@@ -279,10 +290,8 @@ module Sass
         when EmbeddedProtocol::OutboundMessage::CompileResponse
           return unless response.id == @id
 
-          @transport.delete_observer self
-          @mutex.synchronize do
-            @response = response
-            @condition_variable.broadcast
+          Thread.new do
+            super(nil, response)
           end
         when EmbeddedProtocol::OutboundMessage::LogEvent
           # not implemented yet
@@ -295,7 +304,9 @@ module Sass
         when EmbeddedProtocol::OutboundMessage::ImportRequest
           return unless response['compilation_id'] == @id
 
-          @transport.send import_response(response)
+          Thread.new do
+            @transport.send import_response(response)
+          end
         when EmbeddedProtocol::OutboundMessage::FileImportRequest
           raise NotImplementedError, 'FileImportRequest is not implemented'
         when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
@@ -306,16 +317,16 @@ module Sass
           end
         end
       rescue StandardError => e
-        @transport.delete_observer self
-        @mutex.synchronize do
-          @error = e
-          @condition_variable.broadcast
+        Thread.new do
+          super(e, nil)
         end
       end
 
-      def compile_request(id)
+      private
+
+      def compile_request
         EmbeddedProtocol::InboundMessage::CompileRequest.new(
-          id: id,
+          id: @id,
           string: string,
           path: path,
           style: style,
@@ -404,8 +415,6 @@ module Sass
           error: e.message
         )
       end
-
-      private
 
       def syntax
         if @indented_syntax == true

@@ -57,10 +57,10 @@ module Sass
             bits += 7
             break if byte <= 0x7f
           end
-          changed
           payload = @stdout.read length
           message = EmbeddedProtocol::OutboundMessage.decode payload
           @observerable_semaphore.synchronize do
+            changed
             notify_observers nil, message
           end
         rescue Interrupt
