@@ -15,8 +15,9 @@ module Sass
                    importer:)
       raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
 
-      super(transport, id)
+      super(transport)
 
+      @id = id
       @data = data
       @file = file
       @indented_syntax = indented_syntax
@@ -31,7 +32,7 @@ module Sass
       @importer = importer
       @import_responses = {}
 
-      @transport.send_message compile_request
+      send_message compile_request
     end
 
     def update(error, message)
@@ -54,13 +55,13 @@ module Sass
         return unless message.compilation_id == @id
 
         Thread.new do
-          @transport.send_message canonicalize_response message
+          send_message canonicalize_response message
         end
       when EmbeddedProtocol::OutboundMessage::ImportRequest
         return unless message.compilation_id == @id
 
         Thread.new do
-          @transport.send_message import_response message
+          send_message import_response message
         end
       when EmbeddedProtocol::OutboundMessage::FileImportRequest
         raise NotImplementedError, 'FileImportRequest is not implemented'
@@ -68,7 +69,7 @@ module Sass
         return unless message.compilation_id == @id
 
         Thread.new do
-          @transport.send_message function_call_response message
+          send_message function_call_response message
         end
       end
     rescue StandardError => e

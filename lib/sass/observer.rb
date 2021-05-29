@@ -3,11 +3,10 @@
 module Sass
   # The {Observer} for receiving messages from {Transport}.
   class Observer
-    def initialize(transport, id)
+    def initialize(transport)
       raise NotImplementedError if instance_of? Observer
 
       @transport = transport
-      @id = id
       @mutex = Mutex.new
       @condition_variable = ConditionVariable.new
       @error = nil
@@ -32,6 +31,12 @@ module Sass
         @message = message
         @condition_variable.broadcast
       end
+    end
+
+    private
+
+    def send_message(message)
+      @transport.send_message(message)
     end
   end
 end
