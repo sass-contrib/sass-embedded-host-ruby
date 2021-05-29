@@ -29,7 +29,7 @@ module Sass
       @stdin_mutex = Mutex.new
       @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
       pipe @stderr, $stderr
-      receive
+      receive_message @stdout
     end
 
     def add_observer(*args)
@@ -38,7 +38,7 @@ module Sass
       end
     end
 
-    def send(message)
+    def send_message(message)
       write EmbeddedProtocol::InboundMessage.new(
         ONEOF_MESSAGE[message.class.descriptor] => message
       ).to_proto
@@ -58,17 +58,17 @@ module Sass
 
     private
 
-    def receive
+    def receive_message(readable)
       Thread.new do
         loop do
           bits = length = 0
           loop do
-            byte = @stdout.readbyte
+            byte = readable.readbyte
             length += (byte & 0x7f) << bits
             bits += 7
             break if byte <= 0x7f
           end
-          payload = @stdout.read length
+          payload = readable.read length
           message = EmbeddedProtocol::OutboundMessage.decode payload
           @observerable_mutex.synchronize do
             changed
@@ -87,7 +87,7 @@ module Sass
     def pipe(readable, writeable)
       Thread.new do
         loop do
-          writeable.write readable.read
+          writeable.write readable.readline
         rescue Interrupt
           break
         rescue IOError => e

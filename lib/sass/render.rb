@@ -31,7 +31,7 @@ module Sass
       @importer = importer
       @import_responses = {}
 
-      @transport.send compile_request
+      @transport.send_message compile_request
     end
 
     def update(error, message)
@@ -54,13 +54,13 @@ module Sass
         return unless message.compilation_id == @id
 
         Thread.new do
-          @transport.send canonicalize_response message
+          @transport.send_message canonicalize_response message
         end
       when EmbeddedProtocol::OutboundMessage::ImportRequest
         return unless message.compilation_id == @id
 
         Thread.new do
-          @transport.send import_response message
+          @transport.send_message import_response message
         end
       when EmbeddedProtocol::OutboundMessage::FileImportRequest
         raise NotImplementedError, 'FileImportRequest is not implemented'
@@ -68,7 +68,7 @@ module Sass
         return unless message.compilation_id == @id
 
         Thread.new do
-          @transport.send function_call_response message
+          @transport.send_message function_call_response message
         end
       end
     rescue StandardError => e

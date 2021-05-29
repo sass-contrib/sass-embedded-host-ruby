@@ -5,7 +5,7 @@ module Sass
   class Version < Observer
     def initialize(transport, id)
       super(transport, id)
-      @transport.send EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
+      @transport.send_message EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
     end
 
     def update(error, message)
