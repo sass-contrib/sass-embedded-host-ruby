@@ -7,8 +7,6 @@ module Sass
 
   # The {Error} raised by {Embedded#render}.
   class RenderError < Error
-    include Struct
-
     attr_reader :formatted, :file, :line, :column, :status
 
     def initialize(message, formatted, file, line, column, status)
