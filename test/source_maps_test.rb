@@ -47,6 +47,7 @@ module Sass
         h1 {
           font-size: 40px;
         }
+
         /*# sourceMappingURL=out.map */
       CSS
 
@@ -92,6 +93,7 @@ module Sass
         h1 {
           font-size: 40px;
         }
+
         /*# sourceMappingURL=out.css.map */
       CSS
 
@@ -139,6 +141,7 @@ module Sass
         h1 {
           font-size: 40px;
         }
+
         /*# sourceMappingURL=data:application/json;base64,
       CSS
 
@@ -163,6 +166,7 @@ module Sass
         h1 {
           font-size: 40px;
         }
+
         /*# sourceMappingURL=out.map */
       CSS
 

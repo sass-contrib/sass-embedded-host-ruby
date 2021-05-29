@@ -183,7 +183,7 @@ module Sass
               else
                 source_map
               end
-        css += "#{linefeed}/*# sourceMappingURL=#{url} */"
+        css += "#{linefeed}#{linefeed}/*# sourceMappingURL=#{url} */"
       end
 
       -css
