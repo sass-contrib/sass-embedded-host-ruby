@@ -30,7 +30,7 @@ module Sass
     #
     # See {file:README.md#options} for supported options.
     #
-    # @return [Result]
+    # @return [RenderResult]
     # @raise [ProtocolError]
     # @raise [RenderError]
     def render(data: nil,
@@ -101,9 +101,9 @@ module Sass
 
       finish = Util.now
 
-      stats = Result::Stats.new(file.nil? ? 'data' : file, start, finish, finish - start)
+      stats = RenderResult::Stats.new(file.nil? ? 'data' : file, start, finish, finish - start)
 
-      Result.new(css, map, stats)
+      RenderResult.new(css, map, stats)
     end
 
     def close

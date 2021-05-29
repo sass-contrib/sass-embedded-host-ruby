@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Sass
-  # The {Result} of {Embedded#render}.
-  class Result
+  # The {RenderResult} of {Embedded#render}.
+  class RenderResult
     include Struct
 
     attr_reader :css, :map, :stats
