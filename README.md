@@ -22,7 +22,7 @@ Sass.render(file: "style.scss")
 
 ## Options
 
-`Sass.render()` support the following options:
+`Sass.render(**kwargs)` supports the following options:
 
 - [`data`](https://sass-lang.com/documentation/js-api#data)
 - [`file`](https://sass-lang.com/documentation/js-api#file)
