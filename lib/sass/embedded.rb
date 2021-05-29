@@ -49,8 +49,6 @@ module Sass
                source_map_root: '',
                functions: {},
                importer: [])
-      raise NotImplementedError, 'source_map_contents is not implemented' unless source_map_contents == false
-
       start = Util.now
 
       indent_type = parse_indent_type(indent_type)
@@ -89,6 +87,7 @@ module Sass
                                          file: file,
                                          out_file: out_file,
                                          source_map: source_map,
+                                         source_map_contents: source_map_contents,
                                          source_map_root: source_map_root)
 
       css = post_process_css(css: message.success.css,
@@ -122,6 +121,7 @@ module Sass
                          file:,
                          out_file:,
                          source_map:,
+                         source_map_contents:,
                          source_map_root:)
       return if map.nil? || map.empty?
 
@@ -146,10 +146,15 @@ module Sass
         map_data['file'] = 'stdin.css'
       end
 
+      map_data['sourcesContent'] = [] if source_map_contents
+
       map_data['sources'].map! do |source|
         if source.start_with? Util::FILE_PROTOCOL
-          Util.relative(source_map_dir, Util.path(source))
+          path = Util.path(source)
+          map_data['sourcesContent'].push(File.read(path)) if source_map_contents
+          Util.relative(source_map_dir, path)
         else
+          map_data['sourcesContent'].push(nil) if source_map_contents
           source
         end
       end
