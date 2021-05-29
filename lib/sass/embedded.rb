@@ -44,11 +44,13 @@ module Sass
                source_map: false,
                out_file: nil,
                omit_source_map_url: false,
-               # source_map_contents: false,
+               source_map_contents: false,
                source_map_embed: false,
                source_map_root: '',
                functions: {},
                importer: [])
+      raise NotImplementedError, 'source_map_contents is not implemented' unless source_map_contents == false
+
       start = Util.now
 
       indent_type = parse_indent_type(indent_type)
