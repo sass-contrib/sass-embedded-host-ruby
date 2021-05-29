@@ -35,7 +35,7 @@ module Sass
         @embedded.render(data: sass, indented_syntax: false)
       end
 
-      assert_equal css, @embedded.render(data: sass, indented_syntax: true)[:css]
+      assert_equal css, @embedded.render(data: sass, indented_syntax: true).css
     end
 
     def test_input_file_with_indented_syntax
@@ -53,9 +53,9 @@ module Sass
 
       temp_file('style.sass', sass)
 
-      assert_equal css, @embedded.render(file: 'style.sass')[:css]
-      assert_equal css, @embedded.render(file: 'style.sass', indented_syntax: true)[:css]
-      assert_equal css, @embedded.render(file: 'style.sass', indented_syntax: false)[:css]
+      assert_equal css, @embedded.render(file: 'style.sass').css
+      assert_equal css, @embedded.render(file: 'style.sass', indented_syntax: true).css
+      assert_equal css, @embedded.render(file: 'style.sass', indented_syntax: false).css
     end
   end
 end

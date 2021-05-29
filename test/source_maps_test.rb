@@ -31,8 +31,8 @@ module Sass
       temp_file('style.scss', scss)
 
       result = @embedded.render(file: 'style.scss')
-      assert_equal css, result[:css]
-      assert_nil result[:map]
+      assert_equal css, result.css
+      assert_nil result.map
     end
 
     def test_source_map_file_as_string
@@ -54,8 +54,8 @@ module Sass
 
       result = @embedded.render(file: 'style.scss',
                                 source_map: 'out.map')
-      assert_equal css, result[:css]
-      JSON.parse(result[:map])
+      assert_equal css, result.css
+      JSON.parse(result.map)
     end
 
     def test_source_map_true_without_out_file_has_no_effect
@@ -76,8 +76,8 @@ module Sass
 
       result = @embedded.render(file: 'style.scss',
                                 source_map: true)
-      assert_equal css, result[:css]
-      assert_nil result[:map]
+      assert_equal css, result.css
+      assert_nil result.map
     end
 
     def test_source_map_true_with_out_file
@@ -100,8 +100,8 @@ module Sass
       result = @embedded.render(file: 'style.scss',
                                 source_map: true,
                                 out_file: 'out.css')
-      assert_equal css, result[:css]
-      JSON.parse(result[:map])
+      assert_equal css, result.css
+      JSON.parse(result.map)
     end
 
     def test_omit_source_map_url
@@ -123,8 +123,8 @@ module Sass
       result = @embedded.render(file: 'style.scss',
                                 source_map: 'out.map',
                                 omit_source_map_url: true)
-      assert_equal css, result[:css]
-      JSON.parse(result[:map])
+      assert_equal css, result.css
+      JSON.parse(result.map)
     end
 
     def test_source_map_embedded
@@ -147,8 +147,8 @@ module Sass
       result = @embedded.render(file: 'style.scss',
                                 source_map: 'out.map',
                                 source_map_embed: true)
-      assert result[:css].start_with? css
-      JSON.parse(result[:map])
+      assert result.css.start_with? css
+      JSON.parse(result.map)
     end
 
     def test_source_map_root
@@ -171,8 +171,8 @@ module Sass
       result = @embedded.render(file: 'style.scss',
                                 source_map: 'out.map',
                                 source_map_root: 'assets')
-      assert_equal css, result[:css]
-      assert_equal 'assets', JSON.parse(result[:map])['sourceRoot']
+      assert_equal css, result.css
+      assert_equal 'assets', JSON.parse(result.map)['sourceRoot']
     end
   end
 end

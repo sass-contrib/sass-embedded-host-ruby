@@ -15,7 +15,7 @@ module Sass
     end
 
     def render(data, importer)
-      @embedded.render(data: data, importer: importer)[:css]
+      @embedded.render(data: data, importer: importer).css
     end
 
     def test_custom_importer_works
@@ -121,7 +121,7 @@ module Sass
                                   lambda { |_url, prev|
                                     { contents: ".#{prev} { color: red; }" }
                                   }
-                                ])[:css]
+                                ]).css
 
       assert_equal <<~CSS.chomp, output
         .import-parent-filename.scss {
@@ -140,10 +140,10 @@ module Sass
                                                                    lambda { |_url, _prev|
                                                                      { contents: 'h1 { color: black; }' }
                                                                    }
-                                                                 ])[:css]
+                                                                 ]).css
                                     }
                                   }
-                                ])[:css]
+                                ]).css
 
       assert_equal <<~CSS.chomp, output
         h1 {

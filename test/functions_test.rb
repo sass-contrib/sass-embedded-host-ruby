@@ -162,7 +162,7 @@ module Sass
                                                     )
                                                   )
                                                 }
-                       })[:css]
+                       }).css
     end
 
     # rubocop:enable Layout/LineLength
@@ -334,7 +334,7 @@ module Sass
                                             )
                                           )
                                         }
-                                      })[:css]
+                                      }).css
             assert_match(/test_key1/, output)
             assert_match(/test_key2/, output)
             assert_match(/test_value/, output)
@@ -356,7 +356,7 @@ module Sass
                                       )
                                     )
                                   }
-                                })[:css]
+                                }).css
 
       assert_match(/custom_function/, output)
     end
@@ -368,7 +368,7 @@ module Sass
                            'test_function()': lambda {
                              Class.new
                            }
-                         })[:css]
+                         }).css
       end
     end
 

@@ -47,17 +47,17 @@ module Sass
           super(nil, message)
         end
       when EmbeddedProtocol::OutboundMessage::LogEvent
-        return unless message['compilation_id'] == @id && $stderr.tty?
+        return unless message.compilation_id == @id && $stderr.tty?
 
         warn message.formatted
       when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
-        return unless message['compilation_id'] == @id
+        return unless message.compilation_id == @id
 
         Thread.new do
           @transport.send canonicalize_response message
         end
       when EmbeddedProtocol::OutboundMessage::ImportRequest
-        return unless message['compilation_id'] == @id
+        return unless message.compilation_id == @id
 
         Thread.new do
           @transport.send import_response message
@@ -65,7 +65,7 @@ module Sass
       when EmbeddedProtocol::OutboundMessage::FileImportRequest
         raise NotImplementedError, 'FileImportRequest is not implemented'
       when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
-        return unless message['compilation_id'] == @id
+        return unless message.compilation_id == @id
 
         Thread.new do
           @transport.send function_call_response message

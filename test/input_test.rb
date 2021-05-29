@@ -30,7 +30,7 @@ module Sass
       CSS
 
       result = @embedded.render(data: scss)
-      assert_equal css, result[:css]
+      assert_equal css, result.css
     end
 
     def test_input_file
@@ -50,7 +50,7 @@ module Sass
 
       temp_file('style.scss', scss)
       result = @embedded.render(file: 'style.scss')
-      assert_equal css, result[:css]
+      assert_equal css, result.css
     end
   end
 end

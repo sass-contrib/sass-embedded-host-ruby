@@ -31,7 +31,7 @@ module Sass
       assert_equal css, @embedded.render(file: 'styles.scss',
                                          include_paths: %w[
                                            included_1 included_2
-                                         ])[:css]
+                                         ]).css
     end
 
     def test_global_include_paths
@@ -51,7 +51,7 @@ module Sass
         }
       CSS
 
-      assert_equal css, @embedded.render(file: 'styles.scss')[:css]
+      assert_equal css, @embedded.render(file: 'styles.scss').css
     end
 
     def test_include_paths_from_env
