@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module Sass
-  # The {Observer} for receiving messages from {Transport}.
-  class Observer
+  # The {Observer} module for receiving messages from {Transport}.
+  module Observer
     def initialize(transport)
-      raise NotImplementedError if instance_of? Observer
-
       @transport = transport
       @mutex = Mutex.new
       @condition_variable = ConditionVariable.new

@@ -2,11 +2,13 @@
 
 module Sass
   # The {Observer} for {Embedded#info}.
-  class Version < Observer
-    def initialize(transport, id)
-      super(transport)
+  class Version
+    include Observer
 
+    def initialize(transport, id)
       @id = id
+
+      super(transport)
 
       send_message EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
     end

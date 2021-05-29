@@ -2,7 +2,9 @@
 
 module Sass
   # The {Observer} for {Embedded#render}.
-  class Render < Observer
+  class Render
+    include Observer
+
     def initialize(transport, id,
                    data:,
                    file:,
@@ -14,8 +16,6 @@ module Sass
                    functions:,
                    importer:)
       raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
-
-      super(transport)
 
       @id = id
       @data = data
@@ -31,6 +31,8 @@ module Sass
       end
       @importer = importer
       @import_responses = {}
+
+      super(transport)
 
       send_message compile_request
     end
