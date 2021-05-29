@@ -47,7 +47,9 @@ module Sass
           super(nil, message)
         end
       when EmbeddedProtocol::OutboundMessage::LogEvent
-        # not implemented yet
+        return unless message['compilation_id'] == @id && $stderr.tty?
+
+        warn message.formatted
       when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
         return unless message['compilation_id'] == @id
 
