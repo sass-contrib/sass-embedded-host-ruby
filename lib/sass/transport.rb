@@ -61,13 +61,7 @@ module Sass
     def receive_message(readable)
       Thread.new do
         loop do
-          bits = length = 0
-          loop do
-            byte = readable.readbyte
-            length += (byte & 0x7f) << bits
-            bits += 7
-            break if byte <= 0x7f
-          end
+          length = read_varint(readable)
           payload = readable.read length
           message = EmbeddedProtocol::OutboundMessage.decode payload
           @observerable_mutex.synchronize do
@@ -102,12 +96,26 @@ module Sass
 
     def write(payload)
       @stdin_mutex.synchronize do
-        length = payload.length
-        while length.positive?
-          @stdin.write ((length > 0x7f ? 0x80 : 0) | (length & 0x7f)).chr
-          length >>= 7
-        end
+        write_varint(@stdin, payload.length)
         @stdin.write payload
+      end
+    end
+
+    def read_varint(readable)
+      varint = bits = 0
+      loop do
+        byte = readable.readbyte
+        varint += (byte & 0x7f) << bits
+        bits += 7
+        break if byte <= 0x7f
+      end
+      varint
+    end
+
+    def write_varint(writeable, varint)
+      while varint.positive?
+        writeable.write ((varint > 0x7f ? 0x80 : 0) | (varint & 0x7f)).chr
+        varint >>= 7
       end
     end
   end
