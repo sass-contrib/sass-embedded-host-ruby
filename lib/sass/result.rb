@@ -12,19 +12,19 @@ module Sass
       @map = map
       @stats = stats
     end
+  end
 
-    # The {Stats} of {Embedded#render}.
-    class Stats
-      include Struct
+  # The {RenderResultStats} of {Embedded#render}.
+  class RenderResultStats
+    include Struct
 
-      attr_reader :entry, :start, :end, :duration
+    attr_reader :entry, :start, :end, :duration
 
-      def initialize(entry, start, finish, duration)
-        @entry = entry
-        @start = start
-        @end = finish
-        @duration = duration
-      end
+    def initialize(entry, start, finish, duration)
+      @entry = entry
+      @start = start
+      @end = finish
+      @duration = duration
     end
   end
 end

@@ -102,7 +102,7 @@ module Sass
 
       finish = Util.now
 
-      stats = RenderResult::Stats.new(file.nil? ? 'data' : file, start, finish, finish - start)
+      stats = RenderResultStats.new(file.nil? ? 'data' : file, start, finish, finish - start)
 
       RenderResult.new(css, map, stats)
     end
