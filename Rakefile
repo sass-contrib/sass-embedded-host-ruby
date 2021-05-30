@@ -11,7 +11,6 @@ end
 
 desc 'Run all tests'
 task test: :extconf do
-  $LOAD_PATH.unshift('lib', 'test')
   Dir.glob('./test/**/*_test.rb').sort.each { |f| require f }
 end
 

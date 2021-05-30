@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('lib', __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'sass/version'
+require_relative 'lib/sass/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'sass-embedded'
@@ -10,20 +8,22 @@ Gem::Specification.new do |spec|
   spec.authors       = ['なつき']
   spec.email         = ['i@ntk.me']
   spec.summary       = 'Use dart-sass with Ruby!'
-  spec.description   = 'Use dart-sass with Ruby!'
+  spec.description   = 'A Ruby library that will communicate with Embedded Dart Sass using the Embedded Sass protocol.'
   spec.homepage      = 'https://github.com/ntkme/sass-embedded-host-ruby'
   spec.license       = 'MIT'
+  spec.metadata      = {
+    'source_code_uri' => "https://github.com/ntkme/sass-embedded-host-ruby/tree/v#{Sass::VERSION}"
+  }
 
-  spec.files         = `git ls-files -z`.split("\x0")
   spec.extensions    = ['ext/extconf.rb']
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.files         = Dir['lib/**/*.rb'] + [
+    'ext/extconf.rb',
+    'ext/Makefile',
+    'LICENSE',
+    'README.md'
+  ]
 
   spec.required_ruby_version = '>= 2.6.0'
-
-  spec.require_paths = ['lib']
-
-  spec.platform      = Gem::Platform::RUBY
 
   spec.add_dependency 'google-protobuf', '~> 3.17.0'
 
