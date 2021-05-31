@@ -28,8 +28,12 @@ module Sass
       @observerable_mutex = Mutex.new
       @stdin_mutex = Mutex.new
       @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
-      pipe @stderr, $stderr
-      read @stdout
+      poll do
+        $stderr.write @stderr.readline
+      end
+      poll do
+        receive_proto read
+      end
     end
 
     def add_observer(*args)
@@ -58,42 +62,35 @@ module Sass
 
     private
 
-    def receive_message(error, message)
+    def poll
+      Thread.new do
+        loop do
+          yield
+        rescue Interrupt
+          break
+        rescue IOError => e
+          notify_observers(e, nil)
+          close
+          break
+        end
+      end
+    end
+
+    def notify_observers(*args)
       @observerable_mutex.synchronize do
         changed
-        notify_observers error, message
+        super(*args)
       end
     end
 
-    def pipe(readable, writeable)
-      Thread.new do
-        loop do
-          writeable.write readable.readline
-        rescue Interrupt
-          break
-        rescue IOError => e
-          receive_message(e, nil)
-          close
-          break
-        end
-      end
+    def receive_proto(proto)
+      message = EmbeddedProtocol::OutboundMessage.decode(proto)
+      notify_observers(nil, message[message.message.to_s])
     end
 
-    def read(readable)
-      Thread.new do
-        loop do
-          length = read_varint(readable)
-          payload = readable.read(length)
-          message = EmbeddedProtocol::OutboundMessage.decode payload
-          receive_message(nil, message[message.message.to_s])
-        rescue Interrupt
-          break
-        rescue IOError => e
-          receive_message(e, nil)
-          close
-          break
-        end
-      end
+    def read
+      length = read_varint(@stdout)
+      @stdout.read(length)
     end
 
     def write(payload)
