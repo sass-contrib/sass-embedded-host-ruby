@@ -75,7 +75,7 @@ module Sass
           elsif message.failure.span.url == ''
             'stdin'
           else
-            Util.path(message.failure.span.url)
+            Util.path_from_file_uri(message.failure.span.url)
           end,
           message.failure.span ? message.failure.span.start.line + 1 : nil,
           message.failure.span ? message.failure.span.start.column + 1 : nil,
@@ -138,7 +138,7 @@ module Sass
       source_map_dir = File.dirname(source_map_path)
 
       if out_file
-        map_data['file'] = Util.relative(source_map_dir, out_file)
+        map_data['file'] = Util.relative_path(source_map_dir, out_file)
       elsif file
         ext = File.extname(file)
         map_data['file'] = "#{file[0..(ext.empty? ? -1 : -ext.length - 1)]}.css"
@@ -149,10 +149,10 @@ module Sass
       map_data['sourcesContent'] = [] if source_map_contents
 
       map_data['sources'].map! do |source|
-        if source.start_with? Util::FILE_PROTOCOL
-          path = Util.path(source)
+        if source.start_with? 'file://'
+          path = Util.path_from_file_uri(source)
           map_data['sourcesContent'].push(File.read(path)) if source_map_contents
-          Util.relative(source_map_dir, path)
+          Util.relative_path(source_map_dir, path)
         else
           map_data['sourcesContent'].push(nil) if source_map_contents
           source
@@ -184,7 +184,7 @@ module Sass
         url = if source_map_embed
                 "data:application/json;base64,#{Base64.strict_encode64(map)}"
               elsif out_file
-                Util.relative(File.dirname(out_file), source_map)
+                Util.relative_path(File.dirname(out_file), source_map)
               else
                 source_map
               end

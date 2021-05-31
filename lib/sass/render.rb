@@ -97,7 +97,7 @@ module Sass
     end
 
     def canonicalize_response(canonicalize_request)
-      url = Util.file_uri(File.absolute_path(canonicalize_request.url, (@file.nil? ? 'stdin' : @file)))
+      url = Util.file_uri_from_path(File.absolute_path(canonicalize_request.url, (@file.nil? ? 'stdin' : @file)))
 
       begin
         result = @importer[canonicalize_request.importer_id].call canonicalize_request.url, @file
@@ -123,7 +123,7 @@ module Sass
           url: url
         )
       elsif result&.key? :file
-        canonicalized_url = Util.file_uri(result[:file])
+        canonicalized_url = Util.file_uri_from_path(result[:file])
 
         # TODO: FileImportRequest is not supported yet.
         # Workaround by reading contents and return it when server asks
@@ -185,7 +185,7 @@ module Sass
     def url
       return if @file.nil?
 
-      Util.file_uri @file
+      Util.file_uri_from_path @file
     end
 
     def string

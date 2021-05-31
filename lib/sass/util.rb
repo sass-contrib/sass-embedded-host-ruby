@@ -1,39 +1,28 @@
 # frozen_string_literal: true
 
 require 'pathname'
+require 'uri'
 
 module Sass
   # The {Util} module.
   module Util
     module_function
 
-    FILE_PROTOCOL = 'file://'
+    URI_PARSER = URI::Parser.new({ RESERVED: ';/?:@&=+$,' })
 
-    def file_uri(path)
+    def file_uri_from_path(path)
       absolute_path = File.absolute_path(path)
 
-      unless absolute_path.start_with? File::SEPARATOR
-        components = absolute_path.split File::SEPARATOR
-        components[0] = components[0][0].downcase
-        absolute_path = components.join File::SEPARATOR
-      end
+      absolute_path = File::SEPARATOR + absolute_path unless absolute_path.start_with? File::SEPARATOR
 
-      "#{FILE_PROTOCOL}#{absolute_path}"
+      URI_PARSER.escape("file://#{absolute_path}")
     end
 
-    def path(file_uri)
-      absolute_path = file_uri[FILE_PROTOCOL.length..]
-
-      unless absolute_path.start_with? File::SEPARATOR
-        components = absolute_path.split File::SEPARATOR
-        components[0] = "#{components[0].upcase}:"
-        absolute_path = components.join File::SEPARATOR
-      end
-
-      absolute_path
+    def path_from_file_uri(file_uri)
+      URI_PARSER.unescape(file_uri)[7..]
     end
 
-    def relative(from, to)
+    def relative_path(from, to)
       Pathname.new(File.absolute_path(to)).relative_path_from(Pathname.new(File.absolute_path(from))).to_s
     end
 
