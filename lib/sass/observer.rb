@@ -12,7 +12,7 @@ module Sass
       @transport.add_observer self
     end
 
-    def message
+    def receive_message
       @mutex.synchronize do
         @condition_variable.wait(@mutex) if @error.nil? && @message.nil?
       end

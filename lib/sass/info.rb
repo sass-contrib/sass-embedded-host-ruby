@@ -2,7 +2,7 @@
 
 module Sass
   # The {Observer} for {Embedded#info}.
-  class Version
+  class VersionContext
     include Observer
 
     def initialize(transport, id)
