@@ -24,6 +24,8 @@ module Sass
       [field_descriptor.subtype, field_descriptor.name]
     end.to_h
 
+    private_constant :ONEOF_MESSAGE
+
     def initialize
       @observerable_mutex = Mutex.new
       @stdin_mutex = Mutex.new

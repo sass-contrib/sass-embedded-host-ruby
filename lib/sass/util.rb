@@ -10,6 +10,8 @@ module Sass
 
     URI_PARSER = URI::Parser.new({ RESERVED: ';/?:@&=+$,' })
 
+    private_constant :URI_PARSER
+
     def file_uri_from_path(path)
       absolute_path = File.absolute_path(path)
 
