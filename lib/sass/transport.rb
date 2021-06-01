@@ -86,8 +86,14 @@ module Sass
     end
 
     def receive_proto(proto)
-      message = EmbeddedProtocol::OutboundMessage.decode(proto)
-      notify_observers(nil, message[message.message.to_s])
+      payload = EmbeddedProtocol::OutboundMessage.decode(proto)
+      message = payload[payload.message.to_s]
+      case message
+      when EmbeddedProtocol::ProtocolError
+        notify_observers(ProtocolError.new(message.message), nil)
+      else
+        notify_observers(nil, message)
+      end
     end
 
     def read

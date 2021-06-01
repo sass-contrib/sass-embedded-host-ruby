@@ -17,8 +17,6 @@ module Sass
       raise error unless error.nil?
 
       case message
-      when EmbeddedProtocol::ProtocolError
-        raise ProtocolError, message.message
       when EmbeddedProtocol::OutboundMessage::VersionResponse
         return unless message.id == @id
 
