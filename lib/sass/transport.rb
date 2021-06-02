@@ -31,7 +31,7 @@ module Sass
       @stdin_mutex = Mutex.new
       @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
       poll do
-        $stderr.write @stderr.readline
+        warn(@stderr.readline, uplevel: 1)
       end
       poll do
         receive_proto read
@@ -68,9 +68,7 @@ module Sass
       Thread.new do
         loop do
           yield
-        rescue Interrupt
-          break
-        rescue IOError => e
+        rescue StandardError => e
           notify_observers(e, nil)
           close
           break
@@ -90,7 +88,7 @@ module Sass
       message = payload[payload.message.to_s]
       case message
       when EmbeddedProtocol::ProtocolError
-        notify_observers(ProtocolError.new(message.message), nil)
+        raise ProtocolError, message.message
       else
         notify_observers(nil, message)
       end
