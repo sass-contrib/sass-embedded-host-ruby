@@ -55,16 +55,16 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      message = RenderContext.new(@transport, next_id,
-                                  data: data,
-                                  file: file,
-                                  indented_syntax: indented_syntax,
-                                  include_paths: include_paths,
-                                  output_style: output_style,
-                                  source_map: source_map,
-                                  out_file: out_file,
-                                  functions: functions,
-                                  importer: importer).receive_message
+      message = CompileContext.new(@transport, next_id,
+                                   data: data,
+                                   file: file,
+                                   indented_syntax: indented_syntax,
+                                   include_paths: include_paths,
+                                   output_style: output_style,
+                                   source_map: source_map,
+                                   out_file: out_file,
+                                   functions: functions,
+                                   importer: importer).receive_message
 
       if message.failure
         raise RenderError.new(

@@ -2,7 +2,7 @@
 
 module Sass
   # The {Observer} for {Embedded#render}.
-  class RenderContext
+  class CompileContext
     include Observer
 
     def initialize(transport, id,
