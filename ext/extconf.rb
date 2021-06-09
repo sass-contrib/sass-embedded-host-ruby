@@ -84,7 +84,7 @@ module Sass
       # TODO, don't use prerelease once a release is available
       tag_name = latest_release repo, prerelease: true
 
-      os = case Sass::Platform::OS
+      os = case Platform::OS
            when 'darwin'
              'macos'
            when 'linux'
@@ -92,16 +92,16 @@ module Sass
            when 'windows'
              'windows'
            else
-             raise "Unsupported OS: #{Sass::Platform::OS}"
+             raise "Unsupported OS: #{Platform::OS}"
            end
 
-      arch = case Sass::Platform::ARCH
+      arch = case Platform::ARCH
              when 'x86_64'
                'x64'
              when 'i386'
                'ia32'
              else
-               raise "Unsupported Arch: #{Sass::Platform::ARCH}"
+               raise "Unsupported Arch: #{Platform::ARCH}"
              end
 
       ext = case os
@@ -119,7 +119,7 @@ module Sass
 
       tag_name = latest_release repo
 
-      os = case Sass::Platform::OS
+      os = case Platform::OS
            when 'darwin'
              'osx'
            when 'linux'
@@ -127,10 +127,10 @@ module Sass
            when 'windows'
              'win'
            else
-             raise "Unsupported OS: #{Sass::Platform::OS}"
+             raise "Unsupported OS: #{Platform::OS}"
            end
 
-      arch = case Sass::Platform::ARCH
+      arch = case Platform::ARCH
              when 'aarch64'
                'aarch_64'
              when 'sparcv9'
@@ -142,7 +142,7 @@ module Sass
              when 'powerpc64'
                'ppcle_64'
              else
-               raise "Unsupported Arch: #{Sass::Platform::ARCH}"
+               raise "Unsupported Arch: #{Platform::ARCH}"
              end
 
       os_arch = case os
