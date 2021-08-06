@@ -52,6 +52,7 @@ module Sass
       if uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
         FileUtils.copy_file uri.path, path
       elsif uri.respond_to? :open
+        puts "curl -fsSLo #{path} -- #{uri}"
         uri.open do |source|
           File.open(path, 'wb') do |destination|
             destination.write source.read
@@ -64,12 +65,18 @@ module Sass
       raise "Failed to get: #{uri}"
     end
 
-    def latest_release(repo, prerelease: false)
-      if prerelease
+    def latest_release(repo, prerelease: false, tag: false)
+      if prerelease || tag
         headers = {}
         headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-        URI.parse("https://api.github.com/repos/#{repo}/releases").open(headers) do |file|
-          JSON.parse(file.read)[0]['tag_name']
+        if tag
+          URI.parse("https://api.github.com/repos/#{repo}/tags").open(headers) do |file|
+            JSON.parse(file.read)[0]['name']
+          end
+        else
+          URI.parse("https://api.github.com/repos/#{repo}/releases").open(headers) do |file|
+            JSON.parse(file.read)[0]['tag_name']
+          end
         end
       else
         URI.parse("https://github.com/#{repo}/releases/latest").open do |file|
@@ -81,7 +88,7 @@ module Sass
     def latest_sass_embedded
       repo = 'sass/dart-sass-embedded'
 
-      # TODO, don't use prerelease once a release is available
+      # TODO: don't use prerelease once a release is available
       tag_name = latest_release repo, prerelease: true
 
       os = case Platform::OS
@@ -168,9 +175,8 @@ module Sass
     def latest_sass_embedded_protocol
       repo = 'sass/embedded-protocol'
 
-      # TODO: use latest release once available
-      # tag_name = latest_release repo
-      tag_name = 'HEAD'
+      # TODO: don't use tag once a release is available
+      tag_name = latest_release repo, tag: true
 
       "https://raw.githubusercontent.com/#{repo}/#{tag_name}/embedded_sass.proto"
     end
