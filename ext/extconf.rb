@@ -5,13 +5,14 @@ require 'mkmf'
 require 'json'
 require 'open-uri'
 require 'fileutils'
+require_relative './dependencies'
 require_relative '../lib/sass/platform'
 
 module Sass
   # The dependency downloader. This downloads all the dependencies during gem
   # installation. The companion Makefile then unpacks all downloaded
-  # dependencies. By default it downloads the latest release of each
-  # dependency from GitHub releases.
+  # dependencies. By default it downloads the release of each dependency
+  # from GitHub releases.
   #
   # It is possible to specify an alternative source or version of each
   # dependency. Local sources can be used for offline installation.
@@ -23,9 +24,9 @@ module Sass
   #     --with-sass-embedded-protocol=file:///path/to/embedded_sass.proto
   class Extconf
     def initialize
-      get_with_config('protoc', true) { latest_protoc }
-      get_with_config('sass-embedded', true) { latest_sass_embedded }
-      get_with_config('sass-embedded-protocol', true) { latest_sass_embedded_protocol }
+      get_with_config('protoc', true) { default_protoc }
+      get_with_config('sass-embedded', true) { default_sass_embedded }
+      get_with_config('sass-embedded-protocol', true) { default_sass_embedded_protocol }
     end
 
     private
@@ -65,31 +66,34 @@ module Sass
       raise "Failed to get: #{uri}"
     end
 
-    def latest_release(repo, prerelease: false, tag: false)
-      if prerelease || tag
-        headers = {}
-        headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-        if tag
-          URI.parse("https://api.github.com/repos/#{repo}/tags").open(headers) do |file|
-            JSON.parse(file.read)[0]['name']
-          end
-        else
-          URI.parse("https://api.github.com/repos/#{repo}/releases").open(headers) do |file|
-            JSON.parse(file.read)[0]['tag_name']
-          end
-        end
-      else
+    def resolve_tag_name(repo, *requirements, gh_release: true)
+      requirements = Gem::Requirement.create(*requirements)
+
+      if requirements == Gem::Requirement.default && gh_release
         URI.parse("https://github.com/#{repo}/releases/latest").open do |file|
           File.basename file.base_uri.to_s
         end
+      else
+        headers = {}
+        headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
+        if gh_release
+          URI.parse("https://api.github.com/repos/#{repo}/releases?per_page=100").open(headers) do |file|
+            JSON.parse(file.read).map { |release| release['tag_name'] }
+          end
+        else
+          URI.parse("https://api.github.com/repos/#{repo}/tags?per_page=100").open(headers) do |file|
+            JSON.parse(file.read).map { |tag| tag['name'] }
+          end
+        end
+          .find { |version| Gem::Version.correct?(version) && requirements.satisfied_by?(Gem::Version.new(version)) }
+          &.to_s
       end
     end
 
-    def latest_sass_embedded
+    def default_sass_embedded
       repo = 'sass/dart-sass-embedded'
 
-      # TODO: don't use prerelease once a release is available
-      tag_name = latest_release repo, prerelease: true
+      tag_name = resolve_tag_name(repo, Sass::Dependencies::REQUIREMENTS[repo])
 
       os = case Platform::OS
            when 'darwin'
@@ -125,10 +129,12 @@ module Sass
       "https://github.com/#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{arch}.#{ext}"
     end
 
-    def latest_protoc
+    def default_protoc
       repo = 'protocolbuffers/protobuf'
 
-      tag_name = latest_release repo
+      spec = Gem::Dependency.new('google-protobuf', Sass::Dependencies::REQUIREMENTS[repo]).to_spec
+
+      tag_name = "v#{spec.version}"
 
       os = case Platform::OS
            when 'darwin'
@@ -172,11 +178,10 @@ module Sass
       "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name[1..]}-#{os_arch}.#{ext}"
     end
 
-    def latest_sass_embedded_protocol
+    def default_sass_embedded_protocol
       repo = 'sass/embedded-protocol'
 
-      # TODO: don't use tag once a release is available
-      tag_name = latest_release repo, tag: true
+      tag_name = resolve_tag_name(repo, Sass::Dependencies::REQUIREMENTS[repo], gh_release: false)
 
       "https://raw.githubusercontent.com/#{repo}/#{tag_name}/embedded_sass.proto"
     end

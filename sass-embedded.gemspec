@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'lib/sass/version'
+require_relative 'ext/dependencies'
 
 Gem::Specification.new do |spec|
   spec.name          = 'sass-embedded'
@@ -17,6 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.extensions    = ['ext/extconf.rb']
   spec.files         = Dir['lib/**/*.rb'] + [
+    'ext/dependencies.rb',
     'ext/extconf.rb',
     'ext/Makefile',
     'LICENSE',
@@ -25,7 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6.0'
 
-  spec.add_dependency 'google-protobuf', '~> 3.17.0'
+  spec.add_dependency 'google-protobuf', Sass::Dependencies::REQUIREMENTS['protocolbuffers/protobuf']
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'minitest', '~> 5.14.4'
