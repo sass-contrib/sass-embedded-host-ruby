@@ -63,7 +63,7 @@ module Sass
         raise
       end
     rescue StandardError
-      raise "Failed to get: #{uri}"
+      raise "Failed to get: #{uri_s}"
     end
 
     def resolve_tag_name(repo, *requirements, gh_release: true)
@@ -74,16 +74,21 @@ module Sass
           File.basename file.base_uri.to_s
         end
       else
-        headers = {}
-        headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-        if gh_release
-          URI.parse("https://api.github.com/repos/#{repo}/releases?per_page=100").open(headers) do |file|
-            JSON.parse(file.read).map { |release| release['tag_name'] }
+        begin
+          headers = {}
+          headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
+          if gh_release
+            URI.parse("https://api.github.com/repos/#{repo}/releases?per_page=100").open(headers) do |file|
+              JSON.parse(file.read).map { |release| release['tag_name'] }
+            end
+          else
+            URI.parse("https://api.github.com/repos/#{repo}/tags?per_page=100").open(headers) do |file|
+              JSON.parse(file.read).map { |tag| tag['name'] }
+            end
           end
-        else
-          URI.parse("https://api.github.com/repos/#{repo}/tags?per_page=100").open(headers) do |file|
-            JSON.parse(file.read).map { |tag| tag['name'] }
-          end
+        rescue OpenURI::HTTPError
+          requirements.requirements
+                      .map { |requirement| requirement.last.to_s.gsub('.pre.', '-') }
         end
           .find { |version| Gem::Version.correct?(version) && requirements.satisfied_by?(Gem::Version.new(version)) }
           &.to_s
