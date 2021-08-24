@@ -103,6 +103,14 @@ module Sass
 
                                                       argument
                                                     },
+                         'inspect_argument_list($args...)': lambda { |args|
+                                                              unless args.argument_list.is_a? EmbeddedProtocol::Value::ArgumentList
+                                                                raise StandardError,
+                                                                      'passed value is not a EmbeddedProtocol::Value::ArgumentList'
+                                                              end
+
+                                                              args
+                                                            },
                          'returns_sass_value()': lambda {
                                                    EmbeddedProtocol::Value.new(
                                                      rgb_color: EmbeddedProtocol::Value::RgbColor.new(
@@ -316,6 +324,32 @@ module Sass
         div { width: nth(inspect-list((10 20 30)), 2); }
       SCSS
         div { width: 20; }
+      CSS
+    end
+
+    def test_function_that_takes_a_sass_argument_list
+      assert_sass <<-SCSS, <<-CSS
+        @use "sass:meta";
+
+        @each $name, $color in meta.keywords(inspect-argument-list(
+          $string: #080,
+          $comment: #800,
+          $variable: #60b,
+        )) {
+          pre span.stx-\#{$name} {
+            color: $color;
+          }
+        }
+      SCSS
+        pre span.stx-string {
+          color: #080;
+        }
+        pre span.stx-comment {
+          color: #800;
+        }
+        pre span.stx-variable {
+          color: #60b;
+        }
       CSS
     end
 

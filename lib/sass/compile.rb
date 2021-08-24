@@ -161,9 +161,13 @@ module Sass
     end
 
     def function_call_response(function_call_request)
+      # TODO: convert argument_list to **kwargs
       EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
         id: function_call_request.id,
-        success: @functions[function_call_request.name].call(*function_call_request.arguments)
+        success: @functions[function_call_request.name].call(*function_call_request.arguments),
+        accessed_argument_lists: function_call_request.arguments
+          .filter { |argument| argument.value == :argument_list }
+          .map { |argument| argument.argument_list.id }
       )
     rescue StandardError => e
       EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
