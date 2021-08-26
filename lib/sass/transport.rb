@@ -30,6 +30,10 @@ module Sass
       @observerable_mutex = Mutex.new
       @stdin_mutex = Mutex.new
       @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
+
+      @stdin.set_encoding(Encoding::ASCII_8BIT)
+      @stdout.set_encoding(Encoding::ASCII_8BIT)
+
       poll do
         warn(@stderr.readline, uplevel: 1)
       end
