@@ -107,22 +107,23 @@ module Sass
     end
 
     def read_varint(readable)
-      varint = bits = 0
+      value = bits = 0
       loop do
         byte = readable.readbyte
-        varint += (byte & 0x7f) << bits
+        value |= (byte & 0x7f) << bits
         bits += 7
-        break if byte <= 0x7f
+        break if byte < 0x80
       end
-      varint
+      value
     end
 
-    def write_varint(writeable, varint)
+    def write_varint(writeable, value)
       bytes = []
-      while varint.positive?
-        bytes << ((varint > 0x7f ? 0x80 : 0) | (varint & 0x7f))
-        varint >>= 7
+      until value < 0x80
+        bytes << (0x80 | (value & 0x7f))
+        value >>= 7
       end
+      bytes << value
       writeable.write bytes.pack('C*')
     end
   end
