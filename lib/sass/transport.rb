@@ -118,10 +118,12 @@ module Sass
     end
 
     def write_varint(writeable, varint)
+      bytes = []
       while varint.positive?
-        writeable.write ((varint > 0x7f ? 0x80 : 0) | (varint & 0x7f)).chr
+        bytes << ((varint > 0x7f ? 0x80 : 0) | (varint & 0x7f))
         varint >>= 7
       end
+      writeable.write bytes.pack('C*')
     end
   end
 end
