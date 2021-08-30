@@ -84,6 +84,7 @@ module Sass
       end
 
       map, source_map = post_process_map(map: message.success.source_map,
+                                         data: data,
                                          file: file,
                                          out_file: out_file,
                                          source_map: source_map,
@@ -118,6 +119,7 @@ module Sass
     private
 
     def post_process_map(map:,
+                         data:,
                          file:,
                          out_file:,
                          source_map:,
@@ -148,10 +150,21 @@ module Sass
 
       map_data['sourcesContent'] = [] if source_map_contents
 
+      file = File.absolute_path(file) unless file.nil?
+
       map_data['sources'].map! do |source|
         if source.start_with? 'file://'
           path = Util.path_from_file_uri(source)
-          map_data['sourcesContent'].push(File.read(path)) if source_map_contents
+          content = if path == file && !data.nil?
+                      data
+                    else
+                      begin
+                        File.read(path)
+                      rescue StandardError
+                        nil
+                      end
+                    end
+          map_data['sourcesContent'].push(content) if source_map_contents
           Util.relative_path(source_map_dir, path)
         else
           map_data['sourcesContent'].push(nil) if source_map_contents
