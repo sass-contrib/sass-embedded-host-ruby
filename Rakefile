@@ -2,17 +2,19 @@
 
 require 'bundler/gem_tasks'
 
-task default: %i[rubocop test]
+task 'default' => %w[rubocop test]
 
-desc 'Download dart-sass-embedded'
-task :extconf do
-  system('make', '-C', 'ext')
+desc 'Compile all the extensions'
+task 'compile' do
+  system('make', '-C', 'ext/sass')
 end
 
-desc 'Run all tests'
-task test: :extconf do
-  Dir.glob('./test/**/*_test.rb').sort.each { |f| require f }
+desc 'Run all the tests'
+task 'test' => 'compile' do
+  Dir.glob('test/**/*_test.rb').sort.each { |f| require_relative f }
 end
+
+task 'release', [:remote] => ['build', 'release:guard_clean', 'release:source_control_push']
 
 begin
   require 'rubocop/rake_task'

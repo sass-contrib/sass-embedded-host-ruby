@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'lib/sass/version'
-require_relative 'ext/dependencies'
+require_relative 'ext/sass/dependencies'
 
 Gem::Specification.new do |spec|
   spec.name          = 'sass-embedded'
@@ -16,11 +16,11 @@ Gem::Specification.new do |spec|
     'source_code_uri' => "https://github.com/ntkme/sass-embedded-host-ruby/tree/v#{Sass::VERSION}"
   }
 
-  spec.extensions    = ['ext/extconf.rb']
+  spec.extensions    = ['ext/sass/extconf.rb']
   spec.files         = Dir['lib/**/*.rb'] + [
-    'ext/dependencies.rb',
-    'ext/extconf.rb',
-    'ext/Makefile',
+    'ext/sass/dependencies.rb',
+    'ext/sass/extconf.rb',
+    'ext/sass/Makefile',
     'LICENSE',
     'README.md'
   ]

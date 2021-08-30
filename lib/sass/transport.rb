@@ -2,7 +2,7 @@
 
 require 'open3'
 require 'observer'
-require_relative '../../ext/embedded_sass_pb'
+require_relative '../../ext/sass/embedded_sass_pb'
 
 module Sass
   # The {::Observable} {Transport} for low level communication with
@@ -12,7 +12,7 @@ module Sass
     include Observable
 
     DART_SASS_EMBEDDED = File.absolute_path(
-      "../../ext/sass_embedded/dart-sass-embedded#{Platform::OS == 'windows' ? '.bat' : ''}", __dir__
+      "../../ext/sass/sass_embedded/dart-sass-embedded#{Platform::OS == 'windows' ? '.bat' : ''}", __dir__
     )
 
     PROTOCOL_ERROR_ID = 4_294_967_295
