@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require 'bundler/gem_tasks'
+require 'rubocop/rake_task'
+
+ENV['gem_push'] = ENV['CI'] || 'false'
 
 task 'default' => %w[rubocop test]
 
@@ -14,11 +17,4 @@ task 'test' => 'compile' do
   Dir.glob('test/**/*_test.rb').sort.each { |f| require_relative f }
 end
 
-task 'release', [:remote] => ['build', 'release:guard_clean', 'release:source_control_push']
-
-begin
-  require 'rubocop/rake_task'
-  RuboCop::RakeTask.new
-rescue LoadError
-  nil
-end
+RuboCop::RakeTask.new

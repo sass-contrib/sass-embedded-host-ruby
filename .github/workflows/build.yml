@@ -24,10 +24,3 @@ jobs:
 
     - name: Test
       run: bundle exec rake
-
-    - name: Install Gem
-      run: rake install
-
-    - name: Test Gem
-      run: |-
-        ruby -r sass -e "puts Sass.render(data: 'h1 { color: black; }').css"
