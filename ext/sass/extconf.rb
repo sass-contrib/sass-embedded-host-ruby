@@ -27,18 +27,9 @@ module Sass
       get_with_config('protoc', true) { default_protoc }
       get_with_config('sass-embedded', true) { default_sass_embedded }
       get_with_config('sass-embedded-protocol', true) { default_sass_embedded_protocol }
-      mkmf
     end
 
     private
-
-    def mkmf
-      return if File.exist? File.basename(__FILE__)
-
-      File.write('Makefile',
-                 format(DATA.read, __dir__: Pathname.new(__dir__).relative_path_from(Pathname.new(Dir.pwd)),
-                                   DLLIB: "#{File.basename(__dir__)}.#{RbConfig::MAKEFILE_CONFIG['DLEXT']}"))
-    end
 
     def get_with_config(config, default)
       val = with_config(config, default)
@@ -203,17 +194,3 @@ module Sass
 end
 
 Sass::Extconf.new
-
-__END__
-ifeq ($(OS),Windows_NT)
-	TOUCH = cmd /c copy NUL
-else
-	TOUCH = touch
-endif
-
-.PHONY: all
-all: %{DLLIB}
-	$(MAKE) -C %{__dir__}
-
-%{DLLIB}:
-	$(TOUCH) $@
