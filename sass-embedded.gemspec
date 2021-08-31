@@ -33,7 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest', '~> 5.14.4'
   spec.add_development_dependency 'minitest-around'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rake-compiler'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-minitest'
   spec.add_development_dependency 'rubocop-rake'
