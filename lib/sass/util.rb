@@ -13,15 +13,11 @@ module Sass
     private_constant :URI_PARSER
 
     def file_uri_from_path(path)
-      absolute_path = File.absolute_path(path)
-
-      absolute_path = File::SEPARATOR + absolute_path unless absolute_path.start_with? File::SEPARATOR
-
-      URI_PARSER.escape("file://#{absolute_path}")
+      "file://#{Platform::OS == 'windows' ? File::SEPARATOR : ''}#{URI_PARSER.escape(path)}"
     end
 
     def path_from_file_uri(file_uri)
-      URI_PARSER.unescape(file_uri)[7..]
+      URI_PARSER.unescape(file_uri[(Platform::OS == 'windows' ? 8 : 7)..])
     end
 
     def relative_path(from, to)

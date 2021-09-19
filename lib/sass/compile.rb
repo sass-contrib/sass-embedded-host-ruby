@@ -121,7 +121,7 @@ module Sass
           url: url
         )
       elsif result&.key? :file
-        canonicalized_url = Util.file_uri_from_path(result[:file])
+        canonicalized_url = Util.file_uri_from_path(File.absolute_path(result[:file]))
 
         # TODO: FileImportRequest is not supported yet.
         # Workaround by reading contents and return it when server asks
@@ -187,7 +187,7 @@ module Sass
     def url
       return if @file.nil?
 
-      Util.file_uri_from_path @file
+      Util.file_uri_from_path File.absolute_path @file
     end
 
     def string
