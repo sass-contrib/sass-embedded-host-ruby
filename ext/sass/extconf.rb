@@ -63,7 +63,8 @@ module Sass
         raise
       end
     rescue StandardError
-      raise "Failed to get: #{uri_s}"
+      warn "Failed to get: #{uri_s}"
+      raise
     end
 
     def resolve_tag_name(repo, *requirements, gh_release: true)
