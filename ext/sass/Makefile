@@ -1,5 +1,5 @@
 ifeq ($(OS),Windows_NT)
-RM = cmd /c del /f /q /s
+RM = powershell -c cmd.exe /c del /f /q /s
 else
 RM = rm -fr
 endif
