@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.files         = Dir['lib/**/*.rb'] + [
     'ext/sass/dependencies.rb',
     'ext/sass/extconf.rb',
+    'ext/sass/unzip.vbs',
     'ext/sass/Makefile',
     'LICENSE',
     'README.md'

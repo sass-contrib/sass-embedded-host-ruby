@@ -28,7 +28,7 @@ endif
 
 ifeq ($(OS),Windows_NT)
 sass_embedded: sass_embedded-*.zip
-	powershell -c "Get-Item $< | Expand-Archive -DestinationPath . -Force"
+	powershell -c "if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) { Get-Item $< | Expand-Archive -DestinationPath . -Force } else { cscript.exe unzip.vbs $< . }"
 else
 sass_embedded: sass_embedded-*.tar.gz
 	tar -vxzf $<
@@ -39,7 +39,7 @@ protoc-*.zip:
 
 protoc: protoc-*.zip
 ifeq ($(OS),Windows_NT)
-	powershell -c "Get-Item $< | Expand-Archive -DestinationPath $@ -Force"
+	powershell -c "if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) { Get-Item $< | Expand-Archive -DestinationPath $@ -Force } else { cscript.exe unzip.vbs $< $@ }"
 else
 	unzip -od $@ $<
 endif
