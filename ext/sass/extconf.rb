@@ -29,30 +29,30 @@ module Sass
   #     --with-sass-embedded-protocol=file:///path/to/embedded_sass.proto
   class Extconf
     def initialize
-      get_with_config('protoc', false) { default_protoc }
-      get_with_config('sass-embedded', false) { default_sass_embedded }
-      get_with_config('sass-embedded-protocol', false) { default_sass_embedded_protocol }
+      fetch_with_config('protoc', false) { default_protoc }
+      fetch_with_config('sass-embedded', false) { default_sass_embedded }
+      fetch_with_config('sass-embedded-protocol', false) { default_sass_embedded_protocol }
     end
 
     private
 
-    def get_with_config(config, default)
+    def fetch_with_config(config, default)
       val = with_config(config, default)
       case val
       when true
         if block_given?
-          get yield
+          fetch yield
         else
-          get default
+          fetch default
         end
       when false
         nil
       else
-        get val
+        fetch val
       end
     end
 
-    def get(uri_s)
+    def fetch(uri_s)
       uri = URI.parse(uri_s)
       path = File.absolute_path(File.basename(uri.path), __dir__)
       if uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
@@ -68,7 +68,7 @@ module Sass
         raise
       end
     rescue StandardError
-      warn "Failed to get: #{uri_s}"
+      warn "ERROR:  Error fetching #{uri_s}:"
       raise
     end
 
