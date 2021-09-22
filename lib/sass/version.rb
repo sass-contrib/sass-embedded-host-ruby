@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Sass
-  VERSION = '0.7.27'
+  VERSION = '0.7.28'
 end
