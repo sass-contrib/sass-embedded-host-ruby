@@ -32,7 +32,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'google-protobuf', Sass::Dependencies::REQUIREMENTS['protocolbuffers/protobuf']
 
-  spec.add_development_dependency 'bundler', '~> 2.2.27'
   spec.add_development_dependency 'minitest', '~> 5.14.4'
   spec.add_development_dependency 'minitest-around', '~> 0.5.0'
   spec.add_development_dependency 'rake', '~> 13.0.6'

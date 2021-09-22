@@ -363,16 +363,13 @@ module Sass
                                         'test_function()': lambda {
                                           EmbeddedProtocol::Value.new(
                                             string: EmbeddedProtocol::Value::String.new(
-                                              text: "{test_key1: 'test_value', test_key2: #{id}}",
+                                              text: "thread-#{id}",
                                               quoted: true
                                             )
                                           )
                                         }
                                       }).css
-            assert_match(/test_key1/, output)
-            assert_match(/test_key2/, output)
-            assert_match(/test_value/, output)
-            assert_match(/#{id}/, output)
+            assert_match(/url: "thread-#{id}"/, output)
           end
         end
         threads.each(&:join)
