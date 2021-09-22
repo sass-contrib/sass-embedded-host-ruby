@@ -13,7 +13,9 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/ntkme/sass-embedded-host-ruby'
   spec.license       = 'MIT'
   spec.metadata      = {
-    'source_code_uri' => "https://github.com/ntkme/sass-embedded-host-ruby/tree/v#{Sass::VERSION}"
+    'documentation_uri' => "https://www.rubydoc.info/gems/#{spec.name}/#{spec.version}",
+    'source_code_uri' => "#{spec.homepage}/tree/v#{spec.version}",
+    'funding_uri' => 'https://github.com/sponsors/ntkme'
   }
 
   spec.extensions    = ['ext/sass/extconf.rb']
