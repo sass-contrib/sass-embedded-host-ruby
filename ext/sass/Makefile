@@ -3,7 +3,7 @@ RM = powershell -c "cmd.exe /c del /f /q /s"
 else
 RM = rm -fr
 endif
-EXTCONF = ruby -- extconf.rb --without-sass-embedded --without-sass-embedded-protocol --without-protoc
+EXTCONF = ruby -- extconf.rb
 
 .PHONY: all
 all: sass_embedded embedded_sass_pb.rb

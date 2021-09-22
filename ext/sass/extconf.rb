@@ -29,9 +29,9 @@ module Sass
   #     --with-sass-embedded-protocol=file:///path/to/embedded_sass.proto
   class Extconf
     def initialize
-      get_with_config('protoc', true) { default_protoc }
-      get_with_config('sass-embedded', true) { default_sass_embedded }
-      get_with_config('sass-embedded-protocol', true) { default_sass_embedded_protocol }
+      get_with_config('protoc', false) { default_protoc }
+      get_with_config('sass-embedded', false) { default_sass_embedded }
+      get_with_config('sass-embedded-protocol', false) { default_sass_embedded_protocol }
     end
 
     private
