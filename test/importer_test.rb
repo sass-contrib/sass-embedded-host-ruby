@@ -28,7 +28,7 @@ module Sass
 
       output = render(data, [
                         lambda { |url, _prev|
-                          { contents: '$var1: #000; .hi { color: $var1; }' } if url =~ /styles/
+                          { contents: '$var1: #000; .hi { color: $var1; }' } if /styles/.match?(url)
                         }
                       ])
 
