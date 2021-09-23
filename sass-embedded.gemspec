@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6.0'
 
-  spec.add_dependency 'google-protobuf', Sass::Dependencies::REQUIREMENTS['protocolbuffers/protobuf']
+  spec.add_dependency 'google-protobuf', '~> 3.18.0'
 
   spec.add_development_dependency 'minitest', '~> 5.14.4'
   spec.add_development_dependency 'minitest-around', '~> 0.5.0'

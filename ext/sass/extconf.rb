@@ -7,6 +7,7 @@ require 'open-uri'
 require 'fileutils'
 require_relative './dependencies'
 require_relative '../../lib/sass/platform'
+require_relative '../../lib/sass/compiler'
 
 module Sass
   # The dependency downloader. This downloads all the dependencies during gem
@@ -143,7 +144,7 @@ module Sass
     def default_protoc
       repo = 'protocolbuffers/protobuf'
 
-      spec = Gem::Dependency.new('google-protobuf', Sass::Dependencies::REQUIREMENTS[repo]).to_spec
+      spec = Gem::Dependency.new('google-protobuf').to_spec
 
       tag_name = "v#{spec.version}"
 
@@ -192,7 +193,9 @@ module Sass
     def default_sass_embedded_protocol
       repo = 'sass/embedded-protocol'
 
-      tag_name = resolve_tag_name(repo, Sass::Dependencies::REQUIREMENTS[repo], gh_release: false)
+      tag_name = IO.popen([Compiler::DART_SASS_EMBEDDED, '--version']) do |file|
+        JSON.parse(file.read)['protocolVersion']
+      end
 
       "https://raw.githubusercontent.com/#{repo}/#{tag_name}/embedded_sass.proto"
     end

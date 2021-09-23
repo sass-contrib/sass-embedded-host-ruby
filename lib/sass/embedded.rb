@@ -243,7 +243,7 @@ module Sass
     def next_id
       @id_semaphore.synchronize do
         @id += 1
-        @id = 0 if @id == Transport::PROTOCOL_ERROR_ID
+        @id = 0 if @id == Compiler::PROTOCOL_ERROR_ID
         @id
       end
     end

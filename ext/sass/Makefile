@@ -44,7 +44,7 @@ else
 	unzip -od $@ $<
 endif
 
-embedded_sass.proto:
+embedded_sass.proto: sass_embedded
 	$(EXTCONF) --with-sass-embedded-protocol
 
 %_pb.rb: %.proto protoc

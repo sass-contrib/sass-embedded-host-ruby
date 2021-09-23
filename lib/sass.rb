@@ -62,6 +62,7 @@ end
 
 require_relative 'sass/version'
 require_relative 'sass/platform'
+require_relative 'sass/compiler'
 require_relative 'sass/util'
 require_relative 'sass/struct'
 require_relative 'sass/result'

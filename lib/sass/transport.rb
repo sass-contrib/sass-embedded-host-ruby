@@ -11,12 +11,6 @@ module Sass
   class Transport
     include Observable
 
-    DART_SASS_EMBEDDED = File.absolute_path(
-      "../../ext/sass/sass_embedded/dart-sass-embedded#{Platform::OS == 'windows' ? '.bat' : ''}", __dir__
-    )
-
-    PROTOCOL_ERROR_ID = 4_294_967_295
-
     ONEOF_MESSAGE = EmbeddedProtocol::InboundMessage
                     .descriptor
                     .lookup_oneof('message')
@@ -29,7 +23,7 @@ module Sass
     def initialize
       @observerable_mutex = Mutex.new
       @stdin_mutex = Mutex.new
-      @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(DART_SASS_EMBEDDED)
+      @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(Compiler::DART_SASS_EMBEDDED)
 
       [@stdin, @stdout].each(&:binmode)
 
