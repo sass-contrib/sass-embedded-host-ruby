@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'lib/sass/version'
-require_relative 'ext/sass/dependencies'
 
 Gem::Specification.new do |spec|
   spec.name          = 'sass-embedded'

@@ -7,5 +7,7 @@ module Sass
     )
 
     PROTOCOL_ERROR_ID = 4_294_967_295
+
+    REQUIREMENTS = '~> 1.0.0-beta.11'
   end
 end

@@ -5,7 +5,6 @@ require 'mkmf'
 require 'json'
 require 'open-uri'
 require 'fileutils'
-require_relative './dependencies'
 require_relative '../../lib/sass/platform'
 require_relative '../../lib/sass/compiler'
 
@@ -76,36 +75,53 @@ module Sass
     def resolve_tag_name(repo, *requirements, gh_release: true)
       requirements = Gem::Requirement.create(*requirements)
 
-      if requirements == Gem::Requirement.default && gh_release
-        URI.parse("https://github.com/#{repo}/releases/latest").open do |file|
-          File.basename file.base_uri.to_s
-        end
-      else
-        begin
-          headers = {}
-          headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-          if gh_release
-            URI.parse("https://api.github.com/repos/#{repo}/releases?per_page=100").open(headers) do |file|
-              JSON.parse(file.read).map { |release| release['tag_name'] }
-            end
-          else
-            URI.parse("https://api.github.com/repos/#{repo}/tags?per_page=100").open(headers) do |file|
-              JSON.parse(file.read).map { |tag| tag['name'] }
-            end
+      satisfied = lambda { |version|
+        Gem::Version.correct?(version) && requirements.satisfied_by?(Gem::Version.new(version))
+      }
+
+      headers = {}
+      headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
+
+      begin
+        if gh_release
+          releases_uri = "https://github.com/#{repo}/releases"
+          uri = "#{releases_uri}/latest"
+          tag_name = URI.parse(uri).open do |file|
+            return nil if file.base_uri == releases_uri
+
+            latest = File.basename file.base_uri.to_s
+            latest if satisfied.call latest
           end
-        rescue OpenURI::HTTPError
-          requirements.requirements
-                      .map { |requirement| requirement.last.to_s.gsub('.pre.', '-') }
+
+          return tag_name unless tag_name.nil?
+
+          uri = "https://api.github.com/repos/#{repo}/releases?per_page=100"
+          tag_name = URI.parse(uri).open(headers) do |file|
+            JSON.parse(file.read).map { |release| release['tag_name'] }
+          end
+                        .find(satisfied)&.peek
+        else
+          uri = "https://api.github.com/repos/#{repo}/tags?per_page=100"
+          tag_name = URI.parse(uri).open(headers) do |file|
+            JSON.parse(file.read).map { |tag| tag['name'] }
+          end
+                        .find(satisfied)&.peek
         end
-          .find { |version| Gem::Version.correct?(version) && requirements.satisfied_by?(Gem::Version.new(version)) }
-          &.to_s
+
+        return tag_name unless tag_name.nil?
+      rescue OpenURI::HTTPError => e
+        warn "WARNING:  Error fetching #{uri}: #{e}"
       end
+
+      requirements.requirements
+                  .map { |requirement| requirement.last.to_s.gsub('.pre.', '-') }
+                  .find(satisfied)&.peek
     end
 
     def default_sass_embedded
       repo = 'sass/dart-sass-embedded'
 
-      tag_name = resolve_tag_name(repo, Sass::Dependencies::REQUIREMENTS[repo])
+      tag_name = resolve_tag_name(repo, Compiler::REQUIREMENTS)
 
       os = case Platform::OS
            when 'darwin'
