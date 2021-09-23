@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
 
   spec.extensions    = ['ext/sass/extconf.rb']
   spec.files         = Dir['lib/**/*.rb'] + [
-    'ext/sass/dependencies.rb',
     'ext/sass/extconf.rb',
     'ext/sass/unzip.vbs',
     'ext/sass/Makefile',
