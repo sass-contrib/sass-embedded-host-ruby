@@ -5,7 +5,7 @@ on:
     tags:
       - 'v*'
     paths:
-      - 'lib/*/version.rb'
+      - 'lib/**/version.rb'
 
 jobs:
   release:
