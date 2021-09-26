@@ -58,7 +58,7 @@ module Sass
       def test_include_paths_from_env
         expected_include_paths = %w[included_3 included_4]
 
-        ::Sass.instance_eval { @include_paths = nil }
+        ::Sass::Embedded.instance_eval { @include_paths = nil }
 
         ENV['SASS_PATH'] = expected_include_paths.join(File::PATH_SEPARATOR)
 

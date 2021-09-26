@@ -241,7 +241,7 @@ module Sass
         end
 
         include_path_importers = @include_paths
-                                 .concat(Sass.include_paths)
+                                 .concat(Embedded.include_paths)
                                  .map do |include_path|
           EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
             path: File.absolute_path(include_path)

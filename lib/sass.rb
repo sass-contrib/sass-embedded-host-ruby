@@ -19,11 +19,7 @@ module Sass
     #   Sass.include_paths << File.dirname(__FILE__) + '/sass'
     # @return [Array]
     def include_paths
-      @include_paths ||= if ENV['SASS_PATH']
-                           ENV['SASS_PATH'].split(File::PATH_SEPARATOR)
-                         else
-                           []
-                         end
+      Embedded.include_paths
     end
 
     # The global {.info} method. This instantiates a global {Embedded} instance
@@ -31,7 +27,7 @@ module Sass
     #
     # @raise [ProtocolError]
     def info
-      embedded.info
+      instance.info
     end
 
     # The global {.render} method. This instantiates a global {Embedded} instance
@@ -47,15 +43,15 @@ module Sass
     # @raise [ProtocolError]
     # @raise [RenderError]
     def render(**kwargs)
-      embedded.render(**kwargs)
+      instance.render(**kwargs)
     end
 
     private
 
-    def embedded
-      return @embedded if defined?(@embedded) && !@embedded.closed?
+    def instance
+      return @instance if defined?(@instance) && !@instance.closed?
 
-      @embedded = Sass::Embedded.new
+      @instance = Embedded.new
     end
   end
 end

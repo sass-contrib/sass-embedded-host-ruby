@@ -20,6 +20,14 @@ module Sass
   #   result = embedded.render(file: 'style.css')
   #   embedded.close
   class Embedded
+    def self.include_paths
+      @include_paths ||= if ENV['SASS_PATH']
+                           ENV['SASS_PATH'].split(File::PATH_SEPARATOR)
+                         else
+                           []
+                         end
+    end
+
     def initialize
       @transport = Transport.new
       @id_semaphore = Mutex.new
