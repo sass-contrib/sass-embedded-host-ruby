@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'mkmf'
-require 'json'
-require 'open-uri'
 require 'fileutils'
-require_relative '../../lib/sass/embedded/platform'
+require 'json'
+require 'mkmf'
+require 'open-uri'
 require_relative '../../lib/sass/embedded/compiler'
+require_relative '../../lib/sass/embedded/platform'
 
 module Sass
   class Embedded

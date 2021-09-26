@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'sass/embedded'
+
 # The Sass module. This communicates with Embedded Dart Sass using
 # the Embedded Sass protocol.
 module Sass
@@ -55,5 +57,3 @@ module Sass
     end
   end
 end
-
-require_relative 'sass/embedded'

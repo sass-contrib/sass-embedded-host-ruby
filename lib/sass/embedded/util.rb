@@ -7,11 +7,11 @@ module Sass
   class Embedded
     # The {Util} module.
     module Util
-      module_function
-
       URI_PARSER = URI::Parser.new({ RESERVED: ';/?:@&=+$,' })
 
       private_constant :URI_PARSER
+
+      module_function
 
       def file_uri_from_path(path)
         "file://#{Platform::OS == 'windows' ? File::SEPARATOR : ''}#{URI_PARSER.escape(path)}"
