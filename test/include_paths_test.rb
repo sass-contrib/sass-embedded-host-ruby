@@ -43,8 +43,8 @@ module Sass
         temp_file('included_2/import.scss', "@use 'import_parent' as *; $size: $s;")
         temp_file('styles.scss', "@use 'import.scss' as *; .hi { width: $size; }")
 
-        ::Sass.include_paths << 'included_1'
-        ::Sass.include_paths << 'included_2'
+        ::Sass::Embedded.include_paths << 'included_1'
+        ::Sass::Embedded.include_paths << 'included_2'
 
         css = <<~CSS.chomp
           .hi {
@@ -62,9 +62,9 @@ module Sass
 
         ENV['SASS_PATH'] = expected_include_paths.join(File::PATH_SEPARATOR)
 
-        assert_equal expected_include_paths, ::Sass.include_paths
+        assert_equal expected_include_paths, ::Sass::Embedded.include_paths
 
-        ::Sass.include_paths.clear
+        ::Sass::Embedded.include_paths.clear
       end
 
       def test_include_paths_not_configured

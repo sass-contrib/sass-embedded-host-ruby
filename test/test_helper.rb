@@ -6,7 +6,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'minitest/around/unit'
 
-require_relative '../lib/sass'
+require_relative '../lib/sass/embedded'
 
 module TempFileTest
   def around
