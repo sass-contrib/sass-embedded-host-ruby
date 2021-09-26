@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'lib/sass/version'
+require_relative 'lib/sass/embedded/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'sass-embedded'
-  spec.version       = Sass::VERSION
+  spec.version       = Sass::Embedded::VERSION
   spec.authors       = ['なつき']
   spec.email         = ['i@ntk.me']
   spec.summary       = 'Use dart-sass with Ruby!'

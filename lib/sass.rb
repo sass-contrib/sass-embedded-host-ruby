@@ -60,15 +60,4 @@ module Sass
   end
 end
 
-require_relative 'sass/version'
-require_relative 'sass/platform'
-require_relative 'sass/compiler'
-require_relative 'sass/util'
-require_relative 'sass/struct'
-require_relative 'sass/result'
-require_relative 'sass/error'
-require_relative 'sass/transport'
-require_relative 'sass/observer'
-require_relative 'sass/info'
-require_relative 'sass/compile'
 require_relative 'sass/embedded'

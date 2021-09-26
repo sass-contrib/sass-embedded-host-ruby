@@ -2,6 +2,13 @@
 
 require 'base64'
 require 'json'
+require_relative 'embedded/compile'
+require_relative 'embedded/error'
+require_relative 'embedded/info'
+require_relative 'embedded/result'
+require_relative 'embedded/transport'
+require_relative 'embedded/util'
+require_relative 'embedded/version'
 
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
