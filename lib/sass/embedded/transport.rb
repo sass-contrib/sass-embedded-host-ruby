@@ -2,9 +2,9 @@
 
 require 'open3'
 require 'observer'
+require_relative '../embedded_protocol'
 require_relative 'compiler'
 require_relative 'error'
-require_relative 'protocol'
 
 module Sass
   class Embedded

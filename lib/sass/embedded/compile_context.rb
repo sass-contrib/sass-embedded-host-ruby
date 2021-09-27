@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../embedded_protocol'
 require_relative 'observer'
-require_relative 'protocol'
 require_relative 'util'
 
 module Sass
