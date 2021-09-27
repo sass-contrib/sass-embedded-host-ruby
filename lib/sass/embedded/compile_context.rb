@@ -10,7 +10,7 @@ module Sass
     class CompileContext
       include Observer
 
-      def initialize(transport, id,
+      def initialize(transport,
                      data:,
                      file:,
                      indented_syntax:,
@@ -22,7 +22,6 @@ module Sass
                      importer:)
         raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
 
-        @id = id
         @data = data
         @file = file
         @indented_syntax = indented_syntax

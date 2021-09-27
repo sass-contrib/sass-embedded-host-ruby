@@ -31,15 +31,13 @@ module Sass
 
     def initialize
       @transport = Transport.new
-      @id_semaphore = Mutex.new
-      @id = 0
     end
 
     # The {Embedded#info} method.
     #
     # @raise [ProtocolError]
     def info
-      @info ||= VersionContext.new(@transport, next_id).receive_message
+      @info ||= VersionContext.new(@transport).receive_message
     end
 
     # The {Embedded#render} method.
@@ -71,7 +69,7 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      message = CompileContext.new(@transport, next_id,
+      message = CompileContext.new(@transport,
                                    data: data,
                                    file: file,
                                    indented_syntax: indented_syntax,
@@ -253,14 +251,6 @@ module Sass
         "\r\n"
       else
         raise ArgumentError, 'linefeed must be one of :lf, :lfcr, :cr, :crlf'
-      end
-    end
-
-    def next_id
-      @id_semaphore.synchronize do
-        @id += 1
-        @id = 0 if @id == EmbeddedProtocol::PROTOCOL_ERROR_ID
-        @id
       end
     end
   end

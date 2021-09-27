@@ -6,6 +6,7 @@ module Sass
     module Observer
       def initialize(transport)
         @transport = transport
+        @id = transport.next_id
         @mutex = Mutex.new
         @condition_variable = ConditionVariable.new
         @error = nil

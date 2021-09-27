@@ -9,9 +9,7 @@ module Sass
     class VersionContext
       include Observer
 
-      def initialize(transport, id)
-        @id = id
-
+      def initialize(transport)
         super(transport)
 
         send_message EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)

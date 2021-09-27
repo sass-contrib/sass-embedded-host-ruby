@@ -24,6 +24,8 @@ module Sass
       private_constant :ONEOF_MESSAGE
 
       def initialize
+        @id_semaphore = Mutex.new
+        @id = 0
         @observerable_mutex = Mutex.new
         @stdin_mutex = Mutex.new
         @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(Compiler::PATH)
@@ -60,6 +62,14 @@ module Sass
 
       def closed?
         @stdin.closed?
+      end
+
+      def next_id
+        @id_semaphore.synchronize do
+          @id += 1
+          @id = 0 if @id == EmbeddedProtocol::PROTOCOL_ERROR_ID
+          @id
+        end
       end
 
       private
