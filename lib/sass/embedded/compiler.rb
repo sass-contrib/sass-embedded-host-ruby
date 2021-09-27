@@ -5,7 +5,7 @@ require_relative 'platform'
 module Sass
   class Embedded
     module Compiler
-      DART_SASS_EMBEDDED = File.absolute_path(
+      PATH = File.absolute_path(
         "../../../ext/sass/sass_embedded/dart-sass-embedded#{Platform::OS == 'windows' ? '.bat' : ''}", __dir__
       )
 

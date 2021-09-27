@@ -26,7 +26,7 @@ module Sass
       def initialize
         @observerable_mutex = Mutex.new
         @stdin_mutex = Mutex.new
-        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(Compiler::DART_SASS_EMBEDDED)
+        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(Compiler::PATH)
 
         [@stdin, @stdout].each(&:binmode)
 

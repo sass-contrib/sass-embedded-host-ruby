@@ -210,7 +210,7 @@ module Sass
       def default_sass_embedded_protocol
         repo = 'sass/embedded-protocol'
 
-        tag_name = IO.popen([Compiler::DART_SASS_EMBEDDED, '--version']) do |file|
+        tag_name = IO.popen([Compiler::PATH, '--version']) do |file|
           JSON.parse(file.read)['protocolVersion']
         end
 
