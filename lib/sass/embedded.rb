@@ -2,6 +2,7 @@
 
 require 'base64'
 require 'json'
+require_relative 'embedded_protocol'
 require_relative 'embedded/compile_context'
 require_relative 'embedded/error'
 require_relative 'embedded/result'
@@ -258,7 +259,7 @@ module Sass
     def next_id
       @id_semaphore.synchronize do
         @id += 1
-        @id = 0 if @id == Compiler::PROTOCOL_ERROR_ID
+        @id = 0 if @id == EmbeddedProtocol::PROTOCOL_ERROR_ID
         @id
       end
     end
