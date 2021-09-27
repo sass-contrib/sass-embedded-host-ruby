@@ -2,18 +2,17 @@
 
 require 'base64'
 require 'json'
-require_relative 'embedded_protocol'
+require_relative 'embedded/channel'
 require_relative 'embedded/compile_context'
 require_relative 'embedded/error'
 require_relative 'embedded/result'
-require_relative 'embedded/transport'
 require_relative 'embedded/util'
 require_relative 'embedded/version'
 require_relative 'embedded/version_context'
 
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
-  # its own {Transport}.
+  # its own {Channel}.
   #
   # @example
   #   embedded = Sass::Embedded.new
@@ -30,14 +29,14 @@ module Sass
     end
 
     def initialize
-      @transport = Transport.new
+      @channel = Channel.new
     end
 
     # The {Embedded#info} method.
     #
     # @raise [ProtocolError]
     def info
-      @info ||= VersionContext.new(@transport).receive_message
+      @info ||= VersionContext.new(@channel).receive_message
     end
 
     # The {Embedded#render} method.
@@ -69,7 +68,7 @@ module Sass
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      message = CompileContext.new(@transport,
+      message = CompileContext.new(@channel,
                                    data: data,
                                    file: file,
                                    indented_syntax: indented_syntax,
@@ -123,11 +122,11 @@ module Sass
     end
 
     def close
-      @transport.close
+      @channel.close
     end
 
     def closed?
-      @transport.closed?
+      @channel.closed?
     end
 
     private

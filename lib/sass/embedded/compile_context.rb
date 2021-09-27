@@ -10,7 +10,7 @@ module Sass
     class CompileContext
       include Observer
 
-      def initialize(transport,
+      def initialize(channel,
                      data:,
                      file:,
                      indented_syntax:,
@@ -36,7 +36,7 @@ module Sass
         @importer = importer
         @import_responses = {}
 
-        super(transport)
+        super(channel)
 
         send_message compile_request
       end
@@ -46,23 +46,23 @@ module Sass
 
         case message
         when EmbeddedProtocol::OutboundMessage::CompileResponse
-          return unless message.id == @id
+          return unless message.id == id
 
           Thread.new do
             super(nil, message)
           end
         when EmbeddedProtocol::OutboundMessage::LogEvent
-          return unless message.compilation_id == @id && $stderr.tty?
+          return unless message.compilation_id == id && $stderr.tty?
 
           warn message.formatted
         when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
-          return unless message.compilation_id == @id
+          return unless message.compilation_id == id
 
           Thread.new do
             send_message canonicalize_response message
           end
         when EmbeddedProtocol::OutboundMessage::ImportRequest
-          return unless message.compilation_id == @id
+          return unless message.compilation_id == id
 
           Thread.new do
             send_message import_response message
@@ -70,7 +70,7 @@ module Sass
         when EmbeddedProtocol::OutboundMessage::FileImportRequest
           raise NotImplementedError, 'FileImportRequest is not implemented'
         when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
-          return unless message.compilation_id == @id
+          return unless message.compilation_id == id
 
           Thread.new do
             send_message function_call_response message
@@ -86,7 +86,7 @@ module Sass
 
       def compile_request
         EmbeddedProtocol::InboundMessage::CompileRequest.new(
-          id: @id,
+          id: id,
           string: string,
           path: path,
           style: style,

@@ -9,10 +9,10 @@ module Sass
     class VersionContext
       include Observer
 
-      def initialize(transport)
-        super(transport)
+      def initialize(channel)
+        super(channel)
 
-        send_message EmbeddedProtocol::InboundMessage::VersionRequest.new(id: @id)
+        send_message EmbeddedProtocol::InboundMessage::VersionRequest.new(id: id)
       end
 
       def update(error, message)
@@ -20,7 +20,7 @@ module Sass
 
         case message
         when EmbeddedProtocol::OutboundMessage::VersionResponse
-          return unless message.id == @id
+          return unless message.id == id
 
           Thread.new do
             super(nil, message)

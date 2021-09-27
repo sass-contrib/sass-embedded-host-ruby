@@ -2,16 +2,15 @@
 
 module Sass
   class Embedded
-    # The {Observer} module for receiving messages from {Transport}.
+    # The {Observer} module for communicating with {Compiler}.
     module Observer
-      def initialize(transport)
-        @transport = transport
-        @id = transport.next_id
+      def initialize(channel)
         @mutex = Mutex.new
         @condition_variable = ConditionVariable.new
         @error = nil
         @message = nil
-        @transport.add_observer self
+
+        @connection = channel.connect(self)
       end
 
       def receive_message
@@ -25,7 +24,7 @@ module Sass
       end
 
       def update(error, message)
-        @transport.delete_observer self
+        @connection.close
         @mutex.synchronize do
           @error = error
           @message = message
@@ -35,8 +34,12 @@ module Sass
 
       private
 
-      def send_message(message)
-        @transport.send_message(message)
+      def id
+        @connection.id
+      end
+
+      def send_message(*args)
+        @connection.send_message(*args)
       end
     end
   end
