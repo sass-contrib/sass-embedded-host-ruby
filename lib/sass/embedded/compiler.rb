@@ -74,7 +74,7 @@ module Sass
           @stderr.close unless @stderr.closed?
         end
 
-        nil
+        @wait_thread.value
       end
 
       def closed?
