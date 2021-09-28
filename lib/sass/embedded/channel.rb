@@ -55,6 +55,8 @@ module Sass
           @compiler.send_message(*args)
         end
       end
+
+      private_constant :Connection
     end
   end
 end
