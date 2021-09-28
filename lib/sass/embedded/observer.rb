@@ -10,7 +10,7 @@ module Sass
         @error = nil
         @message = nil
 
-        @connection = channel.connect(self)
+        @subscription = channel.subscribe(self)
       end
 
       def receive_message
@@ -24,7 +24,7 @@ module Sass
       end
 
       def update(error, message)
-        @connection.close
+        @subscription.unsubscribe
         @mutex.synchronize do
           @error = error
           @message = message
@@ -35,11 +35,11 @@ module Sass
       private
 
       def id
-        @connection.id
+        @subscription.id
       end
 
       def send_message(*args)
-        @connection.send_message(*args)
+        @subscription.send_message(*args)
       end
     end
   end

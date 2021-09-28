@@ -25,7 +25,7 @@ module Sass
         end
       end
 
-      def connect(observer)
+      def subscribe(observer)
         @mutex.synchronize do
           begin
             id = @compiler.add_observer(observer)
@@ -33,12 +33,12 @@ module Sass
             @compiler = Compiler.new
             id = @compiler.add_observer(observer)
           end
-          Connection.new @compiler, observer, id
+          Subscription.new @compiler, observer, id
         end
       end
 
-      # The {Connection} between {Compiler} and {Observer}.
-      class Connection
+      # The {Subscription} between {Compiler} and {Observer}.
+      class Subscription
         attr_reader :id
 
         def initialize(compiler, observer, id)
@@ -47,7 +47,7 @@ module Sass
           @id = id
         end
 
-        def close
+        def unsubscribe
           @compiler.delete_observer(@observer)
         end
 
@@ -56,7 +56,7 @@ module Sass
         end
       end
 
-      private_constant :Connection
+      private_constant :Subscription
     end
   end
 end
