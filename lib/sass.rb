@@ -51,9 +51,16 @@ module Sass
     private
 
     def instance
-      return @instance if defined?(@instance) && !@instance.closed?
-
-      @instance = Embedded.new
+      if @instance.nil?
+        at_exit do
+          @instance.close
+        end
+        @instance = Embedded.new
+      elsif @instance.closed?
+        @instance = Embedded.new
+      else
+        @instance
+      end
     end
   end
 end
