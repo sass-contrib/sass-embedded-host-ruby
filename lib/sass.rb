@@ -52,15 +52,14 @@ module Sass
 
     def instance
       if @instance.nil?
+        @instance = Embedded.new
         at_exit do
           @instance.close
         end
-        @instance = Embedded.new
       elsif @instance.closed?
         @instance = Embedded.new
-      else
-        @instance
       end
+      @instance
     end
   end
 end
