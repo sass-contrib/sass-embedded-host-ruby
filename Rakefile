@@ -1,20 +1,21 @@
 # frozen_string_literal: true
 
 require 'bundler/gem_tasks'
+require 'rake/testtask'
 require 'rubocop/rake_task'
 
 ENV['gem_push'] = ENV['CI'] || 'false'
 
-task 'default' => %w[rubocop test]
+task default: %i[compile rubocop test]
 
 desc 'Compile all the extensions'
-task 'compile' do
+task :compile do
   system('make', '-C', 'ext/sass')
 end
 
-desc 'Run all the tests'
-task 'test' => 'compile' do
-  Dir.glob('test/**/*_test.rb').sort.each { |f| require_relative f }
+Rake::TestTask.new do |t|
+  t.libs << 'test'
+  t.test_files = FileList['test/**/test_*.rb']
 end
 
 RuboCop::RakeTask.new
