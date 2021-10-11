@@ -29,7 +29,7 @@ module Sass
         @mutex.synchronize do
           begin
             id = @compiler.add_observer(observer)
-          rescue IOError
+          rescue ProtocolError
             @compiler = Compiler.new
             id = @compiler.add_observer(observer)
           end

@@ -41,7 +41,7 @@ module Sass
 
       def add_observer(*args)
         @observerable_mutex.synchronize do
-          raise IOError, 'half-closed compiler' if half_closed?
+          raise ProtocolError, 'half-closed compiler' if half_closed?
 
           super(*args)
 
