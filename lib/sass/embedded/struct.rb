@@ -18,5 +18,7 @@ module Sass
         to_h.to_s
       end
     end
+
+    private_constant :Struct
   end
 end

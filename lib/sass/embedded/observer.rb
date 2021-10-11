@@ -25,6 +25,7 @@ module Sass
 
       def update(error, message)
         @subscription.unsubscribe
+
         @mutex.synchronize do
           @error = error
           @message = message
