@@ -2,7 +2,7 @@
 
 require_relative 'lib/sass/embedded/version'
 
-Gem::Specification.new do |spec|
+Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.name          = 'sass-embedded'
   spec.version       = Sass::Embedded::VERSION
   spec.authors       = ['なつき']
