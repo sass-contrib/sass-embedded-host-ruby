@@ -30,7 +30,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
 
   spec.add_dependency 'google-protobuf', '~> 3.19.0'
 
-  spec.add_development_dependency 'minitest', '~> 5.14.4'
+  spec.add_development_dependency 'minitest', '~> 5.15.0'
   spec.add_development_dependency 'minitest-around', '~> 0.5.0'
   spec.add_development_dependency 'rake', '~> 13.0.6'
   spec.add_development_dependency 'rubocop', '~> 1.23.0'
