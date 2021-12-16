@@ -7,6 +7,31 @@ module Sass
     class ImporterTest < MiniTest::Test
       include TempFileTest
 
+      class MockImporter
+        def initialize(predicate, data)
+          @predicate = predicate
+          @data = data
+        end
+
+        def canonicalize(url)
+          Embedded::Util.file_uri_from_path(url) if @predicate.call(url)
+        end
+
+        def load(canonical_url)
+          ImporterResult.new(@data, :scss) if @predicate.call(canonical_url)
+        end
+      end
+
+      class MockFileImporter
+        def initialize(find)
+          @find = find
+        end
+
+        def find_file_url(url, from_import:) # rubocop:disable Lint/UnusedMethodArgument
+          @find.call(url)
+        end
+      end
+
       def setup
         @embedded = Embedded.new
       end
@@ -15,142 +40,63 @@ module Sass
         @embedded.close
       end
 
-      def render(data, importer)
-        @embedded.render(data: data, importer: importer).css
-      end
+      def render(data, importer); end
 
       def test_custom_importer_works
-        temp_file('fonts.scss', '.font { color: $var1; }')
-
         data = <<~SCSS
           @import "styles";
-          @import "fonts";
         SCSS
 
-        output = render(data, [
-                          lambda { |url, _prev|
-                            { contents: '$var1: #000; .hi { color: $var1; }' } if /styles/.match?(url)
-                          }
-                        ])
+        importer = MockImporter.new(->(url) { /styles/.match?(url) }, '$var1: #000; .hi { color: $var1; }')
+        output = @embedded.compile_string(data, url: Embedded::Util.file_uri_from_path('test.scss'),
+                                                importer: importer).css
 
         assert_equal <<~CSS.chomp, output
           .hi {
-            color: #000;
-          }
-
-          .font {
             color: #000;
           }
         CSS
       end
 
       def test_custom_importer_works_with_empty_contents
-        output = render("@import 'fake.scss';", [
-                          lambda { |_url, _prev|
-                            { contents: '' }
-                          }
-                        ])
+        importer = MockImporter.new(->(_) { true }, '')
+        output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Util.file_uri_from_path('test.scss'),
+                                                                  importer: importer).css
 
         assert_equal '', output
       end
 
       def test_custom_importer_works_with_file
-        temp_file('test.scss', '.test { color: #000; }')
+        temp_file('fonts.scss', '.font { color: #000; }')
 
-        output = render("@import 'fake.scss';", [
-                          lambda { |_url, _prev|
-                            { file: File.absolute_path('test.scss') }
-                          }
-                        ])
-
-        assert_equal <<~CSS.chomp, output
-          .test {
-            color: #000;
-          }
-        CSS
-      end
-
-      def test_custom_importer_comes_after_local_file
-        temp_file('test.scss', '.test { color: #000; }')
-
-        output = render("@import 'test.scss';", [
-                          lambda { |_url, _prev|
-                            return { contents: '.h1 { color: #fff; }' }
-                          }
-                        ])
+        importer = MockFileImporter.new(lambda { |url|
+          Embedded::Util.file_uri_from_path(File.absolute_path('fonts.scss')) if File.basename(url) == 'fake.scss'
+        })
+        output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Util.file_uri_from_path('test.scss'),
+                                                                  importers: [importer]).css
 
         assert_equal <<~CSS.chomp, output
-          .test {
+          .font {
             color: #000;
           }
         CSS
       end
 
       def test_custom_importer_that_does_not_resolve
-        assert_raises(RenderError) do
-          render("@import 'test.scss';", [
-                   lambda { |_url, _prev|
-                   }
-                 ])
-        end
-      end
+        importer = MockImporter.new(->(_) { false }, nil)
 
-      def test_custom_importer_that_returns_error
-        assert_raises(RenderError) do
-          render("@import 'test.scss';", [
-                   lambda { |_url, _prev|
-                     IOError.new 'test error'
-                   }
-                 ])
+        assert_raises(CompileError) do
+          @embedded.compile_string("@import 'test.scss';", url: Embedded::Util.file_uri_from_path('test.scss'),
+                                                           importer: importer).css
         end
       end
 
       def test_custom_importer_that_raises_error
-        assert_raises(RenderError) do
-          render("@import 'test.scss';", [
-                   lambda { |_url, _prev|
-                     raise IOError, 'test error'
-                   }
-                 ])
+        importer = MockImporter.new(->(_) { raise IOError, 'test error' }, nil)
+
+        assert_raises(CompileError) do
+          @embedded.compile_string("@import 'test.scss';", importer: importer).css
         end
-      end
-
-      def test_parent_path_is_accessible
-        output = @embedded.render(data: "@import 'parent.scss';",
-                                  file: 'import-parent-filename.scss',
-                                  importer: [
-                                    lambda { |_url, prev|
-                                      { contents: ".#{prev} { color: red; }" }
-                                    }
-                                  ]).css
-
-        assert_equal <<~CSS.chomp, output
-          .import-parent-filename.scss {
-            color: red;
-          }
-        CSS
-      end
-
-      def test_call_embedded_importer
-        output = @embedded.render(data: "@import 'parent.scss';",
-                                  importer: [
-                                    lambda { |_url, _prev|
-                                      {
-                                        contents: @embedded.render(data: "@import 'parent-parent.scss'",
-                                                                   importer: [
-                                                                     lambda { |_url, _prev|
-                                                                       { contents: 'h1 { color: black; }' }
-                                                                     }
-                                                                   ]).css
-                                      }
-                                    }
-                                  ]).css
-
-        assert_equal <<~CSS.chomp, output
-          h1 {
-            color: black;
-          }
-        CSS
       end
     end
   end

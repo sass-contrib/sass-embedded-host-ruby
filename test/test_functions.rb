@@ -16,162 +16,162 @@ module Sass
       # rubocop:disable Layout/LineLength
 
       def render(sass)
-        @embedded.render(data: sass,
-                         functions: {
-                           'javascript_path($path)': lambda { |path|
-                             path.string.text = "/js/#{path.string.text}"
-                             path
-                           },
-                           'stylesheet_path($path)': lambda { |path|
-                                                       path.string.text = "/css/#{path.string.text}"
-                                                       path
-                                                     },
-                           'sass_return_path($path)': lambda { |path|
-                                                        path
-                                                      },
-                           'no_return_path($path)': lambda { |_path|
-                                                      EmbeddedProtocol::Value.new(
-                                                        singleton: EmbeddedProtocol::SingletonValue::NULL
-                                                      )
-                                                    },
-                           'optional_arguments($path, $optional: null)': lambda { |path, optional|
-                                                                           EmbeddedProtocol::Value.new(
-                                                                             string: EmbeddedProtocol::Value::String.new(
-                                                                               text: "#{path.string.text}/#{optional.singleton == :NULL ? 'bar' : optional.string.text}",
-                                                                               quoted: true
-                                                                             )
-                                                                           )
-                                                                         },
-                           'function_that_raises_errors()': lambda {
-                                                              raise StandardError,
-                                                                    'Intentional wrong thing happened somewhere inside the custom function'
-                                                            },
-                           'nice_color_argument($color)': lambda { |color|
-                                                            color
-                                                          },
-                           'returns_a_color()': lambda {
-                                                  EmbeddedProtocol::Value.new(
-                                                    rgb_color: EmbeddedProtocol::Value::RgbColor.new(
-                                                      red: 0,
-                                                      green: 0,
-                                                      blue: 0,
-                                                      alpha: 1
-                                                    )
-                                                  )
-                                                },
-                           'returns_a_number()': lambda {
-                                                   EmbeddedProtocol::Value.new(
-                                                     number: EmbeddedProtocol::Value::Number.new(
-                                                       value: -312,
-                                                       numerators: ['rem']
-                                                     )
-                                                   )
-                                                 },
-                           'returns_a_bool()': lambda {
-                                                 EmbeddedProtocol::Value.new(
-                                                   singleton: EmbeddedProtocol::SingletonValue::TRUE
-                                                 )
-                                               },
-                           'inspect_bool($argument)': lambda { |argument|
-                                                        unless argument&.singleton == :TRUE || argument.singleton == :FALSE
-                                                          raise StandardError,
-                                                                'passed value is not a EmbeddedProtocol::SingletonValue::TRUE or EmbeddedProtocol::SingletonValue::FALSE'
-                                                        end
-
-                                                        argument
-                                                      },
-                           'inspect_number($argument)': lambda { |argument|
-                                                          unless argument&.number.is_a? EmbeddedProtocol::Value::Number
-                                                            raise StandardError,
-                                                                  'passed value is not a EmbeddedProtocol::Value::Number'
-                                                          end
-
-                                                          argument
-                                                        },
-                           'inspect_map($argument)': lambda { |argument|
-                                                       unless argument&.map.is_a? EmbeddedProtocol::Value::Map
-                                                         raise StandardError,
-                                                               'passed value is not a EmbeddedProtocol::Value::Map'
-                                                       end
-
-                                                       argument
-                                                     },
-                           'inspect_list($argument)': lambda { |argument|
-                                                        unless argument&.list.is_a? EmbeddedProtocol::Value::List
-                                                          raise StandardError,
-                                                                'passed value is not a EmbeddedProtocol::Value::List'
-                                                        end
-
-                                                        argument
-                                                      },
-                           'inspect_argument_list($args...)': lambda { |args|
-                                                                unless args.argument_list.is_a? EmbeddedProtocol::Value::ArgumentList
-                                                                  raise StandardError,
-                                                                        'passed value is not a EmbeddedProtocol::Value::ArgumentList'
-                                                                end
-
-                                                                args
+        @embedded.compile_string(sass,
+                                 functions: {
+                                   'javascript_path($path)': lambda { |path|
+                                     path.string.text = "/js/#{path.string.text}"
+                                     path
+                                   },
+                                   'stylesheet_path($path)': lambda { |path|
+                                                               path.string.text = "/css/#{path.string.text}"
+                                                               path
+                                                             },
+                                   'sass_return_path($path)': lambda { |path|
+                                                                path
                                                               },
-                           'returns_sass_value()': lambda {
-                                                     EmbeddedProtocol::Value.new(
-                                                       rgb_color: EmbeddedProtocol::Value::RgbColor.new(
-                                                         red: 0,
-                                                         green: 0,
-                                                         blue: 0,
-                                                         alpha: 1
-                                                       )
-                                                     )
-                                                   },
-                           'returns_sass_map()': lambda {
-                                                   EmbeddedProtocol::Value.new(
-                                                     map: EmbeddedProtocol::Value::Map.new(
-                                                       entries: [
-                                                         EmbeddedProtocol::Value::Map::Entry.new(
-                                                           key: EmbeddedProtocol::Value.new(
-                                                             string: EmbeddedProtocol::Value::String.new(
-                                                               text: 'color',
-                                                               quoted: true
-                                                             )
-                                                           ),
-                                                           value: EmbeddedProtocol::Value.new(
-                                                             rgb_color: EmbeddedProtocol::Value::RgbColor.new(
-                                                               red: 0,
-                                                               green: 0,
-                                                               blue: 0,
-                                                               alpha: 1
-                                                             )
-                                                           )
-                                                         )
-                                                       ]
-                                                     )
-                                                   )
-                                                 },
-                           'returns_sass_list()': lambda {
-                                                    EmbeddedProtocol::Value.new(
-                                                      list: EmbeddedProtocol::Value::List.new(
-                                                        separator: EmbeddedProtocol::ListSeparator::COMMA,
-                                                        has_brackets: true,
-                                                        contents: [
+                                   'no_return_path($path)': lambda { |_path|
+                                                              EmbeddedProtocol::Value.new(
+                                                                singleton: EmbeddedProtocol::SingletonValue::NULL
+                                                              )
+                                                            },
+                                   'optional_arguments($path, $optional: null)': lambda { |path, optional|
+                                                                                   EmbeddedProtocol::Value.new(
+                                                                                     string: EmbeddedProtocol::Value::String.new(
+                                                                                       text: "#{path.string.text}/#{optional.singleton == :NULL ? 'bar' : optional.string.text}",
+                                                                                       quoted: true
+                                                                                     )
+                                                                                   )
+                                                                                 },
+                                   'function_that_raises_errors()': lambda {
+                                                                      raise StandardError,
+                                                                            'Intentional wrong thing happened somewhere inside the custom function'
+                                                                    },
+                                   'nice_color_argument($color)': lambda { |color|
+                                                                    color
+                                                                  },
+                                   'returns_a_color()': lambda {
                                                           EmbeddedProtocol::Value.new(
-                                                            number: EmbeddedProtocol::Value::Number.new(
-                                                              value: 10
-                                                            )
-                                                          ),
-                                                          EmbeddedProtocol::Value.new(
-                                                            number: EmbeddedProtocol::Value::Number.new(
-                                                              value: 20
-                                                            )
-                                                          ),
-                                                          EmbeddedProtocol::Value.new(
-                                                            number: EmbeddedProtocol::Value::Number.new(
-                                                              value: 30
+                                                            rgb_color: EmbeddedProtocol::Value::RgbColor.new(
+                                                              red: 0,
+                                                              green: 0,
+                                                              blue: 0,
+                                                              alpha: 1
                                                             )
                                                           )
-                                                        ]
-                                                      )
-                                                    )
-                                                  }
-                         }).css
+                                                        },
+                                   'returns_a_number()': lambda {
+                                                           EmbeddedProtocol::Value.new(
+                                                             number: EmbeddedProtocol::Value::Number.new(
+                                                               value: -312,
+                                                               numerators: ['rem']
+                                                             )
+                                                           )
+                                                         },
+                                   'returns_a_bool()': lambda {
+                                                         EmbeddedProtocol::Value.new(
+                                                           singleton: EmbeddedProtocol::SingletonValue::TRUE
+                                                         )
+                                                       },
+                                   'inspect_bool($argument)': lambda { |argument|
+                                                                unless argument&.singleton == :TRUE || argument.singleton == :FALSE
+                                                                  raise StandardError,
+                                                                        'passed value is not a EmbeddedProtocol::SingletonValue::TRUE or EmbeddedProtocol::SingletonValue::FALSE'
+                                                                end
+
+                                                                argument
+                                                              },
+                                   'inspect_number($argument)': lambda { |argument|
+                                                                  unless argument&.number.is_a? EmbeddedProtocol::Value::Number
+                                                                    raise StandardError,
+                                                                          'passed value is not a EmbeddedProtocol::Value::Number'
+                                                                  end
+
+                                                                  argument
+                                                                },
+                                   'inspect_map($argument)': lambda { |argument|
+                                                               unless argument&.map.is_a? EmbeddedProtocol::Value::Map
+                                                                 raise StandardError,
+                                                                       'passed value is not a EmbeddedProtocol::Value::Map'
+                                                               end
+
+                                                               argument
+                                                             },
+                                   'inspect_list($argument)': lambda { |argument|
+                                                                unless argument&.list.is_a? EmbeddedProtocol::Value::List
+                                                                  raise StandardError,
+                                                                        'passed value is not a EmbeddedProtocol::Value::List'
+                                                                end
+
+                                                                argument
+                                                              },
+                                   'inspect_argument_list($args...)': lambda { |args|
+                                                                        unless args.argument_list.is_a? EmbeddedProtocol::Value::ArgumentList
+                                                                          raise StandardError,
+                                                                                'passed value is not a EmbeddedProtocol::Value::ArgumentList'
+                                                                        end
+
+                                                                        args
+                                                                      },
+                                   'returns_sass_value()': lambda {
+                                                             EmbeddedProtocol::Value.new(
+                                                               rgb_color: EmbeddedProtocol::Value::RgbColor.new(
+                                                                 red: 0,
+                                                                 green: 0,
+                                                                 blue: 0,
+                                                                 alpha: 1
+                                                               )
+                                                             )
+                                                           },
+                                   'returns_sass_map()': lambda {
+                                                           EmbeddedProtocol::Value.new(
+                                                             map: EmbeddedProtocol::Value::Map.new(
+                                                               entries: [
+                                                                 EmbeddedProtocol::Value::Map::Entry.new(
+                                                                   key: EmbeddedProtocol::Value.new(
+                                                                     string: EmbeddedProtocol::Value::String.new(
+                                                                       text: 'color',
+                                                                       quoted: true
+                                                                     )
+                                                                   ),
+                                                                   value: EmbeddedProtocol::Value.new(
+                                                                     rgb_color: EmbeddedProtocol::Value::RgbColor.new(
+                                                                       red: 0,
+                                                                       green: 0,
+                                                                       blue: 0,
+                                                                       alpha: 1
+                                                                     )
+                                                                   )
+                                                                 )
+                                                               ]
+                                                             )
+                                                           )
+                                                         },
+                                   'returns_sass_list()': lambda {
+                                                            EmbeddedProtocol::Value.new(
+                                                              list: EmbeddedProtocol::Value::List.new(
+                                                                separator: EmbeddedProtocol::ListSeparator::COMMA,
+                                                                has_brackets: true,
+                                                                contents: [
+                                                                  EmbeddedProtocol::Value.new(
+                                                                    number: EmbeddedProtocol::Value::Number.new(
+                                                                      value: 10
+                                                                    )
+                                                                  ),
+                                                                  EmbeddedProtocol::Value.new(
+                                                                    number: EmbeddedProtocol::Value::Number.new(
+                                                                      value: 20
+                                                                    )
+                                                                  ),
+                                                                  EmbeddedProtocol::Value.new(
+                                                                    number: EmbeddedProtocol::Value::Number.new(
+                                                                      value: 30
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                            )
+                                                          }
+                                 }).css
       end
 
       # rubocop:enable Layout/LineLength
@@ -281,7 +281,7 @@ module Sass
       end
 
       def test_function_with_error
-        assert_raises(RenderError) do
+        assert_raises(CompileError) do
           render('div {url: function_that_raises_errors();}')
         end
       end
@@ -359,17 +359,17 @@ module Sass
           threads = []
           10.times do |i|
             threads << Thread.new(i) do |id|
-              output = @embedded.render(data: 'div { url: test-function() }',
-                                        functions: {
-                                          'test_function()': lambda {
-                                            EmbeddedProtocol::Value.new(
-                                              string: EmbeddedProtocol::Value::String.new(
-                                                text: "thread-#{id}",
-                                                quoted: true
-                                              )
-                                            )
-                                          }
-                                        }).css
+              output = @embedded.compile_string('div { url: test-function() }',
+                                                functions: {
+                                                  'test_function()': lambda {
+                                                    EmbeddedProtocol::Value.new(
+                                                      string: EmbeddedProtocol::Value::String.new(
+                                                        text: "thread-#{id}",
+                                                        quoted: true
+                                                      )
+                                                    )
+                                                  }
+                                                }).css
               assert_match(/url: "thread-#{id}"/, output)
             end
           end
@@ -378,29 +378,29 @@ module Sass
       end
 
       def test_pass_custom_functions_as_a_parameter
-        output = @embedded.render(data: 'div { url: test-function(); }',
-                                  functions: {
-                                    'test_function()': lambda {
-                                      EmbeddedProtocol::Value.new(
-                                        string: EmbeddedProtocol::Value::String.new(
-                                          text: 'custom_function',
-                                          quoted: true
-                                        )
-                                      )
-                                    }
-                                  }).css
+        output = @embedded.compile_string('div { url: test-function(); }',
+                                          functions: {
+                                            'test_function()': lambda {
+                                              EmbeddedProtocol::Value.new(
+                                                string: EmbeddedProtocol::Value::String.new(
+                                                  text: 'custom_function',
+                                                  quoted: true
+                                                )
+                                              )
+                                            }
+                                          }).css
 
         assert_match(/custom_function/, output)
       end
 
       def test_pass_incompatible_type_to_custom_functions
-        assert_raises(RenderError) do
-          @embedded.render(data: 'div { url: test-function(); }',
-                           functions: {
-                             'test_function()': lambda {
-                               Class.new
-                             }
-                           }).css
+        assert_raises(CompileError) do
+          @embedded.compile_string('div { url: test-function(); }',
+                                   functions: {
+                                     'test_function()': lambda {
+                                       Class.new
+                                     }
+                                   }).css
         end
       end
 

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'helper'
-require_relative '../lib/sass'
+require_relative '../../lib/sass'
 
 module Sass
   class Embedded
-    class RenderTest < MiniTest::Test
+    class LegacyRenderTest < MiniTest::Test
       def test_sass_render
         assert_equal '', ::Sass.render(data: '').css
 

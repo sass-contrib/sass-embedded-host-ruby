@@ -4,7 +4,7 @@ require_relative 'helper'
 
 module Sass
   class Embedded
-    class OutputTest < MiniTest::Test
+    class LegacyOutputTest < MiniTest::Test
       include TempFileTest
 
       def setup

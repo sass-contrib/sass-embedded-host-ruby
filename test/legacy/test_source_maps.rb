@@ -4,7 +4,7 @@ require_relative 'helper'
 
 module Sass
   class Embedded
-    class SourceMapsTest < MiniTest::Test
+    class LegacySourceMapsTest < MiniTest::Test
       include TempFileTest
 
       def setup

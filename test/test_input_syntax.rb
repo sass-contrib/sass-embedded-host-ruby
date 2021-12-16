@@ -28,15 +28,15 @@ module Sass
           }
         CSS
 
-        assert_raises(RenderError) do
-          @embedded.render(data: sass)
+        assert_raises(CompileError) do
+          @embedded.compile_string(sass)
         end
 
-        assert_raises(RenderError) do
-          @embedded.render(data: sass, indented_syntax: false)
+        assert_raises(CompileError) do
+          @embedded.compile_string(sass, syntax: :scss)
         end
 
-        assert_equal css, @embedded.render(data: sass, indented_syntax: true).css
+        assert_equal css, @embedded.compile_string(sass, syntax: :indented).css
       end
 
       def test_input_file_with_indented_syntax
@@ -54,9 +54,7 @@ module Sass
 
         temp_file('style.sass', sass)
 
-        assert_equal css, @embedded.render(file: 'style.sass').css
-        assert_equal css, @embedded.render(file: 'style.sass', indented_syntax: true).css
-        assert_equal css, @embedded.render(file: 'style.sass', indented_syntax: false).css
+        assert_equal css, @embedded.compile('style.sass').css
       end
     end
   end

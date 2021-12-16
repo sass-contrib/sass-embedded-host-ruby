@@ -2,6 +2,9 @@
 
 require 'base64'
 require 'json'
+require_relative 'compile_error'
+require_relative 'compile_result'
+require_relative 'importer_result'
 require_relative 'embedded/channel'
 require_relative 'embedded/compile_context'
 require_relative 'embedded/error'
@@ -9,6 +12,7 @@ require_relative 'embedded/result'
 require_relative 'embedded/util'
 require_relative 'embedded/version'
 require_relative 'embedded/version_context'
+require_relative 'logger'
 
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
@@ -16,10 +20,11 @@ module Sass
   #
   # @example
   #   embedded = Sass::Embedded.new
-  #   result = embedded.render(data: 'h1 { font-size: 40px; }')
-  #   result = embedded.render(file: 'style.css')
+  #   result = embedded.compile_string('h1 { font-size: 40px; }')
+  #   result = embedded.compile('style.scss')
   #   embedded.close
   class Embedded
+    # @deprecated
     def self.include_paths
       @include_paths ||= if ENV['SASS_PATH']
                            ENV['SASS_PATH'].split(File::PATH_SEPARATOR)
@@ -32,6 +37,96 @@ module Sass
       @channel = Channel.new
     end
 
+    # The {Embedded#compile} method.
+    #
+    # @return [CompileResult]
+    # @raise [CompileError]
+    # @raise [ProtocolError]
+    def compile(path,
+                load_paths: [],
+
+                source_map: false,
+                style: :expanded,
+
+                functions: {},
+                importers: [],
+
+                alert_ascii: false,
+                alert_color: $stderr.tty?,
+                logger: nil,
+                quiet_deps: false,
+                verbose: false)
+
+      raise ArgumentError, 'path must be set' if path.nil?
+
+      message = CompileContext.new(@channel,
+                                   path: path,
+                                   source: nil,
+                                   importer: nil,
+                                   load_paths: load_paths,
+                                   syntax: nil,
+                                   url: nil,
+                                   source_map: source_map,
+                                   style: style,
+                                   functions: functions,
+                                   importers: importers,
+                                   alert_color: alert_color,
+                                   alert_ascii: alert_ascii,
+                                   logger: logger,
+                                   quiet_deps: quiet_deps,
+                                   verbose: verbose).receive_message
+
+      raise CompileError.from_proto(message.failure) if message.failure
+
+      CompileResult.from_proto(message.success)
+    end
+
+    # The {Embedded#compile_string} method.
+    #
+    # @return [CompileResult]
+    # @raise [CompileError]
+    # @raise [ProtocolError]
+    def compile_string(source,
+                       importer: nil,
+                       load_paths: [],
+                       syntax: :scss,
+                       url: nil,
+
+                       source_map: false,
+                       style: :expanded,
+
+                       functions: {},
+                       importers: [],
+
+                       alert_ascii: false,
+                       alert_color: $stderr.tty?,
+                       logger: nil,
+                       quiet_deps: false,
+                       verbose: false)
+      raise ArgumentError, 'source must be set' if source.nil?
+
+      message = CompileContext.new(@channel,
+                                   path: nil,
+                                   source: source,
+                                   importer: importer,
+                                   load_paths: load_paths,
+                                   syntax: syntax,
+                                   url: url,
+                                   source_map: source_map,
+                                   style: style,
+                                   functions: functions,
+                                   importers: importers,
+                                   alert_color: alert_color,
+                                   alert_ascii: alert_ascii,
+                                   logger: logger,
+                                   quiet_deps: quiet_deps,
+                                   verbose: verbose).receive_message
+
+      raise CompileError.from_proto(message.failure) if message.failure
+
+      CompileResult.from_proto(message.success)
+    end
+
     # The {Embedded#info} method.
     #
     # @raise [ProtocolError]
@@ -39,6 +134,7 @@ module Sass
       @info ||= VersionContext.new(@channel).receive_message
     end
 
+    # @deprecated
     # The {Embedded#render} method.
     #
     # See {file:README.md#options} for supported options.
@@ -64,39 +160,56 @@ module Sass
                importer: [])
       start = Util.now
 
+      raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
+
       indent_type = parse_indent_type(indent_type)
       indent_width = parse_indent_width(indent_width)
       linefeed = parse_linefeed(linefeed)
 
-      message = CompileContext.new(@channel,
-                                   data: data,
-                                   file: file,
-                                   indented_syntax: indented_syntax,
-                                   include_paths: include_paths,
-                                   output_style: output_style,
-                                   source_map: source_map,
-                                   out_file: out_file,
-                                   functions: functions,
-                                   importer: importer).receive_message
+      load_paths = include_paths + Embedded.include_paths
 
-      if message.failure
+      source_map_option = source_map.is_a?(String) || (source_map == true && !out_file.nil?)
+
+      begin
+        compile_result = if data
+                           compile_string(data, load_paths: load_paths,
+                                                syntax: indented_syntax ? :indented : :scss,
+                                                url: unless file.nil?
+                                                       Util.file_uri_from_path(File.absolute_path(file))
+                                                     end,
+                                                source_map: source_map_option,
+                                                style: output_style,
+                                                functions: functions,
+                                                importers: importer.map do |legacy_importer|
+                                                             LegacyImporter.new(legacy_importer, file)
+                                                           end)
+                         else
+                           compile(file, load_paths: load_paths,
+                                         source_map: source_map_option,
+                                         style: output_style,
+                                         functions: functions,
+                                         importers: importer.map do |legacy_importer|
+                                                      LegacyImporter.new(legacy_importer, file)
+                                                    end)
+                         end
+      rescue CompileError => e
         raise RenderError.new(
-          message.failure.message,
-          message.failure.formatted,
-          if message.failure.span.nil?
+          e.sass_message,
+          e.message,
+          if e.span.nil?
             nil
-          elsif message.failure.span.url == ''
+          elsif e.span.url.nil?
             'stdin'
           else
-            Util.path_from_file_uri(message.failure.span.url)
+            Util.path_from_file_uri(e.span.url)
           end,
-          message.failure.span ? message.failure.span.start.line + 1 : nil,
-          message.failure.span ? message.failure.span.start.column + 1 : nil,
+          e.span.start.line + 1,
+          e.span.start.column + 1,
           1
         )
       end
 
-      map, source_map = post_process_map(map: message.success.source_map,
+      map, source_map = post_process_map(map: compile_result.source_map,
                                          data: data,
                                          file: file,
                                          out_file: out_file,
@@ -104,7 +217,7 @@ module Sass
                                          source_map_contents: source_map_contents,
                                          source_map_root: source_map_root)
 
-      css = post_process_css(css: message.success.css,
+      css = post_process_css(css: compile_result.css,
                              indent_type: indent_type,
                              indent_width: indent_width,
                              linefeed: linefeed,
@@ -131,6 +244,7 @@ module Sass
 
     private
 
+    # @deprecated
     def post_process_map(map:,
                          data:,
                          file:,
@@ -188,6 +302,7 @@ module Sass
       [-JSON.generate(map_data), source_map_path]
     end
 
+    # @deprecated
     def post_process_css(css:,
                          indent_type:,
                          indent_width:,
@@ -220,6 +335,7 @@ module Sass
       -css
     end
 
+    # @deprecated
     def parse_indent_type(indent_type)
       case indent_type.to_sym
       when :space
@@ -231,6 +347,7 @@ module Sass
       end
     end
 
+    # @deprecated
     def parse_indent_width(indent_width)
       raise ArgumentError, 'indent_width must be an integer' unless indent_width.is_a? Integer
       raise RangeError, 'indent_width must be in between 0 and 10 (inclusive)' unless indent_width.between? 0, 10
@@ -238,6 +355,7 @@ module Sass
       indent_width
     end
 
+    # @deprecated
     def parse_linefeed(linefeed)
       case linefeed.to_sym
       when :lf
@@ -252,5 +370,39 @@ module Sass
         raise ArgumentError, 'linefeed must be one of :lf, :lfcr, :cr, :crlf'
       end
     end
+
+    # @deprecated
+    # The {LegacyImporter} for {Embedded#render}.
+    class LegacyImporter
+      def initialize(importer, file)
+        super()
+        @file = file
+        @importer = importer
+        @importer_results = {}
+      end
+
+      def canonicalize(url)
+        canonical_url = Util.file_uri_from_path(File.absolute_path(url, (@file.nil? ? 'stdin' : @file)))
+
+        result = @importer.call canonical_url, @file
+
+        raise result if result.is_a? StandardError
+
+        if result&.key? :contents
+          @importer_results[canonical_url] = ImporterResult.new(result[:contents], :scss)
+          canonical_url
+        elsif result&.key? :file
+          canonical_url = Util.file_uri_from_path(File.absolute_path(result[:file]))
+          @importer_results[canonical_url] = ImporterResult.new(File.read(result[:file]), :scss)
+          canonical_url
+        end
+      end
+
+      def load(canonical_url)
+        @importer_results[canonical_url]
+      end
+    end
+
+    private_constant :LegacyImporter
   end
 end

@@ -4,7 +4,7 @@ require_relative 'helper'
 
 module Sass
   class Embedded
-    class IncludePathsTest < MiniTest::Test
+    class LegacyIncludePathsTest < MiniTest::Test
       include TempFileTest
 
       def setup

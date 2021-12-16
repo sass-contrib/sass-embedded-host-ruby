@@ -4,7 +4,7 @@ require_relative 'helper'
 
 module Sass
   class Embedded
-    class ConcurrencyTest < MiniTest::Test
+    class LegacyConcurrencyTest < MiniTest::Test
       include TempFileTest
 
       def setup
@@ -24,7 +24,7 @@ module Sass
           threads = []
           10.times do |i|
             threads << Thread.new(i) do |id|
-              output = @embedded.compile_string("div { width: #{id} }").css
+              output = @embedded.render(data: "div { width: #{id} }").css
               assert_match(/#{id}/, output)
             end
           end
