@@ -19,9 +19,7 @@ module TempFileTest
   end
 
   def temp_file(filename, contents)
-    File.open(filename, 'w') do |file|
-      file.write(contents)
-    end
+    File.write(filename, contents)
   end
 
   def temp_dir(directory)

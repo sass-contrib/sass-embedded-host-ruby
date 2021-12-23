@@ -17,9 +17,9 @@ module Sass
       ONEOF_MESSAGE = EmbeddedProtocol::InboundMessage
                       .descriptor
                       .lookup_oneof('message')
-                      .collect do |field_descriptor|
+                      .to_h do |field_descriptor|
         [field_descriptor.subtype, field_descriptor.name]
-      end.to_h
+      end
 
       private_constant :ONEOF_MESSAGE
 
