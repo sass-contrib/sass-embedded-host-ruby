@@ -62,9 +62,7 @@ module Sass
         elsif uri.respond_to? :open
           puts "curl -fsSLo #{path} -- #{uri}"
           uri.open do |source|
-            File.open(path, 'wb') do |destination|
-              destination.write source.read
-            end
+            File.binwrite(path, source.read)
           end
         else
           raise
