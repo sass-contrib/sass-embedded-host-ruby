@@ -12,7 +12,7 @@ module Sass
     # See {Embedded#compile} for supported options.
     #
     # @example
-    #   Sass.compile('style.css')
+    #   Sass.compile('style.scss')
     # @return [CompileResult]
     # @raise [CompileError]
     # @raise [ProtocolError]

@@ -16,31 +16,11 @@ gem install sass-embedded
 ## Usage
 
 ``` ruby
-require "sass"
+require 'sass'
 
-Sass.render(file: "style.scss")
+Sass.compile('style.scss')
+Sass.compile_string('h1 { font-size: 40px; }')
 ```
-
-## Options
-
-`Sass.render(**kwargs)` supports the following options:
-
-- [`data`](https://sass-lang.com/documentation/js-api#data)
-- [`file`](https://sass-lang.com/documentation/js-api#file)
-- [`indented_syntax`](https://sass-lang.com/documentation/js-api#indentedsyntax)
-- [`include_paths`](https://sass-lang.com/documentation/js-api#includepaths)
-- [`output_style`](https://sass-lang.com/documentation/js-api#outputstyle)
-- [`indent_type`](https://sass-lang.com/documentation/js-api#indenttype)
-- [`indent_width`](https://sass-lang.com/documentation/js-api#indentwidth)
-- [`linefeed`](https://sass-lang.com/documentation/js-api#linefeed)
-- [`source_map`](https://sass-lang.com/documentation/js-api#sourcemap)
-- [`out_file`](https://sass-lang.com/documentation/js-api#outfile)
-- [`omit_source_map_url`](https://sass-lang.com/documentation/js-api#omitsourcemapurl)
-- [`source_map_contents`](https://sass-lang.com/documentation/js-api#sourcemapcontents)
-- [`source_map_embed`](https://sass-lang.com/documentation/js-api#sourcemapembed)
-- [`source_map_root`](https://sass-lang.com/documentation/js-api#sourcemaproot)
-- [`functions`](https://sass-lang.com/documentation/js-api#functions)
-- [`importer`](https://sass-lang.com/documentation/js-api#importer)
 
 ---
 
