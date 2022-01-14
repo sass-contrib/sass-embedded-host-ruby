@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'base64'
+require 'json'
+
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
   # its own {Channel}.

@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-require 'base64'
-require 'json'
 require_relative 'compile_error'
 require_relative 'compile_result'
 require_relative 'importer_result'
 require_relative 'embedded/channel'
 require_relative 'embedded/compile_context'
-require_relative 'embedded/protocol_error'
 require_relative 'embedded/render'
-require_relative 'embedded/util'
 require_relative 'embedded/version'
 require_relative 'embedded/version_context'
 require_relative 'logger'
