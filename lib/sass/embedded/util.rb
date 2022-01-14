@@ -20,10 +20,6 @@ module Sass
       def path_from_file_uri(file_uri)
         URI_PARSER.unescape(file_uri[(Platform::OS == 'windows' ? 8 : 7)..])
       end
-
-      def relative_path(from, to)
-        Pathname.new(File.absolute_path(to)).relative_path_from(Pathname.new(File.absolute_path(from))).to_s
-      end
     end
   end
 end

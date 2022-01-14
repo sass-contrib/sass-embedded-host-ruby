@@ -193,7 +193,7 @@ module Sass
       source_map_dir = File.dirname(source_map_path)
 
       if out_file
-        map_data['file'] = Util.relative_path(source_map_dir, out_file)
+        map_data['file'] = relative_path(source_map_dir, out_file)
       elsif file
         ext = File.extname(file)
         map_data['file'] = "#{file[0..(ext.empty? ? -1 : -ext.length - 1)]}.css"
@@ -218,7 +218,7 @@ module Sass
                       end
                     end
           map_data['sourcesContent'].push(content) if source_map_contents
-          Util.relative_path(source_map_dir, path)
+          relative_path(source_map_dir, path)
         else
           map_data['sourcesContent'].push(nil) if source_map_contents
           source
@@ -251,7 +251,7 @@ module Sass
         url = if source_map_embed
                 "data:application/json;base64,#{Base64.strict_encode64(map)}"
               elsif out_file
-                Util.relative_path(File.dirname(out_file), source_map)
+                relative_path(File.dirname(out_file), source_map)
               else
                 source_map
               end
@@ -300,6 +300,11 @@ module Sass
     # @deprecated
     def now
       (Time.now.to_f * 1000).to_i
+    end
+
+    # @deprecated
+    def relative_path(from, to)
+      Pathname.new(File.absolute_path(to)).relative_path_from(Pathname.new(File.absolute_path(from))).to_s
     end
 
     # @deprecated
