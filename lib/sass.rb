@@ -65,7 +65,7 @@ module Sass
     # The global {.render} method. This instantiates a global {Embedded} instance
     # and calls {Embedded#render}.
     #
-    # See {file:README.md#options} for supported options.
+    # See {Embedded#render} for supported options.
     #
     # @example
     #   Sass.render(data: 'h1 { font-size: 40px; }')
