@@ -24,11 +24,6 @@ module Sass
       def relative_path(from, to)
         Pathname.new(File.absolute_path(to)).relative_path_from(Pathname.new(File.absolute_path(from))).to_s
       end
-
-      # @deprecated
-      def now
-        (Time.now.to_f * 1000).to_i
-      end
     end
   end
 end

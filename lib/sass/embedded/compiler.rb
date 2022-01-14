@@ -4,7 +4,7 @@ require 'observer'
 require 'open3'
 require_relative '../embedded_protocol'
 require_relative 'compiler/path'
-require_relative 'error'
+require_relative 'protocol_error'
 
 module Sass
   class Embedded
