@@ -5,7 +5,7 @@ module Sass
   module Logger
     # The instance of a slient {Logger}.
     def self.slient
-      @slient ||= SlientLogger.new
+      @slient ||= Slient.new
     end
 
     # The slient {Logger}.

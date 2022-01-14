@@ -109,20 +109,20 @@ module Sass
 
       def log(event)
         case event.type
-        when EmbeddedProtocol::LogEventType::DEBUG
+        when :DEBUG
           if @logger.respond_to? :debug
             @logger.debug(event.message, span: Logger::SourceSpan.from_proto(event.span))
           else
             Kernel.warn(event.formatted)
           end
-        when EmbeddedProtocol::LogEventType::DEPRECATION_WARNING
+        when :DEPRECATION_WARNING
           if @logger.respond_to? :warn
             @logger.warn(event.message, deprecation: true, span: Logger::SourceSpan.from_proto(event.span),
                                         stack: event.stack_trace)
           else
             Kernel.warn(event.formatted)
           end
-        when EmbeddedProtocol::LogEventType::WARNING
+        when :WARNING
           if @logger.respond_to? :warn
             @logger.warn(event.message, deprecation: false, span: Logger::SourceSpan.from_proto(event.span),
                                         stack: event.stack_trace)
