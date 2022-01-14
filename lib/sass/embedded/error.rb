@@ -2,12 +2,11 @@
 
 module Sass
   class Embedded
-    class Error < StandardError; end
+    class ProtocolError < StandardError; end
 
-    class ProtocolError < Error; end
-
+    # @deprecated
     # The {Error} raised by {Embedded#render}.
-    class RenderError < Error
+    class RenderError < StandardError
       attr_reader :formatted, :file, :line, :column, :status
 
       def initialize(message, formatted, file, line, column, status)

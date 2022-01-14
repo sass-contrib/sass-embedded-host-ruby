@@ -2,6 +2,7 @@
 
 module Sass
   class Embedded
+    # @deprecated
     # The {RenderResult} of {Embedded#render}.
     class RenderResult
       attr_reader :css, :map, :stats
@@ -13,6 +14,7 @@ module Sass
       end
     end
 
+    # @deprecated
     # The {RenderResultStats} of {Embedded#render}.
     class RenderResultStats
       attr_reader :entry, :start, :end, :duration

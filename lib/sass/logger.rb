@@ -3,6 +3,7 @@
 module Sass
   # The {Logger} module.
   module Logger
+    # The instance of a slient {Logger}.
     def self.slient
       @slient ||= SlientLogger.new
     end
