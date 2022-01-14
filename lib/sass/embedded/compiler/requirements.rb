@@ -3,7 +3,7 @@
 module Sass
   class Embedded
     class Compiler
-      REQUIREMENTS = '~> 1.0.0-beta.15'
+      REQUIREMENTS = '~> 1.0.0-beta.16'
     end
   end
 end
