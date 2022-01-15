@@ -14,7 +14,7 @@ module Sass
         end
 
         def canonicalize(url)
-          Embedded::Util.file_uri_from_path(url) if @predicate.call(url)
+          Embedded::Url.path_to_file_url(url) if @predicate.call(url)
         end
 
         def load(canonical_url)
@@ -48,7 +48,7 @@ module Sass
         SCSS
 
         importer = MockImporter.new(->(url) { /styles/.match?(url) }, '$var1: #000; .hi { color: $var1; }')
-        output = @embedded.compile_string(data, url: Embedded::Util.file_uri_from_path('test.scss'),
+        output = @embedded.compile_string(data, url: Embedded::Url.path_to_file_url('test.scss'),
                                                 importer: importer).css
 
         assert_equal <<~CSS.chomp, output
@@ -60,7 +60,7 @@ module Sass
 
       def test_custom_importer_works_with_empty_contents
         importer = MockImporter.new(->(_) { true }, '')
-        output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Util.file_uri_from_path('test.scss'),
+        output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Url.path_to_file_url('test.scss'),
                                                                   importer: importer).css
 
         assert_equal '', output
@@ -70,9 +70,9 @@ module Sass
         temp_file('fonts.scss', '.font { color: #000; }')
 
         importer = MockFileImporter.new(lambda { |url|
-          Embedded::Util.file_uri_from_path(File.absolute_path('fonts.scss')) if File.basename(url) == 'fake.scss'
+          Embedded::Url.path_to_file_url(File.absolute_path('fonts.scss')) if File.basename(url) == 'fake.scss'
         })
-        output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Util.file_uri_from_path('test.scss'),
+        output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Url.path_to_file_url('test.scss'),
                                                                   importers: [importer]).css
 
         assert_equal <<~CSS.chomp, output
@@ -86,7 +86,7 @@ module Sass
         importer = MockImporter.new(->(_) { false }, nil)
 
         assert_raises(CompileError) do
-          @embedded.compile_string("@import 'test.scss';", url: Embedded::Util.file_uri_from_path('test.scss'),
+          @embedded.compile_string("@import 'test.scss';", url: Embedded::Url.path_to_file_url('test.scss'),
                                                            importer: importer).css
         end
       end

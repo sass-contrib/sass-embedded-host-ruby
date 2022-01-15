@@ -2,6 +2,8 @@
 
 require 'base64'
 require 'json'
+require 'pathname'
+require_relative 'url'
 
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
@@ -62,9 +64,7 @@ module Sass
         compile_result = if data
                            compile_string(data, load_paths: load_paths,
                                                 syntax: indented_syntax ? :indented : :scss,
-                                                url: unless file.nil?
-                                                       Util.file_uri_from_path(File.absolute_path(file))
-                                                     end,
+                                                url: (Url.path_to_file_url(File.absolute_path(file)) unless file.nil?),
                                                 source_map: source_map_option,
                                                 style: output_style,
                                                 functions: functions,
@@ -89,7 +89,7 @@ module Sass
           elsif e.span.url.nil?
             'stdin'
           else
-            Util.path_from_file_uri(e.span.url)
+            Url.file_url_to_path(e.span.url)
           end,
           e.span.start.line + 1,
           e.span.start.column + 1,
@@ -207,7 +207,7 @@ module Sass
 
       map_data['sources'].map! do |source|
         if source.start_with? 'file://'
-          path = Util.path_from_file_uri(source)
+          path = Url.file_url_to_path(source)
           content = if path == file && !data.nil?
                       data
                     else
@@ -318,7 +318,7 @@ module Sass
       end
 
       def canonicalize(url)
-        canonical_url = Util.file_uri_from_path(File.absolute_path(url, (@file.nil? ? 'stdin' : @file)))
+        canonical_url = Url.path_to_file_url(File.absolute_path(url, (@file.nil? ? 'stdin' : @file)))
 
         result = @importer.call canonical_url, @file
 
@@ -328,7 +328,7 @@ module Sass
           @importer_results[canonical_url] = ImporterResult.new(result[:contents], :scss)
           canonical_url
         elsif result&.key? :file
-          canonical_url = Util.file_uri_from_path(File.absolute_path(result[:file]))
+          canonical_url = Url.path_to_file_url(File.absolute_path(result[:file]))
           @importer_results[canonical_url] = ImporterResult.new(File.read(result[:file]), :scss)
           canonical_url
         end

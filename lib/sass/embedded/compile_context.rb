@@ -3,7 +3,6 @@
 require_relative '../embedded_protocol'
 require_relative '../logger/source_span'
 require_relative 'observer'
-require_relative 'util'
 
 module Sass
   class Embedded
