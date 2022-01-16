@@ -17,8 +17,8 @@ module Sass
         "file://#{Platform::OS == 'windows' ? File::SEPARATOR : ''}#{URI_PARSER.escape(path)}"
       end
 
-      def file_url_to_path(file_uri)
-        URI_PARSER.unescape(file_uri[(Platform::OS == 'windows' ? 8 : 7)..])
+      def file_url_to_path(url)
+        URI_PARSER.unescape(url[(Platform::OS == 'windows' ? 8 : 7)..])
       end
     end
   end
