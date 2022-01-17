@@ -72,7 +72,9 @@ module Sass
         when EmbeddedProtocol::OutboundMessage::LogEvent
           return unless message.compilation_id == id
 
-          log message
+          Thread.new do
+            log message
+          end
         when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
           return unless message.compilation_id == id
 
