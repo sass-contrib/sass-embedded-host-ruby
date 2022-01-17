@@ -14,7 +14,7 @@ module Sass
         end
 
         def canonicalize(url)
-          Embedded::Url.path_to_file_url(url) if @predicate.call(url)
+          Embedded::Url.path_to_file_url(File.absolute_path(url)) if @predicate.call(url)
         end
 
         def load(canonical_url)
