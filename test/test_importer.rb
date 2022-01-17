@@ -14,7 +14,8 @@ module Sass
         end
 
         def canonicalize(url)
-          Embedded::Url.path_to_file_url(File.absolute_path(url)) if @predicate.call(url)
+          path = Url.file_url_to_path(url)
+          Embedded::Url.path_to_file_url(File.absolute_path(path)) if @predicate.call(path)
         end
 
         def load(canonical_url)
@@ -28,7 +29,8 @@ module Sass
         end
 
         def find_file_url(url, from_import:) # rubocop:disable Lint/UnusedMethodArgument
-          @find.call(url)
+          path = Url.file_url_to_path(url)
+          Embedded::Url.path_to_file_url(File.absolute_path(@find.call(path)))
         end
       end
 
@@ -69,8 +71,8 @@ module Sass
       def test_custom_importer_works_with_file
         temp_file('fonts.scss', '.font { color: #000; }')
 
-        importer = MockFileImporter.new(lambda { |url|
-          Embedded::Url.path_to_file_url(File.absolute_path('fonts.scss')) if File.basename(url) == 'fake.scss'
+        importer = MockFileImporter.new(lambda { |path|
+          'fonts.scss' if File.basename(path) == 'fake.scss'
         })
         output = @embedded.compile_string("@import 'fake.scss';", url: Embedded::Url.path_to_file_url('test.scss'),
                                                                   importers: [importer]).css
