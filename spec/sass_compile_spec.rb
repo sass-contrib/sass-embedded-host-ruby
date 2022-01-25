@@ -201,7 +201,6 @@ RSpec.describe Sass do
         end
 
         it 'includes one with source content if source_map_include_sources is true' do
-          skip('not available yet')
           result = described_class.compile_string('a {b: c}', source_map: true,
                                                               source_map_include_sources: true)
           expect(result.source_map).not_to be_nil

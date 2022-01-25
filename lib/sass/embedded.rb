@@ -34,6 +34,7 @@ module Sass
                 load_paths: [],
 
                 source_map: false,
+                source_map_include_sources: false,
                 style: :expanded,
 
                 functions: {},
@@ -55,6 +56,7 @@ module Sass
                                    syntax: nil,
                                    url: nil,
                                    source_map: source_map,
+                                   source_map_include_sources: source_map_include_sources,
                                    style: style,
                                    functions: functions,
                                    importers: importers,
@@ -81,6 +83,7 @@ module Sass
                        url: nil,
 
                        source_map: false,
+                       source_map_include_sources: false,
                        style: :expanded,
 
                        functions: {},
@@ -101,6 +104,7 @@ module Sass
                                    syntax: syntax,
                                    url: url,
                                    source_map: source_map,
+                                   source_map_include_sources: source_map_include_sources,
                                    style: style,
                                    functions: functions,
                                    importers: importers,

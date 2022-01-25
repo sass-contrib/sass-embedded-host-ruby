@@ -20,6 +20,7 @@ module Sass
                      url:,
 
                      source_map:,
+                     source_map_include_sources:,
                      style:,
 
                      functions:,
@@ -39,6 +40,7 @@ module Sass
         @url = url
 
         @source_map = source_map
+        @source_map_include_sources = source_map_include_sources
         @style = style
 
         @global_functions = functions.keys.map(&:to_s)
@@ -151,6 +153,7 @@ module Sass
           path: @path,
           style: to_proto_output_style(@style),
           source_map: @source_map,
+          source_map_include_sources: @source_map_include_sources,
           importers: to_proto_importers(@importers, @load_paths),
           global_functions: @global_functions,
           alert_ascii: @alert_ascii,

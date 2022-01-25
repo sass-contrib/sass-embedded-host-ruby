@@ -66,6 +66,7 @@ module Sass
                                                 syntax: indented_syntax ? :indented : :scss,
                                                 url: (Url.path_to_file_url(File.absolute_path(file)) unless file.nil?),
                                                 source_map: source_map_option,
+                                                source_map_include_sources: source_map_contents,
                                                 style: output_style,
                                                 functions: functions,
                                                 importers: importer.map do |legacy_importer|
@@ -74,6 +75,7 @@ module Sass
                          else
                            compile(file, load_paths: load_paths,
                                          source_map: source_map_option,
+                                         source_map_include_sources: source_map_contents,
                                          style: output_style,
                                          functions: functions,
                                          importers: importer.map do |legacy_importer|
@@ -98,11 +100,9 @@ module Sass
       end
 
       map, source_map = post_process_map(map: compile_result.source_map,
-                                         data: data,
                                          file: file,
                                          out_file: out_file,
                                          source_map: source_map,
-                                         source_map_contents: source_map_contents,
                                          source_map_root: source_map_root)
 
       css = post_process_css(css: compile_result.css,
@@ -172,11 +172,9 @@ module Sass
 
     # @deprecated
     def post_process_map(map:,
-                         data:,
                          file:,
                          out_file:,
                          source_map:,
-                         source_map_contents:,
                          source_map_root:)
       return if map.nil? || map.empty?
 
@@ -201,26 +199,11 @@ module Sass
         map_data['file'] = 'stdin.css'
       end
 
-      map_data['sourcesContent'] = [] if source_map_contents
-
-      file = File.absolute_path(file) unless file.nil?
-
       map_data['sources'].map! do |source|
         if source.start_with? 'file://'
           path = Url.file_url_to_path(source)
-          content = if path == file && !data.nil?
-                      data
-                    else
-                      begin
-                        File.read(path)
-                      rescue StandardError
-                        nil
-                      end
-                    end
-          map_data['sourcesContent'].push(content) if source_map_contents
           relative_path(source_map_dir, path)
         else
-          map_data['sourcesContent'].push(nil) if source_map_contents
           source
         end
       end
