@@ -25,7 +25,7 @@ module Sass
 
       def file_url_to_path(url)
         if url.start_with? FILE_SCHEME
-          URI_PARSER.unescape url[(Platform::OS == 'windows' ? (FILE_SCHEME.length + 1) : FILE_SCHEME.length)..]
+          URI_PARSER.unescape url[(FILE_SCHEME.length + (Platform::OS == 'windows' ? 1 : 0))..]
         else
           URI_PARSER.unescape url
         end
