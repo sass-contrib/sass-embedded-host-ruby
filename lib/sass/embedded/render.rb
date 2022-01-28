@@ -317,7 +317,7 @@ module Sass
         @importer_results = {}
       end
 
-      def canonicalize(url)
+      def canonicalize(url, **_kwargs)
         path = Url.file_url_to_path(url)
         canonical_url = Url.path_to_file_url(File.absolute_path(path, (@file.nil? ? 'stdin' : @file)))
 

@@ -2,6 +2,7 @@ require:
   - rubocop-minitest
   - rubocop-performance
   - rubocop-rake
+  - rubocop-rspec
 
 AllCops:
   Exclude:
@@ -13,4 +14,16 @@ AllCops:
   NewCops: enable
 
 Metrics:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false
+
+Style/MultilineBlockChain:
   Enabled: false

@@ -50,7 +50,11 @@ module Sass
 
         @alert_ascii = alert_ascii
         @alert_color = alert_color
-        @logger = logger
+
+        %i[debug warn].each do |sym|
+          instance_variable_set("@#{sym}".to_sym, get_method(logger, sym))
+        end
+
         @quiet_deps = quiet_deps
         @verbose = verbose
 
@@ -72,9 +76,7 @@ module Sass
         when EmbeddedProtocol::OutboundMessage::LogEvent
           return unless message.compilation_id == id
 
-          Thread.new do
-            log message
-          end
+          log message
         when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
           return unless message.compilation_id == id
 
@@ -111,24 +113,26 @@ module Sass
       def log(event)
         case event.type
         when :DEBUG
-          if @logger.respond_to? :debug
-            @logger.debug(event.message, span: Logger::SourceSpan.from_proto(event.span))
-          else
+          if @debug.nil?
             Kernel.warn(event.formatted)
+          else
+            @debug.call(event.message, span: Logger::SourceSpan.from_proto(event.span))
           end
         when :DEPRECATION_WARNING
-          if @logger.respond_to? :warn
-            @logger.warn(event.message, deprecation: true, span: Logger::SourceSpan.from_proto(event.span),
-                                        stack: event.stack_trace)
-          else
+          if @warn.nil?
             Kernel.warn(event.formatted)
+          else
+            @warn.call(event.message, deprecation: true,
+                                      span: Logger::SourceSpan.from_proto(event.span),
+                                      stack: event.stack_trace)
           end
         when :WARNING
-          if @logger.respond_to? :warn
-            @logger.warn(event.message, deprecation: false, span: Logger::SourceSpan.from_proto(event.span),
-                                        stack: event.stack_trace)
-          else
+          if @warn.nil?
             Kernel.warn(event.formatted)
+          else
+            @warn.call(event.message, deprecation: false,
+                                      span: Logger::SourceSpan.from_proto(event.span),
+                                      stack: event.stack_trace)
           end
         end
       end
@@ -155,7 +159,9 @@ module Sass
       end
 
       def canonicalize_response(canonicalize_request)
-        url = importer_with_id(canonicalize_request.importer_id).canonicalize canonicalize_request.url
+        importer = importer_with_id(canonicalize_request.importer_id)
+        url = get_method(importer, :canonicalize).call canonicalize_request.url,
+                                                       from_import: canonicalize_request.from_import
 
         EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
           id: canonicalize_request.id,
@@ -169,14 +175,15 @@ module Sass
       end
 
       def import_response(import_request)
-        importer_result = importer_with_id(import_request.importer_id).load import_request.url
+        importer = importer_with_id(import_request.importer_id)
+        importer_result = get_method(importer, :load).call import_request.url
 
         EmbeddedProtocol::InboundMessage::ImportResponse.new(
           id: import_request.id,
           success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
-            contents: importer_result.contents,
-            syntax: to_proto_syntax(importer_result.syntax),
-            source_map_url: importer_result.source_map_url
+            contents: get_attr(importer_result, :contents),
+            syntax: to_proto_syntax(get_attr(importer_result, :syntax)),
+            source_map_url: get_attr(importer_result, :source_map_url)
           )
         )
       rescue StandardError => e
@@ -188,8 +195,10 @@ module Sass
 
       def file_import_response(file_import_request)
         file_importer = importer_with_id(file_import_request.importer_id)
-        file_url = file_importer.find_file_url file_import_request.url,
-                                               from_import: file_import_request.from_import
+        file_url = get_method(file_importer, :find_file_url).call file_import_request.url,
+                                                                  from_import: file_import_request.from_import
+
+        raise "file_url must be a file: URL, was \"#{file_url}\"" if !file_url.nil? && !file_url.start_with?('file:')
 
         EmbeddedProtocol::InboundMessage::FileImportResponse.new(
           id: file_import_request.id,
@@ -237,16 +246,19 @@ module Sass
         when :compressed
           EmbeddedProtocol::OutputStyle::COMPRESSED
         else
-          raise ArgumentError, 'output_style must be one of :expanded, :compressed'
+          raise ArgumentError, 'style must be one of :expanded, :compressed'
         end
       end
 
       def to_proto_importer(importer, id)
-        if importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
+        is_importer = get_method(importer, :canonicalize) && get_method(importer, :load)
+        is_file_importer = get_method(importer, :find_file_url)
+
+        if is_importer && !is_file_importer
           EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
             importer_id: id
           )
-        elsif importer.respond_to?(:find_file_url)
+        elsif is_file_importer && !is_importer
           EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
             file_importer_id: id
           )
@@ -274,6 +286,32 @@ module Sass
           @importer
         else
           @importers[id]
+        end
+      end
+
+      def get_method(obj, sym)
+        sym = sym.to_sym
+        if obj.respond_to? sym
+          obj.method(sym)
+        elsif obj.respond_to? :[]
+          if obj[sym].respond_to? :call
+            obj[sym]
+          elsif obj[sym.to_s].respond_to? :call
+            obj[sym.to_s]
+          end
+        end
+      end
+
+      def get_attr(obj, sym)
+        sym = sym.to_sym
+        if obj.respond_to? sym
+          obj.method(sym).call
+        elsif obj.respond_to? :[]
+          if obj[sym]
+            obj[sym]
+          elsif obj[sym.to_s]
+            obj[sym.to_s]
+          end
         end
       end
     end

@@ -3,18 +3,22 @@
 module Sass
   # The {Logger} module.
   module Logger
-    # The instance of a slient {Logger}.
-    def self.slient
-      @slient ||= Slient.new
+    module_function
+
+    # The instance of a silent {Logger}.
+    def silent
+      Silent
     end
 
-    # The slient {Logger}.
-    class Slient
+    # The silent {Logger}.
+    module Silent
+      module_function
+
       def warn(message, deprecation: false, span: nil, stack: nil); end
 
       def debug(message, span: nil); end
     end
 
-    private_constant :Slient
+    private_constant :Silent
   end
 end

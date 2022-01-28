@@ -13,7 +13,7 @@ module Sass
           @data = data
         end
 
-        def canonicalize(url)
+        def canonicalize(url, **_kwargs)
           path = Url.file_url_to_path(url)
           Embedded::Url.path_to_file_url(File.absolute_path(path)) if @predicate.call(path)
         end
