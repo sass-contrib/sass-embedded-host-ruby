@@ -123,7 +123,7 @@ module Sass
     #
     # @raise [ProtocolError]
     def info
-      @info ||= VersionContext.new(@channel).receive_message
+      @info ||= "sass-embedded\t#{VersionContext.new(@channel).receive_message.implementation_version}"
     end
 
     def close
