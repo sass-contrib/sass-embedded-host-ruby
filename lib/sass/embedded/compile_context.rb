@@ -296,7 +296,7 @@ module Sass
         sym = sym.to_sym
         if obj.respond_to? sym
           obj.method(sym)
-        elsif obj.respond_to? :[]
+        elsif obj.is_a? Hash
           if obj[sym].respond_to? :call
             obj[sym]
           elsif obj[sym.to_s].respond_to? :call
@@ -309,7 +309,7 @@ module Sass
         sym = sym.to_sym
         if obj.respond_to? sym
           obj.method(sym).call
-        elsif obj.respond_to? :[]
+        elsif obj.is_a? Hash
           if obj[sym]
             obj[sym]
           elsif obj[sym.to_s]
