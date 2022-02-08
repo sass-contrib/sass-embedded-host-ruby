@@ -295,20 +295,19 @@ module Sass
       def to_struct(obj)
         return obj unless obj.is_a? Hash
 
-        Object.new.instance_eval do
-          obj.each do |key, value|
-            if value.respond_to? :call
-              define_singleton_method key.to_sym do |*args, **kwargs|
-                value.call(*args, **kwargs)
-              end
-            else
-              define_singleton_method key.to_sym do
-                value
-              end
+        struct = Object.new
+        obj.each do |key, value|
+          if value.respond_to? :call
+            struct.define_singleton_method key.to_sym do |*args, **kwargs|
+              value.call(*args, **kwargs)
+            end
+          else
+            struct.define_singleton_method key.to_sym do
+              value
             end
           end
-          self
         end
+        struct
       end
     end
   end
