@@ -162,7 +162,7 @@ module Sass
       end
 
       def canonicalize_response(canonicalize_request)
-        importer = importer_with_id canonicalize_request.importer_id
+        importer = importer_of_id canonicalize_request.importer_id
         url = importer.canonicalize canonicalize_request.url,
                                     from_import: canonicalize_request.from_import
 
@@ -178,7 +178,7 @@ module Sass
       end
 
       def import_response(import_request)
-        importer = importer_with_id import_request.importer_id
+        importer = importer_of_id import_request.importer_id
         importer_result = to_struct importer.load(import_request.url)
 
         EmbeddedProtocol::InboundMessage::ImportResponse.new(
@@ -197,7 +197,7 @@ module Sass
       end
 
       def file_import_response(file_import_request)
-        importer = importer_with_id file_import_request.importer_id
+        importer = importer_of_id file_import_request.importer_id
         file_url = importer.find_file_url file_import_request.url,
                                           from_import: file_import_request.from_import
 
@@ -284,7 +284,7 @@ module Sass
         proto_importers
       end
 
-      def importer_with_id(id)
+      def importer_of_id(id)
         if id == @importers.length
           @importer
         else
