@@ -34,7 +34,7 @@ module Sass
         @path = path
         @source = source
 
-        @importer = importer
+        @importer = to_struct(importer)
         @load_paths = load_paths
         @syntax = syntax
         @url = url
@@ -48,14 +48,14 @@ module Sass
         @functions = functions.transform_keys do |key|
           key.to_s.split('(')[0].chomp
         end
-        @importers = importers
+        @importers = importers.map do |obj|
+          to_struct(obj)
+        end
 
         @alert_ascii = alert_ascii
         @alert_color = alert_color
 
-        %i[debug warn].each do |sym|
-          instance_variable_set("@#{sym}".to_sym, get_method(logger, sym))
-        end
+        @logger = to_struct(logger)
 
         @quiet_deps = quiet_deps
         @verbose = verbose
@@ -115,26 +115,26 @@ module Sass
       def log(event)
         case event.type
         when :DEBUG
-          if @debug.nil?
-            Kernel.warn(event.formatted)
+          if @logger.respond_to? :debug
+            @logger.debug(event.message, span: Logger::SourceSpan.from_proto(event.span))
           else
-            @debug.call(event.message, span: Logger::SourceSpan.from_proto(event.span))
+            Kernel.warn(event.formatted)
           end
         when :DEPRECATION_WARNING
-          if @warn.nil?
-            Kernel.warn(event.formatted)
+          if @logger.respond_to? :warn
+            @logger.warn(event.message, deprecation: true,
+                                        span: Logger::SourceSpan.from_proto(event.span),
+                                        stack: event.stack_trace)
           else
-            @warn.call(event.message, deprecation: true,
-                                      span: Logger::SourceSpan.from_proto(event.span),
-                                      stack: event.stack_trace)
+            Kernel.warn(event.formatted)
           end
         when :WARNING
-          if @warn.nil?
-            Kernel.warn(event.formatted)
+          if @logger.respond_to? :warn
+            @logger.warn(event.message, deprecation: false,
+                                        span: Logger::SourceSpan.from_proto(event.span),
+                                        stack: event.stack_trace)
           else
-            @warn.call(event.message, deprecation: false,
-                                      span: Logger::SourceSpan.from_proto(event.span),
-                                      stack: event.stack_trace)
+            Kernel.warn(event.formatted)
           end
         end
       end
@@ -162,9 +162,9 @@ module Sass
       end
 
       def canonicalize_response(canonicalize_request)
-        importer = importer_with_id(canonicalize_request.importer_id)
-        url = get_method(importer, :canonicalize).call canonicalize_request.url,
-                                                       from_import: canonicalize_request.from_import
+        importer = importer_with_id canonicalize_request.importer_id
+        url = importer.canonicalize canonicalize_request.url,
+                                    from_import: canonicalize_request.from_import
 
         EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
           id: canonicalize_request.id,
@@ -178,15 +178,15 @@ module Sass
       end
 
       def import_response(import_request)
-        importer = importer_with_id(import_request.importer_id)
-        importer_result = get_method(importer, :load).call import_request.url
+        importer = importer_with_id import_request.importer_id
+        importer_result = to_struct importer.load(import_request.url)
 
         EmbeddedProtocol::InboundMessage::ImportResponse.new(
           id: import_request.id,
           success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
-            contents: get_attr(importer_result, :contents),
-            syntax: to_proto_syntax(get_attr(importer_result, :syntax)),
-            source_map_url: get_attr(importer_result, :source_map_url)
+            contents: importer_result.contents,
+            syntax: to_proto_syntax(importer_result.syntax),
+            source_map_url: importer_result.respond_to?(:source_map_url) ? importer_result.source_map_url : nil
           )
         )
       rescue StandardError => e
@@ -197,9 +197,9 @@ module Sass
       end
 
       def file_import_response(file_import_request)
-        file_importer = importer_with_id(file_import_request.importer_id)
-        file_url = get_method(file_importer, :find_file_url).call file_import_request.url,
-                                                                  from_import: file_import_request.from_import
+        importer = importer_with_id file_import_request.importer_id
+        file_url = importer.find_file_url file_import_request.url,
+                                          from_import: file_import_request.from_import
 
         raise "file_url must be a file: URL, was \"#{file_url}\"" if !file_url.nil? && !file_url.start_with?('file:')
 
@@ -254,8 +254,8 @@ module Sass
       end
 
       def to_proto_importer(importer, id)
-        is_importer = get_method(importer, :canonicalize) && get_method(importer, :load)
-        is_file_importer = get_method(importer, :find_file_url)
+        is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
+        is_file_importer = importer.respond_to?(:find_file_url)
 
         if is_importer && !is_file_importer
           EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
@@ -292,29 +292,22 @@ module Sass
         end
       end
 
-      def get_method(obj, sym)
-        sym = sym.to_sym
-        if obj.respond_to? sym
-          obj.method(sym)
-        elsif obj.is_a? Hash
-          if obj[sym].respond_to? :call
-            obj[sym]
-          elsif obj[sym.to_s].respond_to? :call
-            obj[sym.to_s]
-          end
-        end
-      end
+      def to_struct(obj)
+        return obj unless obj.is_a? Hash
 
-      def get_attr(obj, sym)
-        sym = sym.to_sym
-        if obj.respond_to? sym
-          obj.method(sym).call
-        elsif obj.is_a? Hash
-          if obj[sym]
-            obj[sym]
-          elsif obj[sym.to_s]
-            obj[sym.to_s]
+        Object.new.instance_eval do
+          obj.each do |key, value|
+            if value.respond_to? :call
+              define_singleton_method key.to_sym do |*args, **kwargs|
+                value.call(*args, **kwargs)
+              end
+            else
+              define_singleton_method key.to_sym do
+                value
+              end
+            end
           end
+          self
         end
       end
     end
