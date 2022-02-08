@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'uri'
-require_relative 'platform'
 
 module Sass
   class Embedded
@@ -18,7 +17,7 @@ module Sass
 
       def path_to_file_url(path)
         if File.absolute_path? path
-          URI_PARSER.escape "#{FILE_SCHEME}#{Platform::OS == 'windows' ? File::SEPARATOR : ''}#{path}"
+          URI_PARSER.escape "#{FILE_SCHEME}#{Gem.win_platform? ? File::SEPARATOR : ''}#{path}"
         else
           URI_PARSER.escape path
         end
@@ -26,7 +25,7 @@ module Sass
 
       def file_url_to_path(url)
         if url.start_with? FILE_SCHEME
-          URI_PARSER.unescape url[(FILE_SCHEME.length + (Platform::OS == 'windows' ? 1 : 0))..]
+          URI_PARSER.unescape url[(FILE_SCHEME.length + (Gem.win_platform? ? 1 : 0))..]
         else
           URI_PARSER.unescape url
         end
