@@ -7,10 +7,61 @@ require 'mkmf'
 require 'open-uri'
 require_relative '../../lib/sass/embedded/compiler/path'
 require_relative '../../lib/sass/embedded/compiler/requirements'
-require_relative '../../lib/sass/embedded/platform'
 
 module Sass
   class Embedded
+    module Platform
+      OS = case RbConfig::CONFIG['host_os'].downcase
+           when /linux/
+             'linux'
+           when /darwin/
+             'darwin'
+           when /freebsd/
+             'freebsd'
+           when /netbsd/
+             'netbsd'
+           when /openbsd/
+             'openbsd'
+           when /dragonfly/
+             'dragonflybsd'
+           when /sunos|solaris/
+             'solaris'
+           when *Gem::WIN_PATTERNS
+             'windows'
+           else
+             RbConfig::CONFIG['host_os'].downcase
+           end
+
+      OSVERSION = RbConfig::CONFIG['host_os'].gsub(/[^\d]/, '').to_i
+
+      CPU = RbConfig::CONFIG['host_cpu']
+
+      ARCH = case CPU.downcase
+             when /amd64|x86_64|x64/
+               'x86_64'
+             when /i\d86|x86|i86pc/
+               'i386'
+             when /ppc64|powerpc64/
+               'powerpc64'
+             when /ppc|powerpc/
+               'powerpc'
+             when /sparcv9|sparc64/
+               'sparcv9'
+             when /arm64|aarch64/ # MacOS calls it "arm64", other operating systems "aarch64"
+               'aarch64'
+             when /^arm/
+               if OS == 'darwin' # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
+                 'aarch64'
+               else
+                 'arm'
+               end
+             else
+               RbConfig::CONFIG['host_cpu']
+             end
+    end
+
+    private_constant :Platform
+
     # The dependency downloader. This downloads all the dependencies during gem
     # installation. The companion Makefile then unpacks all downloaded
     # dependencies. By default it downloads the release of each dependency
