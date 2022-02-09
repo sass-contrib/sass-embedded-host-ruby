@@ -2,7 +2,7 @@
 
 require 'fileutils'
 require 'tmpdir'
-require_relative '../lib/sass/embedded/url'
+require 'uri'
 
 module Sandbox
   def sandbox
@@ -23,7 +23,7 @@ module Sandbox
     end
 
     def url(*paths)
-      Sass::Embedded::Url.path_to_file_url path(*paths)
+      URI::File.build([nil, "#{Gem.win_platform? ? '/' : ''}#{URI::DEFAULT_PARSER.escape(path(*paths))}"]).to_s
     end
 
     def write(paths)

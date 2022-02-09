@@ -145,7 +145,7 @@ module Sass
           string: unless @source.nil?
                     EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
                       source: @source,
-                      url: @url,
+                      url: @url&.to_s,
                       syntax: to_proto_syntax(@syntax),
                       importer: @importer.nil? ? nil : to_proto_importer(@importer, @importers.length)
                     )
@@ -163,8 +163,7 @@ module Sass
 
       def canonicalize_response(canonicalize_request)
         importer = importer_of_id canonicalize_request.importer_id
-        url = importer.canonicalize canonicalize_request.url,
-                                    from_import: canonicalize_request.from_import
+        url = importer.canonicalize(canonicalize_request.url, from_import: canonicalize_request.from_import)&.to_s
 
         EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
           id: canonicalize_request.id,
@@ -186,7 +185,7 @@ module Sass
           success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
             contents: importer_result.contents,
             syntax: to_proto_syntax(importer_result.syntax),
-            source_map_url: importer_result.respond_to?(:source_map_url) ? importer_result.source_map_url : nil
+            source_map_url: importer_result.respond_to?(:source_map_url) ? importer_result.source_map_url&.to_s : nil
           )
         )
       rescue StandardError => e
@@ -198,8 +197,7 @@ module Sass
 
       def file_import_response(file_import_request)
         importer = importer_of_id file_import_request.importer_id
-        file_url = importer.find_file_url file_import_request.url,
-                                          from_import: file_import_request.from_import
+        file_url = importer.find_file_url(file_import_request.url, from_import: file_import_request.from_import)&.to_s
 
         raise "file_url must be a file: URL, was \"#{file_url}\"" if !file_url.nil? && !file_url.start_with?('file:')
 
