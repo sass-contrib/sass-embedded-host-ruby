@@ -19,7 +19,7 @@ module Sass
         end
 
         def load(canonical_url)
-          ImporterResult.new(@data, :scss) if @predicate.call(canonical_url)
+          { contents: @data, syntax: :scss } if @predicate.call(canonical_url)
         end
       end
 

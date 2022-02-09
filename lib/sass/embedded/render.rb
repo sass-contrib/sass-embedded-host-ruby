@@ -309,11 +309,17 @@ module Sass
         raise result if result.is_a? StandardError
 
         if result&.key? :contents
-          @importer_results[canonical_url] = ImporterResult.new(result[:contents], :scss)
+          @importer_results[canonical_url] = {
+            contents: result[:contents],
+            syntax: :scss
+          }
           canonical_url
         elsif result&.key? :file
           canonical_url = Url.path_to_file_url(File.absolute_path(result[:file]))
-          @importer_results[canonical_url] = ImporterResult.new(File.read(result[:file]), :scss)
+          @importer_results[canonical_url] = {
+            contents: File.read(result[:file]),
+            syntax: :scss
+          }
           canonical_url
         end
       end

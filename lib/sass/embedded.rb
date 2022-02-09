@@ -4,10 +4,9 @@ require_relative 'compile_error'
 require_relative 'compile_result'
 require_relative 'embedded/channel'
 require_relative 'embedded/compile_context'
-require_relative 'embedded/render'
+require_relative 'embedded/render' # deprecated
 require_relative 'embedded/version'
 require_relative 'embedded/version_context'
-require_relative 'importer_result'
 require_relative 'logger'
 
 module Sass
