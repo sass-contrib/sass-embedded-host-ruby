@@ -23,7 +23,7 @@ module Sandbox
     end
 
     def url(*paths)
-      URI::File.build([nil, "#{Gem.win_platform? ? '/' : ''}#{URI::DEFAULT_PARSER.escape(path(*paths))}"]).to_s
+      URI::File.build([nil, "#{@root.start_with?('/') ? '' : '/'}#{URI::DEFAULT_PARSER.escape(path(*paths))}"]).to_s
     end
 
     def write(paths)
