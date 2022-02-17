@@ -2,9 +2,6 @@
 
 require 'observer'
 require 'open3'
-require_relative '../embedded_protocol'
-require_relative 'compiler/path'
-require_relative 'protocol_error'
 
 module Sass
   class Embedded
@@ -110,7 +107,7 @@ module Sass
 
       def receive_proto(proto)
         payload = EmbeddedProtocol::OutboundMessage.decode(proto)
-        message = payload[payload.message.to_s]
+        message = payload.method(payload.message).call
         case message
         when EmbeddedProtocol::ProtocolError
           raise ProtocolError, message.message

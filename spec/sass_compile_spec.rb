@@ -12,17 +12,17 @@ RSpec.describe Sass do
         end
 
         it 'compiles SCSS with explicit syntax' do
-          expect(described_class.compile_string('$a: b; c {d: $a}', syntax: :scss).css)
+          expect(described_class.compile_string('$a: b; c {d: $a}', syntax: 'scss').css)
             .to eq("c {\n  d: b;\n}")
         end
 
         it 'compiles indented syntax with explicit syntax' do
-          expect(described_class.compile_string("a\n  b: c", syntax: :indented).css)
+          expect(described_class.compile_string("a\n  b: c", syntax: 'indented').css)
             .to eq("a {\n  b: c;\n}")
         end
 
         it 'compiles plain CSS syntax with explicit syntax' do
-          expect(described_class.compile_string('a {b: c}', syntax: :css).css)
+          expect(described_class.compile_string('a {b: c}', syntax: 'css').css)
             .to eq("a {\n  b: c;\n}")
         end
 

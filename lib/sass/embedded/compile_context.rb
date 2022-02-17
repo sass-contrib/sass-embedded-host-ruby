@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../embedded_protocol'
-require_relative '../logger/source_span'
-require_relative 'observer'
-
 module Sass
   class Embedded
     # The {Observer} for {Embedded#compile}.
@@ -34,7 +30,6 @@ module Sass
         @path = path
         @source = source
 
-        @importer = to_struct(importer)
         @load_paths = load_paths
         @syntax = syntax
         @url = url
@@ -43,19 +38,16 @@ module Sass
         @source_map_include_sources = source_map_include_sources
         @style = style
 
-        @global_functions = functions.keys.map(&:to_s)
-
-        @functions = functions.transform_keys do |key|
-          key.to_s.split('(')[0].chomp
-        end
-        @importers = importers.map do |obj|
-          to_struct(obj)
-        end
+        @function_registery = FunctionRegistry.new(functions.transform_keys(&:to_s))
+        @importer_registery = ImporterRegistry.new(importers.map do |obj|
+          Protofier.to_struct(obj)
+        end, load_paths)
+        @importer = importer.nil? ? nil : @importer_registery.register(Protofier.to_struct(importer))
 
         @alert_ascii = alert_ascii
         @alert_color = alert_color
 
-        @logger = to_struct(logger)
+        @logger = Protofier.to_struct(logger)
 
         @quiet_deps = quiet_deps
         @verbose = verbose
@@ -83,25 +75,25 @@ module Sass
           return unless message.compilation_id == id
 
           Thread.new do
-            send_message canonicalize_response message
+            send_message @importer_registery.canonicalize message
           end
         when EmbeddedProtocol::OutboundMessage::ImportRequest
           return unless message.compilation_id == id
 
           Thread.new do
-            send_message import_response message
+            send_message @importer_registery.import message
           end
         when EmbeddedProtocol::OutboundMessage::FileImportRequest
           return unless message.compilation_id == id
 
           Thread.new do
-            send_message file_import_response message
+            send_message @importer_registery.file_import message
           end
         when EmbeddedProtocol::OutboundMessage::FunctionCallRequest
           return unless message.compilation_id == id
 
           Thread.new do
-            send_message function_call_response message
+            send_message @function_registery.function_call message
           end
         end
       rescue StandardError => e
@@ -146,166 +138,19 @@ module Sass
                     EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
                       source: @source,
                       url: @url&.to_s,
-                      syntax: to_proto_syntax(@syntax),
-                      importer: @importer.nil? ? nil : to_proto_importer(@importer, @importers.length)
+                      syntax: Protofier.to_proto_syntax(@syntax),
+                      importer: @importer
                     )
                   end,
           path: @path,
-          style: to_proto_output_style(@style),
+          style: Protofier.to_proto_output_style(@style),
           source_map: @source_map,
           source_map_include_sources: @source_map_include_sources,
-          importers: to_proto_importers(@importers, @load_paths),
-          global_functions: @global_functions,
+          importers: @importer_registery.importers,
+          global_functions: @function_registery.global_functions,
           alert_ascii: @alert_ascii,
           alert_color: @alert_color
         )
-      end
-
-      def canonicalize_response(canonicalize_request)
-        importer = importer_of_id canonicalize_request.importer_id
-        url = importer.canonicalize(canonicalize_request.url, from_import: canonicalize_request.from_import)&.to_s
-
-        EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
-          id: canonicalize_request.id,
-          url: url
-        )
-      rescue StandardError => e
-        EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
-          id: canonicalize_request.id,
-          error: e.message
-        )
-      end
-
-      def import_response(import_request)
-        importer = importer_of_id import_request.importer_id
-        importer_result = to_struct importer.load(import_request.url)
-
-        EmbeddedProtocol::InboundMessage::ImportResponse.new(
-          id: import_request.id,
-          success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
-            contents: importer_result.contents,
-            syntax: to_proto_syntax(importer_result.syntax),
-            source_map_url: importer_result.respond_to?(:source_map_url) ? importer_result.source_map_url&.to_s : nil
-          )
-        )
-      rescue StandardError => e
-        EmbeddedProtocol::InboundMessage::ImportResponse.new(
-          id: import_request.id,
-          error: e.message
-        )
-      end
-
-      def file_import_response(file_import_request)
-        importer = importer_of_id file_import_request.importer_id
-        file_url = importer.find_file_url(file_import_request.url, from_import: file_import_request.from_import)&.to_s
-
-        raise "file_url must be a file: URL, was \"#{file_url}\"" if !file_url.nil? && !file_url.start_with?('file:')
-
-        EmbeddedProtocol::InboundMessage::FileImportResponse.new(
-          id: file_import_request.id,
-          file_url: file_url
-        )
-      rescue StandardError => e
-        EmbeddedProtocol::InboundMessage::FileImportResponse.new(
-          id: file_import_request.id,
-          error: e.message
-        )
-      end
-
-      def function_call_response(function_call_request)
-        EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
-          id: function_call_request.id,
-          success: @functions[function_call_request.name].call(*function_call_request.arguments),
-          accessed_argument_lists: function_call_request.arguments
-          .filter { |argument| argument.value == :argument_list }
-          .map { |argument| argument.argument_list.id }
-        )
-      rescue StandardError => e
-        EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
-          id: function_call_request.id,
-          error: e.message
-        )
-      end
-
-      def to_proto_syntax(syntax)
-        case syntax&.to_sym
-        when :scss
-          EmbeddedProtocol::Syntax::SCSS
-        when :indented
-          EmbeddedProtocol::Syntax::INDENTED
-        when :css
-          EmbeddedProtocol::Syntax::CSS
-        else
-          raise ArgumentError, 'syntax must be one of :scss, :indented, :css'
-        end
-      end
-
-      def to_proto_output_style(style)
-        case style&.to_sym
-        when :expanded
-          EmbeddedProtocol::OutputStyle::EXPANDED
-        when :compressed
-          EmbeddedProtocol::OutputStyle::COMPRESSED
-        else
-          raise ArgumentError, 'style must be one of :expanded, :compressed'
-        end
-      end
-
-      def to_proto_importer(importer, id)
-        is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
-        is_file_importer = importer.respond_to?(:find_file_url)
-
-        if is_importer && !is_file_importer
-          EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-            importer_id: id
-          )
-        elsif is_file_importer && !is_importer
-          EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-            file_importer_id: id
-          )
-        else
-          raise ArgumentError, 'importer must be an Importer or a FileImporter'
-        end
-      end
-
-      def to_proto_importers(importers, load_paths)
-        proto_importers = importers.map.with_index do |importer, id|
-          to_proto_importer(importer, id)
-        end
-
-        load_paths.each do |load_path|
-          proto_importers << EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-            path: File.absolute_path(load_path)
-          )
-        end
-
-        proto_importers
-      end
-
-      def importer_of_id(id)
-        if id == @importers.length
-          @importer
-        else
-          @importers[id]
-        end
-      end
-
-      def to_struct(obj)
-        return obj unless obj.is_a? Hash
-
-        struct = Object.new
-        obj.each do |key, value|
-          if value.respond_to? :call
-            struct.define_singleton_method key.to_sym do |*args, **kwargs|
-              value.call(*args, **kwargs)
-            end
-          else
-            struct.define_singleton_method key.to_sym do
-              value
-            end
-          end
-        end
-        struct
       end
     end
   end

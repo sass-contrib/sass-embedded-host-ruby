@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'logger/source_span'
-
 module Sass
   # The {CompileError} raised by {Embedded#compile} or {Embedded#compile_string}.
   class CompileError < StandardError

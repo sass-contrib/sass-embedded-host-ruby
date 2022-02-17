@@ -1,6 +1,36 @@
 # frozen_string_literal: true
 
+require_relative 'sass/compile_error'
+require_relative 'sass/compile_result'
+require_relative 'sass/script_error'
+require_relative 'sass/value'
+require_relative 'sass/value/boolean'
+require_relative 'sass/value/color'
+require_relative 'sass/value/function'
+require_relative 'sass/value/fuzzy_math'
+require_relative 'sass/value/list'
+require_relative 'sass/value/argument_list'
+require_relative 'sass/value/map'
+require_relative 'sass/value/null'
+require_relative 'sass/value/number'
+require_relative 'sass/value/number/unit'
+require_relative 'sass/value/string'
+require_relative 'sass/embedded_protocol'
+require_relative 'sass/embedded/version'
 require_relative 'sass/embedded'
+require_relative 'sass/embedded/observer'
+require_relative 'sass/embedded/protocol_error'
+require_relative 'sass/embedded/channel'
+require_relative 'sass/embedded/compiler'
+require_relative 'sass/embedded/compiler/path'
+require_relative 'sass/embedded/compile_context'
+require_relative 'sass/embedded/compile_context/function_registry'
+require_relative 'sass/embedded/compile_context/importer_registry'
+require_relative 'sass/embedded/compile_context/protofier'
+require_relative 'sass/embedded/version_context'
+require_relative 'sass/logger'
+require_relative 'sass/logger/source_location'
+require_relative 'sass/logger/source_span'
 
 # The Sass module. This communicates with Embedded Dart Sass using
 # the Embedded Sass protocol.
@@ -15,7 +45,7 @@ module Sass
     #   Sass.compile('style.scss')
     # @return [CompileResult]
     # @raise [CompileError]
-    # @raise [ProtocolError]
+    # @raise [Embedded::ProtocolError]
     def compile(path, **kwargs)
       instance.compile(path, **kwargs)
     end
@@ -29,53 +59,17 @@ module Sass
     #   Sass.compile_string('h1 { font-size: 40px; }')
     # @return [CompileResult]
     # @raise [CompileError]
-    # @raise [ProtocolError]
+    # @raise [Embedded::ProtocolError]
     def compile_string(source, **kwargs)
       instance.compile_string(source, **kwargs)
-    end
-
-    # @deprecated
-    # The global {.include_paths} for Sass files. This is meant for plugins and
-    # libraries to register the paths to their Sass stylesheets to that they may
-    # be included via `@import` or `@use`. This include path is used by every
-    # instance of {Sass::Embedded}. They are lower-precedence than any include
-    # paths passed in via the `include_paths` option.
-    #
-    # If the `SASS_PATH` environment variable is set,
-    # the initial value of `include_paths` will be initialized based on that.
-    # The variable should be a colon-separated list of path names
-    # (semicolon-separated on Windows).
-    #
-    # @example
-    #   Sass.include_paths << File.dirname(__FILE__) + '/sass'
-    # @return [Array]
-    def include_paths
-      Embedded.include_paths
     end
 
     # The global {.info} method. This instantiates a global {Embedded} instance
     # and calls {Embedded#info}.
     #
-    # @raise [ProtocolError]
+    # @raise [Embedded::ProtocolError]
     def info
       instance.info
-    end
-
-    # @deprecated
-    # The global {.render} method. This instantiates a global {Embedded} instance
-    # and calls {Embedded#render}.
-    #
-    # See {Embedded#render} for supported options.
-    #
-    # @example
-    #   Sass.render(data: 'h1 { font-size: 40px; }')
-    # @example
-    #   Sass.render(file: 'style.css')
-    # @return [Result]
-    # @raise [ProtocolError]
-    # @raise [RenderError]
-    def render(**kwargs)
-      instance.render(**kwargs)
     end
 
     private

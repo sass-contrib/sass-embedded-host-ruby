@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'compiler'
-
 module Sass
   class Embedded
     # The {Channel} for {Compiler} calls. Each instance creates its own

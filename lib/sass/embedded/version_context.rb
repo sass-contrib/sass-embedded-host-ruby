@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../embedded_protocol'
-require_relative 'observer'
-
 module Sass
   class Embedded
     # The {Observer} for {Embedded#info}.
