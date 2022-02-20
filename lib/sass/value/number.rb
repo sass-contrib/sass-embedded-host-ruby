@@ -64,8 +64,8 @@ module Sass
         FuzzyMath.integer?(value)
       end
 
-      def assert_integer(_name = nil)
-        raise error "#{self} is not an integer" unless integer?
+      def assert_integer(name = nil)
+        raise error "#{self} is not an integer", name unless integer?
 
         to_i
       end

@@ -108,7 +108,7 @@ module Sass
 
       attr_reader :alpha
 
-      def assert_color
+      def assert_color(_name = nil)
         self
       end
 

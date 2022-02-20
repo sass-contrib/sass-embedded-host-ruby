@@ -12,7 +12,7 @@ module Sass
 
       alias to_bool value
 
-      def assert_boolean
+      def assert_boolean(_name = nil)
         self
       end
 
