@@ -26,7 +26,7 @@ module Sass
           hwb_to_rgb
           @whiteness = @blackness = nil
         else
-          raise error 'invalid argument'
+          raise error 'Invalid Color'
         end
       end
 
