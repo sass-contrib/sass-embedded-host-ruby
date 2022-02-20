@@ -12,7 +12,7 @@ module Sass
 
         @id = 0
         @keywords_accessed = false
-        @keywords = keywords.transform_keys(&:to_s)
+        @keywords = keywords.transform_keys(&:to_s).freeze
       end
 
       def keywords
