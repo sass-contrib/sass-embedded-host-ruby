@@ -43,5 +43,7 @@ module Sass
         @subscription.send_message(*args)
       end
     end
+
+    private_constant :Observer
   end
 end

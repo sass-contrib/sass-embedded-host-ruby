@@ -56,5 +56,7 @@ module Sass
 
       private_constant :Subscription
     end
+
+    private_constant :Channel
   end
 end

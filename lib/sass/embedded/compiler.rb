@@ -136,5 +136,7 @@ module Sass
         writeable.write bytes.pack('C*')
       end
     end
+
+    private_constant :Compiler
   end
 end

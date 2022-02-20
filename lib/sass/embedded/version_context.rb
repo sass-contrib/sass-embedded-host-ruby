@@ -29,5 +29,7 @@ module Sass
         end
       end
     end
+
+    private_constant :VersionContext
   end
 end

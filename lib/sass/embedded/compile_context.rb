@@ -153,5 +153,7 @@ module Sass
         )
       end
     end
+
+    private_constant :CompileContext
   end
 end
