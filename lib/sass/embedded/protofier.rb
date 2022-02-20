@@ -35,7 +35,7 @@ module Sass
             )
           )
         when Sass::Value::Color
-          if value.instance_eval { @hue.nil? }
+          if obj.instance_eval { @hue.nil? }
             Sass::EmbeddedProtocol::Value.new(
               rgb_color: Sass::EmbeddedProtocol::Value::RgbColor.new(
                 red: obj.red,
@@ -44,7 +44,7 @@ module Sass
                 alpha: obj.alpha
               )
             )
-          elsif value.instance_eval { @saturation.nil? }
+          elsif obj.instance_eval { @saturation.nil? }
             Sass::EmbeddedProtocol::Value.new(
               hwb_color: Sass::EmbeddedProtocol::Value::HwbColor.new(
                 hue: obj.hue,
