@@ -129,19 +129,19 @@ describe Sass::Value::Map do
 
   describe 'Sass to Ruby index conversion()' do
     it 'converts a positive index' do
-      expect(map.sass_index_to_list_index(Sass::Value::Number.new(1))).to eq(0)
-      expect(map.sass_index_to_list_index(Sass::Value::Number.new(2))).to eq(1)
+      expect(map.sass_index_to_array_index(Sass::Value::Number.new(1))).to eq(0)
+      expect(map.sass_index_to_array_index(Sass::Value::Number.new(2))).to eq(1)
     end
 
     it 'converts a negative index' do
-      expect(map.sass_index_to_list_index(Sass::Value::Number.new(-1))).to eq(1)
-      expect(map.sass_index_to_list_index(Sass::Value::Number.new(-2))).to eq(0)
+      expect(map.sass_index_to_array_index(Sass::Value::Number.new(-1))).to eq(1)
+      expect(map.sass_index_to_array_index(Sass::Value::Number.new(-2))).to eq(0)
     end
 
     it 'rejects invalid indices' do
-      expect { map.sass_index_to_list_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
-      expect { map.sass_index_to_list_index(Sass::Value::Number.new(3)) }.to raise_error(Sass::ScriptError)
-      expect { map.sass_index_to_list_index(Sass::Value::Number.new(-3)) }.to raise_error(Sass::ScriptError)
+      expect { map.sass_index_to_array_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
+      expect { map.sass_index_to_array_index(Sass::Value::Number.new(3)) }.to raise_error(Sass::ScriptError)
+      expect { map.sass_index_to_array_index(Sass::Value::Number.new(-3)) }.to raise_error(Sass::ScriptError)
     end
   end
 
@@ -249,9 +249,9 @@ describe Sass::Value::Map do
     end
 
     it 'rejects invalid indices' do
-      expect { map.sass_index_to_list_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
-      expect { map.sass_index_to_list_index(Sass::Value::Number.new(1)) }.to raise_error(Sass::ScriptError)
-      expect { map.sass_index_to_list_index(Sass::Value::Number.new(-1)) }.to raise_error(Sass::ScriptError)
+      expect { map.sass_index_to_array_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
+      expect { map.sass_index_to_array_index(Sass::Value::Number.new(1)) }.to raise_error(Sass::ScriptError)
+      expect { map.sass_index_to_array_index(Sass::Value::Number.new(-1)) }.to raise_error(Sass::ScriptError)
     end
   end
 end

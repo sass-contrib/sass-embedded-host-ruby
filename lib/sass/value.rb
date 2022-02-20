@@ -27,7 +27,7 @@ module Sass
       false
     end
 
-    def sass_index_to_list_index(sass_index, name = nil)
+    def sass_index_to_array_index(sass_index, name = nil)
       index = sass_index.assert_number(name).assert_integer(name)
       raise error('List index may not be 0', name) if index.zero?
 

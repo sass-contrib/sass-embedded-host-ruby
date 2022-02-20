@@ -116,29 +116,29 @@ describe Sass::Value::List do
     end
 
     it 'converts a positive index' do
-      expect(list.sass_index_to_list_index(Sass::Value::Number.new(1))).to be(0)
-      expect(list.sass_index_to_list_index(Sass::Value::Number.new(2))).to be(1)
-      expect(list.sass_index_to_list_index(Sass::Value::Number.new(3))).to be(2)
+      expect(list.sass_index_to_array_index(Sass::Value::Number.new(1))).to be(0)
+      expect(list.sass_index_to_array_index(Sass::Value::Number.new(2))).to be(1)
+      expect(list.sass_index_to_array_index(Sass::Value::Number.new(3))).to be(2)
     end
 
     it 'converts a negative index' do
-      expect(list.sass_index_to_list_index(Sass::Value::Number.new(-1))).to be(2)
-      expect(list.sass_index_to_list_index(Sass::Value::Number.new(-2))).to be(1)
-      expect(list.sass_index_to_list_index(Sass::Value::Number.new(-3))).to be(0)
+      expect(list.sass_index_to_array_index(Sass::Value::Number.new(-1))).to be(2)
+      expect(list.sass_index_to_array_index(Sass::Value::Number.new(-2))).to be(1)
+      expect(list.sass_index_to_array_index(Sass::Value::Number.new(-3))).to be(0)
     end
 
     it 'rejects a non-number' do
-      expect { list.sass_index_to_list_index(Sass::Value::String.new('foo')) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::String.new('foo')) }.to raise_error(Sass::ScriptError)
     end
 
     it 'rejects a non-integer' do
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(1.1)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(1.1)) }.to raise_error(Sass::ScriptError)
     end
 
     it 'rejects invalid indices' do
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(4)) }.to raise_error(Sass::ScriptError)
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(-4)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(4)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(-4)) }.to raise_error(Sass::ScriptError)
     end
   end
 
@@ -264,17 +264,17 @@ describe Sass::Value::List do
 
     describe 'Sass to Ruby index conversion' do
       it 'converts a positive index' do
-        expect(string.sass_index_to_list_index(Sass::Value::Number.new(1))).to eq(0)
+        expect(string.sass_index_to_array_index(Sass::Value::Number.new(1))).to eq(0)
       end
 
       it 'converts a negative index' do
-        expect(string.sass_index_to_list_index(Sass::Value::Number.new(-1))).to eq(0)
+        expect(string.sass_index_to_array_index(Sass::Value::Number.new(-1))).to eq(0)
       end
 
       it 'rejects invalid indices' do
-        expect { string.sass_index_to_list_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
-        expect { string.sass_index_to_list_index(Sass::Value::Number.new(2)) }.to raise_error(Sass::ScriptError)
-        expect { string.sass_index_to_list_index(Sass::Value::Number.new(-2)) }.to raise_error(Sass::ScriptError)
+        expect { string.sass_index_to_array_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
+        expect { string.sass_index_to_array_index(Sass::Value::Number.new(2)) }.to raise_error(Sass::ScriptError)
+        expect { string.sass_index_to_array_index(Sass::Value::Number.new(-2)) }.to raise_error(Sass::ScriptError)
       end
     end
 
@@ -338,9 +338,9 @@ describe Sass::Value::List do
     end
 
     it 'rejects invalid indices' do
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(1)) }.to raise_error(Sass::ScriptError)
-      expect { list.sass_index_to_list_index(Sass::Value::Number.new(-1)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(0)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(1)) }.to raise_error(Sass::ScriptError)
+      expect { list.sass_index_to_array_index(Sass::Value::Number.new(-1)) }.to raise_error(Sass::ScriptError)
     end
 
     it 'at() always returns nil' do
