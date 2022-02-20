@@ -8,7 +8,7 @@ module Sass
         attr_reader :logger
 
         def initialize(logger)
-          @logger = logger
+          @logger = Structifier.to_struct(logger)
         end
 
         def log(event)

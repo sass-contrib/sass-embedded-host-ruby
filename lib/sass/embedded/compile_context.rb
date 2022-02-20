@@ -27,11 +27,9 @@ module Sass
                      logger:,
                      quiet_deps:,
                      verbose:)
-        @function_registery = FunctionRegistry.new(functions.transform_keys(&:to_s))
-        @importer_registery = ImporterRegistry.new(importers.map do |obj|
-          Protofier.to_struct(obj)
-        end, load_paths)
-        @logger_registery = LoggerRegistry.new(Protofier.to_struct(logger))
+        @function_registery = FunctionRegistry.new(functions)
+        @importer_registery = ImporterRegistry.new(importers, load_paths)
+        @logger_registery = LoggerRegistry.new(logger)
 
         super(channel)
 
@@ -42,7 +40,7 @@ module Sass
                       source: source,
                       url: url&.to_s,
                       syntax: Protofier.to_proto_syntax(syntax),
-                      importer: importer.nil? ? nil : @importer_registery.register(Protofier.to_struct(importer))
+                      importer: @importer_registery.register(importer)
                     )
                   end,
           path: path,

@@ -8,6 +8,8 @@ module Sass
         attr_reader :global_functions
 
         def initialize(functions)
+          functions = functions.transform_keys(&:to_s)
+
           @global_functions = functions.keys
           @functions_by_name = functions.transform_keys do |signature|
             signature = signature.chomp

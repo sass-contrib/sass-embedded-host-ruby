@@ -20,6 +20,10 @@ module Sass
         end
 
         def register(importer)
+          return if importer.nil?
+
+          importer = Structifier.to_struct(importer)
+
           is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
           is_file_importer = importer.respond_to?(:find_file_url)
 
@@ -56,7 +60,7 @@ module Sass
 
         def import(import_request)
           importer = @importers_by_id[import_request.importer_id]
-          importer_result = Protofier.to_struct importer.load(import_request.url)
+          importer_result = Structifier.to_struct importer.load(import_request.url)
 
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,

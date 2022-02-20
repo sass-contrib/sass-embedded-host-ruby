@@ -303,24 +303,6 @@ module Sass
             raise ArgumentError, 'style must be one of :expanded, :compressed'
           end
         end
-
-        def to_struct(obj)
-          return obj unless obj.is_a? Hash
-
-          struct = Object.new
-          obj.each do |key, value|
-            if value.respond_to? :call
-              struct.define_singleton_method key.to_sym do |*args, **kwargs|
-                value.call(*args, **kwargs)
-              end
-            else
-              struct.define_singleton_method key.to_sym do
-                value
-              end
-            end
-          end
-          struct
-        end
       end
     end
 
