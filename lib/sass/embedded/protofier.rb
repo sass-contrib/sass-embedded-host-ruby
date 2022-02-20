@@ -29,7 +29,7 @@ module Sass
         when Sass::Value::Number
           Sass::EmbeddedProtocol::Value.new(
             number: Sass::EmbeddedProtocol::Value::Number.new(
-              value: obj.value,
+              value: obj.value.to_f,
               numerators: obj.numerator_units,
               denominators: obj.denominator_units
             )
@@ -41,43 +41,43 @@ module Sass
                 red: obj.red,
                 green: obj.green,
                 blue: obj.blue,
-                alpha: obj.alpha
+                alpha: obj.alpha.to_f
               )
             )
           elsif obj.instance_eval { @saturation.nil? }
             Sass::EmbeddedProtocol::Value.new(
               hwb_color: Sass::EmbeddedProtocol::Value::HwbColor.new(
-                hue: obj.hue,
-                whiteness: obj.whiteness,
-                blackness: obj.blackness,
-                alpha: obj.alpha
+                hue: obj.hue.to_f,
+                whiteness: obj.whiteness.to_f,
+                blackness: obj.blackness.to_f,
+                alpha: obj.alpha.to_f
               )
             )
           else
             Sass::EmbeddedProtocol::Value.new(
               hsl_color: Sass::EmbeddedProtocol::Value::HslColor.new(
-                hue: obj.hue,
-                saturation: obj.saturation,
-                lightness: obj.lightness,
-                alpha: obj.alpha
+                hue: obj.hue.to_f,
+                saturation: obj.saturation.to_f,
+                lightness: obj.lightness.to_f,
+                alpha: obj.alpha.to_f
               )
             )
           end
-        when Sass::Value::List
-          Sass::EmbeddedProtocol::Value.new(
-            list: Sass::EmbeddedProtocol::Value::List.new(
-              separator: to_proto_separator(obj.separator),
-              has_brackets: obj.bracketed?,
-              contents: obj.contents.map(method(:to_proto))
-            )
-          )
         when Sass::Value::ArgumentList
           Sass::EmbeddedProtocol::Value.new(
             argument_list: Sass::EmbeddedProtocol::Value::ArgumentList.new(
               id: obj.instance_eval { @id },
+              contents: obj.contents.map { |element| to_proto_value(element) },
+              keywords: obj.keywords.transform_values { |value| to_proto_value(value) },
+              separator: to_proto_separator(obj.separator)
+            )
+          )
+        when Sass::Value::List
+          Sass::EmbeddedProtocol::Value.new(
+            list: Sass::EmbeddedProtocol::Value::List.new(
+              contents: obj.contents.map { |element| to_proto_value(element) },
               separator: to_proto_separator(obj.separator),
-              contents: obj.contents.map(method(:to_proto)),
-              keywords: obj.keywords.transform_values(method(:to_proto))
+              has_brackets: obj.bracketed?
             )
           )
         when Sass::Value::Map
@@ -115,7 +115,7 @@ module Sass
             singleton: :NULL
           )
         else
-          raise ArgumentError, "Unknown Sass::Value #{obj}"
+          raise Sass::ScriptError, "Unknown Sass::Value #{obj}"
         end
       end
 
@@ -154,6 +154,19 @@ module Sass
             blackness: value.blackness,
             alpha: value.alpha
           )
+        when :argument_list
+          Sass::Value::ArgumentList.new(
+            value.contents.map do |i|
+              from_proto_value(i)
+            end,
+            value.keywords.entries.to_h do |entry|
+              [entry.first, from_proto_value(entry.last)]
+            end,
+            from_proto_separator(value.separator)
+          ).instance_eval do
+            @id = value.id
+            self
+          end
         when :list
           Sass::Value::List.new(
             value.contents.map do |element|
@@ -162,18 +175,6 @@ module Sass
             separator: from_proto_separator(value.separator),
             bracketed: value.has_brackets
           )
-        when :argument_list
-          Sass::Value::ArgumentList.new(
-            value.contents.map do |i|
-              from_proto_value(i)
-            end,
-            value.keywords.entries.to_h do |entry|
-              [entry.first, from_proto_value(entry.last)]
-            end
-          ).instance_eval do
-            @id = value.id
-            self
-          end
         when :map
           Sass::Value::Map.new(
             value.entries.to_h do |entry|
@@ -185,7 +186,7 @@ module Sass
         when :host_function
           raise ProtocolError, 'The compiler may not send Value.host_function to host'
         when :singleton
-          case value.singleton
+          case value
           when :TRUE
             Sass::Value::Boolean::TRUE
           when :FALSE
@@ -193,10 +194,42 @@ module Sass
           when :NULL
             Sass::Value::Null::NULL
           else
-            raise "Unknown Value.singleton #{value.singleton}"
+            raise Sass::ScriptError "Unknown Value.singleton #{value}"
           end
         else
-          raise "Unknown Value.value #{value}"
+          raise Sass::ScriptError "Unknown Value.value #{value}"
+        end
+      end
+
+      private
+
+      def to_proto_separator(separator)
+        case separator
+        when ','
+          :COMMA
+        when ' '
+          :SPACE
+        when '/'
+          :SLASH
+        when nil
+          :UNDECIDED
+        else
+          raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
+        end
+      end
+
+      def from_proto_separator(separator)
+        case separator
+        when :COMMA
+          ','
+        when :SPACE
+          ' '
+        when :SLASH
+          '/'
+        when :UNDECIDED
+          nil
+        else
+          raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
         end
       end
 
@@ -245,36 +278,6 @@ module Sass
           EmbeddedProtocol::InboundMessage.new(
             ONEOF_MESSAGE[message.class.descriptor] => message
           ).to_proto
-        end
-
-        def to_proto_separator(separator)
-          case separator
-          when ','
-            :COMMA
-          when ' '
-            :SPACE
-          when '/'
-            :SLASH
-          when nil
-            :UNDECIDED
-          else
-            raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
-          end
-        end
-
-        def from_proto_separator(separator)
-          case separator
-          when :COMMA
-            ','
-          when :SPACE
-            ' '
-          when :SLASH
-            '/'
-          when :UNDECIDED
-            nil
-          else
-            raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
-          end
         end
 
         def to_proto_syntax(syntax)
