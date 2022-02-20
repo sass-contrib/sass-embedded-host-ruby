@@ -112,73 +112,73 @@ module Sass
         end
 
         def from_proto(proto)
-          value = proto.method(proto.value).call
+          obj = proto.method(proto.value).call
           case proto.value
           when :string
             Sass::Value::String.new(
-              value.text,
-              quoted: value.quoted
+              obj.text,
+              quoted: obj.quoted
             )
           when :number
             Sass::Value::Number.new(
-              value.value,
-              value.numerators,
-              value.denominators
+              obj.value,
+              obj.numerators,
+              obj.denominators
             )
           when :rgb_color
             Sass::Value::Color.new(
-              red: value.red,
-              green: value.green,
-              blue: value.blue,
-              alpha: value.alpha
+              red: obj.red,
+              green: obj.green,
+              blue: obj.blue,
+              alpha: obj.alpha
             )
           when :hsl_color
             Sass::Value::Color.new(
-              hue: value.hue,
-              saturation: value.saturation,
-              lightness: value.lightness,
-              alpha: value.alpha
+              hue: obj.hue,
+              saturation: obj.saturation,
+              lightness: obj.lightness,
+              alpha: obj.alpha
             )
           when :hwb_color
             Sass::Value::Color.new(
-              hue: value.hue,
-              whiteness: value.whiteness,
-              blackness: value.blackness,
-              alpha: value.alpha
+              hue: obj.hue,
+              whiteness: obj.whiteness,
+              blackness: obj.blackness,
+              alpha: obj.alpha
             )
           when :argument_list
             Sass::Value::ArgumentList.new(
-              value.contents.map do |i|
-                from_proto(i)
+              obj.contents.map do |element|
+                from_proto(element)
               end,
-              value.keywords.entries.to_h do |entry|
+              obj.keywords.entries.to_h do |entry|
                 [entry.first, from_proto(entry.last)]
               end,
-              from_proto_separator(value.separator)
+              from_proto_separator(obj.separator)
             ).instance_eval do
-              @id = value.id
+              @id = obj.id
               self
             end
           when :list
             Sass::Value::List.new(
-              value.contents.map do |element|
+              obj.contents.map do |element|
                 from_proto(element)
               end,
-              separator: from_proto_separator(value.separator),
-              bracketed: value.has_brackets
+              separator: from_proto_separator(obj.separator),
+              bracketed: obj.has_brackets
             )
           when :map
             Sass::Value::Map.new(
-              value.entries.to_h do |entry|
+              obj.entries.to_h do |entry|
                 [from_proto(entry.key), from_proto(entry.value)]
               end
             )
           when :compiler_function
-            Sass::Value::Function.new(value.id)
+            Sass::Value::Function.new(obj.id)
           when :host_function
             raise ProtocolError, 'The compiler may not send Value.host_function to host'
           when :singleton
-            case value
+            case obj
             when :TRUE
               Sass::Value::Boolean::TRUE
             when :FALSE
@@ -186,10 +186,10 @@ module Sass
             when :NULL
               Sass::Value::Null::NULL
             else
-              raise Sass::ScriptError "Unknown Value.singleton #{value}"
+              raise Sass::ScriptError, "Unknown Value.singleton #{obj}"
             end
           else
-            raise Sass::ScriptError, "Unknown Value.value #{value}"
+            raise Sass::ScriptError, "Unknown Value.value #{obj}"
           end
         end
 
