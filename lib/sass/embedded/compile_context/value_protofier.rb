@@ -112,7 +112,7 @@ module Sass
         end
 
         def from_proto(proto)
-          obj = proto.method(proto.value).call
+          obj = proto.send(proto.value)
           case proto.value
           when :string
             Sass::Value::String.new(

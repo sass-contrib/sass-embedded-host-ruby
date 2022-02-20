@@ -52,7 +52,7 @@ module Sass
 
       def from_proto_message(proto)
         message = EmbeddedProtocol::OutboundMessage.decode(proto)
-        message.method(message.message).call
+        message.send(message.message)
       end
 
       def to_proto_message(message)
