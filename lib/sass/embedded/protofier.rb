@@ -11,14 +11,7 @@ module Sass
         [field_descriptor.subtype, field_descriptor.name]
       end
 
-      ONEOF_VALUE = EmbeddedProtocol::Value
-                    .descriptor
-                    .lookup_oneof('value')
-                    .to_h do |field_descriptor|
-        [field_descriptor.subtype, field_descriptor.name]
-      end
-
-      private_constant :ONEOF_MESSAGE, :ONEOF_VALUE
+      private_constant :ONEOF_MESSAGE
 
       def initialize(function_registry)
         @function_registry = function_registry
