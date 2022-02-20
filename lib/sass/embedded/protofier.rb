@@ -197,7 +197,7 @@ module Sass
             raise Sass::ScriptError "Unknown Value.singleton #{value}"
           end
         else
-          raise Sass::ScriptError "Unknown Value.value #{value}"
+          raise Sass::ScriptError, "Unknown Value.value #{value}"
         end
       end
 
