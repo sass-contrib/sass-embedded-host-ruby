@@ -237,7 +237,7 @@ module Sass
         def from_proto_compile_response(compile_response)
           if compile_response.result == :failure
             raise CompileError.new(
-              compile_response.failure.formatted,
+              compile_response.failure.formatted || compile_response.failure.message,
               compile_response.failure.message,
               compile_response.failure.stack_trace,
               from_proto_source_span(compile_response.failure.span)
