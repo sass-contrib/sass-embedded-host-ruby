@@ -44,21 +44,21 @@ module Sass
                 alpha: obj.alpha
               )
             )
-          elsif value.instance_eval { @whiteness.nil? }
-            Sass::EmbeddedProtocol::Value.new(
-              hsl_color: Sass::EmbeddedProtocol::Value::HslColor.new(
-                hue: obj.hue,
-                saturation: obj.saturation,
-                lightness: obj.lightness,
-                alpha: obj.alpha
-              )
-            )
-          else
+          elsif value.instance_eval { @saturation.nil? }
             Sass::EmbeddedProtocol::Value.new(
               hwb_color: Sass::EmbeddedProtocol::Value::HwbColor.new(
                 hue: obj.hue,
                 whiteness: obj.whiteness,
                 blackness: obj.blackness,
+                alpha: obj.alpha
+              )
+            )
+          else
+            Sass::EmbeddedProtocol::Value.new(
+              hsl_color: Sass::EmbeddedProtocol::Value::HslColor.new(
+                hue: obj.hue,
+                saturation: obj.saturation,
+                lightness: obj.lightness,
                 alpha: obj.alpha
               )
             )
