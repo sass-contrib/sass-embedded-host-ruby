@@ -12,9 +12,9 @@ module Sass
       @span = span
     end
 
-    def full_message(**kwargs)
+    def full_message(*_args, **_kwargs)
       if @full_message.nil?
-        super.full_message(**kwargs)
+        super
       else
         @full_message
       end
