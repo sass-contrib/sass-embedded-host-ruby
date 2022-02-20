@@ -106,36 +106,15 @@ module Sass
       end
 
       def read
-        length = read_varint(@stdout)
+        length = Varint.read(@stdout)
         @stdout.read(length)
       end
 
       def write(payload)
         @stdin_mutex.synchronize do
-          write_varint(@stdin, payload.length)
-          @stdin.write payload
+          Varint.write(@stdin, payload.length)
+          @stdin.write(payload)
         end
-      end
-
-      def read_varint(readable)
-        value = bits = 0
-        loop do
-          byte = readable.readbyte
-          value |= (byte & 0x7f) << bits
-          bits += 7
-          break if byte < 0x80
-        end
-        value
-      end
-
-      def write_varint(writeable, value)
-        bytes = []
-        until value < 0x80
-          bytes << (0x80 | (value & 0x7f))
-          value >>= 7
-        end
-        bytes << value
-        writeable.write bytes.pack('C*')
       end
     end
 
