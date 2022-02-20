@@ -13,7 +13,11 @@ module Sass
         obj.each do |key, value|
           if value.respond_to? :call
             struct.define_singleton_method key.to_sym do |*args, **kwargs|
-              value.call(*args, **kwargs)
+              if kwargs.empty?
+                value.call(*args)
+              else
+                value.call(*args, **kwargs)
+              end
             end
           else
             struct.define_singleton_method key.to_sym do

@@ -27,7 +27,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     'README.md'
   ]
 
-  spec.required_ruby_version = '>= 2.7.0'
+  spec.required_ruby_version = '>= 2.6.0'
 
   spec.add_dependency 'google-protobuf', '~> 3.19.0'
 
