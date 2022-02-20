@@ -25,82 +25,105 @@ module Sass
       end
 
       def to_proto_value(obj)
-        value = case obj
-                when Sass::Value::String
-                  Sass::EmbeddedProtocol::Value::String.new(
-                    text: obj.text,
-                    quoted: obj.quoted?
-                  )
-                when Sass::Value::Number
-                  Sass::EmbeddedProtocol::Value::Number.new(
-                    value: obj.value,
-                    numerators: obj.numerator_units,
-                    denominators: obj.denominator_units
-                  )
-                when Sass::Value::Color
-                  if value.instance_eval { @hue.nil? }
-                    Sass::EmbeddedProtocol::Value::RgbColor.new(
-                      hue: obj.hue,
-                      saturation: obj.saturation,
-                      lightness: obj.lightness,
-                      alpha: obj.alpha
-                    )
-                  else
-                    Sass::EmbeddedProtocol::Value::HslColor.new(
-                      red: obj.red,
-                      green: obj.green,
-                      blue: obj.blue,
-                      alpha: obj.alpha
-                    )
-                  end
-                when Sass::Value::List
-                  Sass::EmbeddedProtocol::Value::List.new(
-                    separator: to_proto_separator(obj.separator),
-                    has_brackets: obj.bracketed?,
-                    contents: obj.contents.map(method(:to_proto))
-                  )
-                when Sass::Value::ArgumentList
-                  Sass::EmbeddedProtocol::Value::ArgumentList.new(
-                    id: obj.instance_eval { @id },
-                    separator: to_proto_separator(obj.separator),
-                    contents: obj.contents.map(method(:to_proto)),
-                    keywords: obj.keywords.transform_values(method(:to_proto))
-                  )
-                when Sass::Value::Map
-                  Sass::EmbeddedProtocol::Value::Map.new(
-                    entries: obj.to_a.map do |entry|
-                      Sass::EmbeddedProtocol::Value::Map::Entry.new(
-                        key: to_proto_value(entry.first),
-                        value: to_proto_value(entry.last)
-                      )
-                    end
-                  )
-                when Sass::Value::Function
-                  if obj.id
-                    Sass::EmbeddedProtocol::Value::CompilerFunction.new(
-                      id: obj.id
-                    )
-                  else
-                    Sass::EmbeddedProtocol::Value::HostFunction.new(
-                      id: @function_registry.register(obj.callback),
-                      signature: obj.signature
-                    )
-                  end
-                when Sass::Value::Boolean
-                  return Sass::EmbeddedProtocol::Value.new(
-                    singleton: obj.value ? :TRUE : :FALSE
-                  )
-                when Sass::Value::Null
-                  return Sass::EmbeddedProtocol::Value.new(
-                    singleton: :NULL
-                  )
-                else
-                  raise ArgumentError
-                end
-
-        Sass::EmbeddedProtocol::Value.new(
-          ONEOF_VALUE[value.class.descriptor] => value
-        )
+        case obj
+        when Sass::Value::String
+          Sass::EmbeddedProtocol::Value.new(
+            string: Sass::EmbeddedProtocol::Value::String.new(
+              text: obj.text,
+              quoted: obj.quoted?
+            )
+          )
+        when Sass::Value::Number
+          Sass::EmbeddedProtocol::Value.new(
+            number: Sass::EmbeddedProtocol::Value::Number.new(
+              value: obj.value,
+              numerators: obj.numerator_units,
+              denominators: obj.denominator_units
+            )
+          )
+        when Sass::Value::Color
+          if value.instance_eval { @hue.nil? }
+            Sass::EmbeddedProtocol::Value.new(
+              rgb_color: Sass::EmbeddedProtocol::Value::RgbColor.new(
+                red: obj.red,
+                green: obj.green,
+                blue: obj.blue,
+                alpha: obj.alpha
+              )
+            )
+          elsif value.instance_eval { @whiteness.nil? }
+            Sass::EmbeddedProtocol::Value.new(
+              hsl_color: Sass::EmbeddedProtocol::Value::HslColor.new(
+                hue: obj.hue,
+                saturation: obj.saturation,
+                lightness: obj.lightness,
+                alpha: obj.alpha
+              )
+            )
+          else
+            Sass::EmbeddedProtocol::Value.new(
+              hwb_color: Sass::EmbeddedProtocol::Value::HwbColor.new(
+                hue: obj.hue,
+                whiteness: obj.whiteness,
+                blackness: obj.blackness,
+                alpha: obj.alpha
+              )
+            )
+          end
+        when Sass::Value::List
+          Sass::EmbeddedProtocol::Value.new(
+            list: Sass::EmbeddedProtocol::Value::List.new(
+              separator: to_proto_separator(obj.separator),
+              has_brackets: obj.bracketed?,
+              contents: obj.contents.map(method(:to_proto))
+            )
+          )
+        when Sass::Value::ArgumentList
+          Sass::EmbeddedProtocol::Value.new(
+            argument_list: Sass::EmbeddedProtocol::Value::ArgumentList.new(
+              id: obj.instance_eval { @id },
+              separator: to_proto_separator(obj.separator),
+              contents: obj.contents.map(method(:to_proto)),
+              keywords: obj.keywords.transform_values(method(:to_proto))
+            )
+          )
+        when Sass::Value::Map
+          Sass::EmbeddedProtocol::Value.new(
+            map: Sass::EmbeddedProtocol::Value::Map.new(
+              entries: obj.contents.map do |key, value|
+                Sass::EmbeddedProtocol::Value::Map::Entry.new(
+                  key: to_proto_value(key),
+                  value: to_proto_value(value)
+                )
+              end
+            )
+          )
+        when Sass::Value::Function
+          if obj.id
+            Sass::EmbeddedProtocol::Value.new(
+              compiler_function: Sass::EmbeddedProtocol::Value::CompilerFunction.new(
+                id: obj.id
+              )
+            )
+          else
+            Sass::EmbeddedProtocol::Value.new(
+              host_function: Sass::EmbeddedProtocol::Value::HostFunction.new(
+                id: @function_registry.register(obj.callback),
+                signature: obj.signature
+              )
+            )
+          end
+        when Sass::Value::Boolean
+          Sass::EmbeddedProtocol::Value.new(
+            singleton: obj.value ? :TRUE : :FALSE
+          )
+        when Sass::Value::Null
+          Sass::EmbeddedProtocol::Value.new(
+            singleton: :NULL
+          )
+        else
+          raise ArgumentError, "Unknown Sass::Value #{obj}"
+        end
       end
 
       def from_proto_value(proto)
