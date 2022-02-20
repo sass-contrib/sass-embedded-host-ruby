@@ -5,7 +5,7 @@ require 'fileutils'
 require 'json'
 require 'mkmf'
 require 'open-uri'
-require_relative '../../lib/sass/embedded/compiler/path'
+require_relative '../../lib/sass/embedded/compiler'
 
 module Sass
   class Embedded

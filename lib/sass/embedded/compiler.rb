@@ -11,6 +11,10 @@ module Sass
     class Compiler
       include Observable
 
+      PATH = File.absolute_path(
+        "../../../ext/sass/sass_embedded/dart-sass-embedded#{Gem.win_platform? ? '.bat' : ''}", __dir__
+      )
+
       PROTOCOL_ERROR_ID = 4_294_967_295
 
       def initialize
