@@ -10,6 +10,11 @@ updates:
     schedule:
       interval: "daily"
 
+  - package-ecosystem: "npm"
+    directory: "/ext/sass"
+    schedule:
+      interval: "daily"
+
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:

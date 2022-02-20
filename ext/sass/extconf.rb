@@ -6,7 +6,6 @@ require 'json'
 require 'mkmf'
 require 'open-uri'
 require_relative '../../lib/sass/embedded/compiler/path'
-require_relative '../../lib/sass/embedded/compiler/requirements'
 
 module Sass
   class Embedded
@@ -123,56 +122,12 @@ module Sass
         raise
       end
 
-      def resolve_tag_name(repo, *requirements, gh_release: true)
-        requirements = Gem::Requirement.create(*requirements)
-
-        satisfied = lambda { |version|
-          Gem::Version.correct?(version) && requirements.satisfied_by?(Gem::Version.new(version))
-        }
-
-        headers = {}
-        headers['Authorization'] = "token #{ENV['GITHUB_TOKEN']}" if ENV['GITHUB_TOKEN']
-
-        begin
-          if gh_release
-            releases_uri = "https://github.com/#{repo}/releases"
-            uri = "#{releases_uri}/latest"
-            tag_name = URI.parse(uri).open do |file|
-              return nil if file.base_uri == releases_uri
-
-              latest = File.basename file.base_uri.to_s
-              latest if satisfied.call latest
-            end
-
-            return tag_name unless tag_name.nil?
-
-            uri = "https://api.github.com/repos/#{repo}/releases?per_page=100"
-            tag_name = URI.parse(uri).open(headers) do |file|
-              JSON.parse(file.read).map { |release| release['tag_name'] }
-            end
-                          .find(satisfied)&.peek
-          else
-            uri = "https://api.github.com/repos/#{repo}/tags?per_page=100"
-            tag_name = URI.parse(uri).open(headers) do |file|
-              JSON.parse(file.read).map { |tag| tag['name'] }
-            end
-                          .find(satisfied)&.peek
-          end
-
-          return tag_name unless tag_name.nil?
-        rescue OpenURI::HTTPError => e
-          warn "WARNING:  Error fetching #{uri}: #{e}"
-        end
-
-        requirements.requirements
-                    .map { |requirement| requirement.last.to_s.gsub('.pre.', '-') }
-                    .find(satisfied)&.peek
-      end
-
       def default_sass_embedded
         repo = 'sass/dart-sass-embedded'
 
-        tag_name = resolve_tag_name(repo, Compiler::REQUIREMENTS)
+        spec = JSON.parse(File.read(File.absolute_path('package.json', __dir__)))
+
+        tag_name = spec['dependencies']['sass-embedded']
 
         os = case Platform::OS
              when 'darwin'

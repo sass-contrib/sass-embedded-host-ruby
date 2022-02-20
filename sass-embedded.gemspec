@@ -20,6 +20,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.extensions    = ['ext/sass/extconf.rb']
   spec.files         = Dir['lib/**/*.rb'] + [
     'ext/sass/extconf.rb',
+    'ext/sass/package.json',
     'ext/sass/unzip.vbs',
     'ext/sass/Makefile',
     'LICENSE',
