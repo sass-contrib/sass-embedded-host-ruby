@@ -52,7 +52,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
-            error: e.message
+            error: e.full_message
           )
         end
 
@@ -71,7 +71,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,
-            error: e.message
+            error: e.full_message
           )
         end
 
@@ -88,7 +88,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
-            error: e.message
+            error: e.full_message
           )
         end
       end

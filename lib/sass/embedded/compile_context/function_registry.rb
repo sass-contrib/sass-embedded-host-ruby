@@ -59,7 +59,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
             id: function_call_request.id,
-            error: e.message
+            error: e.full_message
           )
         end
 
