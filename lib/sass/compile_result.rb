@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  # The {CompileResult} of {Embedded#compile} or {Embedded#compile_string}.
+  # The result of compiling Sass to CSS. Returned by {Sass.compile} and {Sass.compile_string}.
   class CompileResult
     attr_reader :css, :source_map, :loaded_urls
 

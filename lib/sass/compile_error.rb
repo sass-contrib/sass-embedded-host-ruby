@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  # The {CompileError} raised by {Embedded#compile} or {Embedded#compile_string}.
+  # An exception thrown because a Sass compilation failed.
   class CompileError < StandardError
     attr_accessor :sass_message, :sass_stack, :span
 

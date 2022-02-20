@@ -2,7 +2,9 @@
 
 module Sass
   module Logger
-    # The {SourceLocation} in {SourceSpan}.
+    # A specific location within a source file.
+    #
+    # This is always associated with a {SourceSpan} which indicates which file it refers to.
     class SourceLocation
       attr_reader :offset, :line, :column
 

@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'source_location'
-
 module Sass
   module Logger
-    # The {SourceSpan} in {CompileError}.
+    # A span of text within a source file.
     class SourceSpan
       attr_reader :start, :end, :text, :url, :context
 

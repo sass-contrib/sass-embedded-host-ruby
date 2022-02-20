@@ -2,7 +2,7 @@
 
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
-  # its own {Channel}.
+  # its own communication {Channel} with a dedicated compiler process.
   #
   # @example
   #   embedded = Sass::Embedded.new

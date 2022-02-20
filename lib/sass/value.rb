@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  # The {Value} abstract class.
+  # The abstract base class of Sass's value types.
   class Value
     def to_a
       [self]

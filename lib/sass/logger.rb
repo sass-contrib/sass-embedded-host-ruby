@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module Sass
-  # The {Logger} module.
+  # A namespace for built-in Loggers.
   module Logger
     module_function
 
-    # The instance of a silent {Logger}.
+    # A Logger that silently ignores all warnings and debug messages.
     def silent
       Silent
     end
 
-    # The silent {Logger}.
+    # A Logger that silently ignores all warnings and debug messages.
     module Silent
       module_function
 
