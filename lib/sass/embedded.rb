@@ -37,27 +37,25 @@ module Sass
 
       raise ArgumentError, 'path must be set' if path.nil?
 
-      message = CompileContext.new(@channel,
-                                   path: path,
-                                   source: nil,
-                                   importer: nil,
-                                   load_paths: load_paths,
-                                   syntax: nil,
-                                   url: nil,
-                                   source_map: source_map,
-                                   source_map_include_sources: source_map_include_sources,
-                                   style: style,
-                                   functions: functions,
-                                   importers: importers,
-                                   alert_color: alert_color,
-                                   alert_ascii: alert_ascii,
-                                   logger: logger,
-                                   quiet_deps: quiet_deps,
-                                   verbose: verbose).receive_message
-
-      raise CompileError.from_proto(message.failure) if message.failure
-
-      CompileResult.from_proto(message.success)
+      Protofier.from_proto_compile_response(
+        CompileContext.new(@channel,
+                           path: path,
+                           source: nil,
+                           importer: nil,
+                           load_paths: load_paths,
+                           syntax: nil,
+                           url: nil,
+                           source_map: source_map,
+                           source_map_include_sources: source_map_include_sources,
+                           style: style,
+                           functions: functions,
+                           importers: importers,
+                           alert_color: alert_color,
+                           alert_ascii: alert_ascii,
+                           logger: logger,
+                           quiet_deps: quiet_deps,
+                           verbose: verbose).receive_message
+      )
     end
 
     # The {Embedded#compile_string} method.
@@ -85,27 +83,25 @@ module Sass
                        verbose: false)
       raise ArgumentError, 'source must be set' if source.nil?
 
-      message = CompileContext.new(@channel,
-                                   path: nil,
-                                   source: source,
-                                   importer: importer,
-                                   load_paths: load_paths,
-                                   syntax: syntax,
-                                   url: url,
-                                   source_map: source_map,
-                                   source_map_include_sources: source_map_include_sources,
-                                   style: style,
-                                   functions: functions,
-                                   importers: importers,
-                                   alert_color: alert_color,
-                                   alert_ascii: alert_ascii,
-                                   logger: logger,
-                                   quiet_deps: quiet_deps,
-                                   verbose: verbose).receive_message
-
-      raise CompileError.from_proto(message.failure) if message.failure
-
-      CompileResult.from_proto(message.success)
+      Protofier.from_proto_compile_response(
+        CompileContext.new(@channel,
+                           path: nil,
+                           source: source,
+                           importer: importer,
+                           load_paths: load_paths,
+                           syntax: syntax,
+                           url: url,
+                           source_map: source_map,
+                           source_map_include_sources: source_map_include_sources,
+                           style: style,
+                           functions: functions,
+                           importers: importers,
+                           alert_color: alert_color,
+                           alert_ascii: alert_ascii,
+                           logger: logger,
+                           quiet_deps: quiet_deps,
+                           verbose: verbose).receive_message
+      )
     end
 
     # The {Embedded#info} method.

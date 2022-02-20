@@ -11,15 +11,6 @@ module Sass
     class Compiler
       include Observable
 
-      ONEOF_MESSAGE = EmbeddedProtocol::InboundMessage
-                      .descriptor
-                      .lookup_oneof('message')
-                      .to_h do |field_descriptor|
-        [field_descriptor.subtype, field_descriptor.name]
-      end
-
-      private_constant :ONEOF_MESSAGE
-
       def initialize
         @observerable_mutex = Mutex.new
         @id = 0
@@ -32,7 +23,7 @@ module Sass
           warn(@stderr.readline, uplevel: 1)
         end
         poll do
-          receive_proto read
+          receive_message Protofier.from_proto_message read
         end
       end
 
@@ -57,9 +48,7 @@ module Sass
       end
 
       def send_message(message)
-        write EmbeddedProtocol::InboundMessage.new(
-          ONEOF_MESSAGE[message.class.descriptor] => message
-        ).to_proto
+        write Protofier.to_proto_message message
       end
 
       def close
@@ -105,9 +94,7 @@ module Sass
         end
       end
 
-      def receive_proto(proto)
-        payload = EmbeddedProtocol::OutboundMessage.decode(proto)
-        message = payload.method(payload.message).call
+      def receive_message(message)
         case message
         when EmbeddedProtocol::ProtocolError
           raise ProtocolError, message.message

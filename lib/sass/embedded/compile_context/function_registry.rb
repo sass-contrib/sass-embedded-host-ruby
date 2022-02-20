@@ -37,10 +37,10 @@ module Sass
 
         def function_call(function_call_request)
           arguments = function_call_request.arguments.map do |argument|
-            protofier.from_proto(argument)
+            protofier.from_proto_value(argument)
           end
 
-          success = protofier.to_proto(get(function_call_request).call(arguments))
+          success = protofier.to_proto_value(get(function_call_request).call(arguments))
           accessed_argument_lists = arguments
                                     .filter do |argument|
                                       argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval do

@@ -108,14 +108,14 @@ module Sass
         case event.type
         when :DEBUG
           if @logger.respond_to? :debug
-            @logger.debug(event.message, span: Logger::SourceSpan.from_proto(event.span))
+            @logger.debug(event.message, span: Protofier.from_proto_source_span(event.span))
           else
             Kernel.warn(event.formatted)
           end
         when :DEPRECATION_WARNING
           if @logger.respond_to? :warn
             @logger.warn(event.message, deprecation: true,
-                                        span: Logger::SourceSpan.from_proto(event.span),
+                                        span: Protofier.from_proto_source_span(event.span),
                                         stack: event.stack_trace)
           else
             Kernel.warn(event.formatted)
@@ -123,7 +123,7 @@ module Sass
         when :WARNING
           if @logger.respond_to? :warn
             @logger.warn(event.message, deprecation: false,
-                                        span: Logger::SourceSpan.from_proto(event.span),
+                                        span: Protofier.from_proto_source_span(event.span),
                                         stack: event.stack_trace)
           else
             Kernel.warn(event.formatted)

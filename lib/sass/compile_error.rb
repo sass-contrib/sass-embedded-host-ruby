@@ -11,12 +11,5 @@ module Sass
       @sass_stack = sass_stack
       @span = span
     end
-
-    def self.from_proto(compile_failure)
-      CompileError.new(compile_failure.formatted,
-                       compile_failure.message,
-                       compile_failure.stack_trace,
-                       Logger::SourceSpan.from_proto(compile_failure.span))
-    end
   end
 end
