@@ -16,14 +16,6 @@ module Sass
         (number1 - number2).abs < EPSILON
       end
 
-      def hash(number)
-        @hash ||= if number.finite?
-                    (number * INVERSE_EPSILON).round.hash
-                  else
-                    number.hash
-                  end
-      end
-
       def less_than(number1, number2)
         number1 < number2 && !equals(number1, number2)
       end
@@ -73,6 +65,14 @@ module Sass
 
         message = "#{number} must be between #{min} and #{max}."
         raise Sass::ScriptError, name.nil? ? message : "$#{name}: #{message}"
+      end
+
+      def hash(number)
+        @hash ||= if number.finite?
+                    (number * INVERSE_EPSILON).round.hash
+                  else
+                    number.hash
+                  end
       end
     end
 
