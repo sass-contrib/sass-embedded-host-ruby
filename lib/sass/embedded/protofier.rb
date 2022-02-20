@@ -121,22 +121,48 @@ module Sass
 
       def from_proto_value(proto)
         value = proto.method(proto.value).call
-        case value
-        when Sass::EmbeddedProtocol::Value::String
-          Sass::Value::String.new(value.text, quoted: value.quoted)
-        when Sass::EmbeddedProtocol::Value::Number
-          Sass::Value::Number.new(value.value, value.numerators, value.denominators)
-        when Sass::EmbeddedProtocol::Value::RgbColor
-          Sass::Value::Color.new(red: value.red, green: value.green, blue: value.blue, alpha: value.alpha)
-        when Sass::EmbeddedProtocol::Value::HslColor
-          Sass::Value::Color.new(hue: value.hue, saturation: value.saturation, lightness: value.lightness,
-                                 alpha: value.alpha)
-        when Sass::EmbeddedProtocol::Value::List
-          Sass::Value::List.new(value.contents.map do |i|
-            from_proto_value(i)
-          end,
-                                separator: from_proto_separator(value.separator), bracketed: value.has_brackets)
-        when Sass::EmbeddedProtocol::Value::ArgumentList
+        case proto.value
+        when :string
+          Sass::Value::String.new(
+            value.text,
+            quoted: value.quoted
+          )
+        when :number
+          Sass::Value::Number.new(
+            value.value,
+            value.numerators,
+            value.denominators
+          )
+        when :rgb_color
+          Sass::Value::Color.new(
+            red: value.red,
+            green: value.green,
+            blue: value.blue,
+            alpha: value.alpha
+          )
+        when :hsl_color
+          Sass::Value::Color.new(
+            hue: value.hue,
+            saturation: value.saturation,
+            lightness: value.lightness,
+            alpha: value.alpha
+          )
+        when :hwb_color
+          Sass::Value::Color.new(
+            hue: value.hue,
+            whiteness: value.whiteness,
+            blackness: value.blackness,
+            alpha: value.alpha
+          )
+        when :list
+          Sass::Value::List.new(
+            value.contents.map do |element|
+              from_proto_value(element)
+            end,
+            separator: from_proto_separator(value.separator),
+            bracketed: value.has_brackets
+          )
+        when :argument_list
           Sass::Value::ArgumentList.new(
             value.contents.map do |i|
               from_proto_value(i)
@@ -148,22 +174,29 @@ module Sass
             @id = value.id
             self
           end
-        when Sass::EmbeddedProtocol::Value::Map
-          Sass::Value::Map.new(value.entries.to_h do |entry|
-                                 [from_proto_value(entry.key), from_proto_value(entry.value)]
-                               end)
-        when Sass::EmbeddedProtocol::Value::CompilerFunction
+        when :map
+          Sass::Value::Map.new(
+            value.entries.to_h do |entry|
+              [from_proto_value(entry.key), from_proto_value(entry.value)]
+            end
+          )
+        when :compiler_function
           Sass::Value::Function.new(value.id)
-        when Sass::EmbeddedProtocol::Value::HostFunction
-          raise ProtocolError, 'The compiler may not send Value.host_function'
-        when :TRUE
-          Sass::Value::Boolean::TRUE
-        when :FALSE
-          Sass::Value::Boolean::FALSE
-        when :NULL
-          Sass::Value::Null::NULL
+        when :host_function
+          raise ProtocolError, 'The compiler may not send Value.host_function to host'
+        when :singleton
+          case value.singleton
+          when :TRUE
+            Sass::Value::Boolean::TRUE
+          when :FALSE
+            Sass::Value::Boolean::FALSE
+          when :NULL
+            Sass::Value::Null::NULL
+          else
+            raise "Unknown Value.singleton #{value.singleton}"
+          end
         else
-          raise "The compiler must send Value.value #{value}"
+          raise "Unknown Value.value #{value}"
         end
       end
 
