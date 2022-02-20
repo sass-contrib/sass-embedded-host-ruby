@@ -7,7 +7,7 @@ module Sass
       class ImporterRegistry
         attr_reader :importers
 
-        def initialize(importers, load_paths)
+        def initialize(importers, load_paths, highlight:)
           @id = 0
           @importers_by_id = {}
           @importers = importers
@@ -17,6 +17,8 @@ module Sass
                                    path: File.absolute_path(load_path)
                                  )
                                end)
+
+          @highlight = highlight
         end
 
         def register(importer)
@@ -52,7 +54,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
-            error: e.full_message
+            error: e.full_message(highlight: @highlight, order: :top)
           )
         end
 
@@ -71,7 +73,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,
-            error: e.full_message
+            error: e.full_message(highlight: @highlight, order: :top)
           )
         end
 
@@ -88,7 +90,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
-            error: e.full_message
+            error: e.full_message(highlight: @highlight, order: :top)
           )
         end
       end

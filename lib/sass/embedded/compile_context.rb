@@ -27,8 +27,8 @@ module Sass
                      logger:,
                      quiet_deps:,
                      verbose:)
-        @function_registery = FunctionRegistry.new(functions)
-        @importer_registery = ImporterRegistry.new(importers, load_paths)
+        @function_registery = FunctionRegistry.new(functions, highlight: alert_color)
+        @importer_registery = ImporterRegistry.new(importers, load_paths, highlight: alert_color)
         @logger_registery = LoggerRegistry.new(logger)
 
         super(channel)

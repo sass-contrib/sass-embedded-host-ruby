@@ -7,7 +7,7 @@ module Sass
       class FunctionRegistry
         attr_reader :global_functions
 
-        def initialize(functions)
+        def initialize(functions, highlight:)
           functions = functions.transform_keys(&:to_s)
 
           @global_functions = functions.keys
@@ -20,9 +20,12 @@ module Sass
               signature
             end
           end
+
+          @id = 0
           @functions_by_id = {}
           @ids_by_function = {}
-          @id = 0
+
+          @highlight = highlight
         end
 
         def register(function)
@@ -59,7 +62,7 @@ module Sass
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
             id: function_call_request.id,
-            error: e.full_message
+            error: e.full_message(highlight: @highlight, order: :top)
           )
         end
 
