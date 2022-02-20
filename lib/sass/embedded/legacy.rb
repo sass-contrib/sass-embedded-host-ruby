@@ -125,8 +125,8 @@ module Sass
                          end
       rescue CompileError => e
         raise RenderError.new(
-          e.sass_message,
           e.message,
+          e.full_message,
           if e.span.nil?
             nil
           elsif e.span.url.nil?
