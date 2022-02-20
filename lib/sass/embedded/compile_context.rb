@@ -27,34 +27,35 @@ module Sass
                      logger:,
                      quiet_deps:,
                      verbose:)
-        @path = path
-        @source = source
-
-        @load_paths = load_paths
-        @syntax = syntax
-        @url = url
-
-        @source_map = source_map
-        @source_map_include_sources = source_map_include_sources
-        @style = style
-
         @function_registery = FunctionRegistry.new(functions.transform_keys(&:to_s))
         @importer_registery = ImporterRegistry.new(importers.map do |obj|
           Protofier.to_struct(obj)
         end, load_paths)
-        @importer = importer.nil? ? nil : @importer_registery.register(Protofier.to_struct(importer))
-
-        @alert_ascii = alert_ascii
-        @alert_color = alert_color
-
-        @logger = Protofier.to_struct(logger)
-
-        @quiet_deps = quiet_deps
-        @verbose = verbose
+        @logger_registery = LoggerRegistry.new(Protofier.to_struct(logger))
 
         super(channel)
 
-        send_message compile_request
+        send_message EmbeddedProtocol::InboundMessage::CompileRequest.new(
+          id: id,
+          string: unless source.nil?
+                    EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
+                      source: source,
+                      url: url&.to_s,
+                      syntax: Protofier.to_proto_syntax(syntax),
+                      importer: importer.nil? ? nil : @importer_registery.register(Protofier.to_struct(importer))
+                    )
+                  end,
+          path: path,
+          style: Protofier.to_proto_output_style(style),
+          source_map: source_map,
+          source_map_include_sources: source_map_include_sources,
+          importers: @importer_registery.importers,
+          global_functions: @function_registery.global_functions,
+          alert_ascii: alert_ascii,
+          alert_color: alert_color,
+          quiet_deps: quiet_deps,
+          verbose: verbose
+        )
       end
 
       def update(error, message)
@@ -70,7 +71,7 @@ module Sass
         when EmbeddedProtocol::OutboundMessage::LogEvent
           return unless message.compilation_id == id
 
-          log message
+          @logger_registery.log message
         when EmbeddedProtocol::OutboundMessage::CanonicalizeRequest
           return unless message.compilation_id == id
 
@@ -100,57 +101,6 @@ module Sass
         Thread.new do
           super(e, nil)
         end
-      end
-
-      private
-
-      def log(event)
-        case event.type
-        when :DEBUG
-          if @logger.respond_to? :debug
-            @logger.debug(event.message, span: Protofier.from_proto_source_span(event.span))
-          else
-            Kernel.warn(event.formatted)
-          end
-        when :DEPRECATION_WARNING
-          if @logger.respond_to? :warn
-            @logger.warn(event.message, deprecation: true,
-                                        span: Protofier.from_proto_source_span(event.span),
-                                        stack: event.stack_trace)
-          else
-            Kernel.warn(event.formatted)
-          end
-        when :WARNING
-          if @logger.respond_to? :warn
-            @logger.warn(event.message, deprecation: false,
-                                        span: Protofier.from_proto_source_span(event.span),
-                                        stack: event.stack_trace)
-          else
-            Kernel.warn(event.formatted)
-          end
-        end
-      end
-
-      def compile_request
-        EmbeddedProtocol::InboundMessage::CompileRequest.new(
-          id: id,
-          string: unless @source.nil?
-                    EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
-                      source: @source,
-                      url: @url&.to_s,
-                      syntax: Protofier.to_proto_syntax(@syntax),
-                      importer: @importer
-                    )
-                  end,
-          path: @path,
-          style: Protofier.to_proto_output_style(@style),
-          source_map: @source_map,
-          source_map_include_sources: @source_map_include_sources,
-          importers: @importer_registery.importers,
-          global_functions: @function_registery.global_functions,
-          alert_ascii: @alert_ascii,
-          alert_color: @alert_color
-        )
       end
     end
 
