@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Sass::Value::Null do
-  value = Sass::Value::NULL
+  value = Sass::Value::Null::NULL
 
   it 'is falsey' do
     expect(value.to_bool).to be(false)
@@ -14,7 +14,7 @@ describe Sass::Value::Null do
   end
 
   it 'is equal to itself' do
-    expect(value).to eq(Sass::Value::NULL)
+    expect(value).to eq(Sass::Value::Null::NULL)
   end
 
   it 'is a value' do

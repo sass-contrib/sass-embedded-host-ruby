@@ -4,14 +4,14 @@ require 'spec_helper'
 
 describe Sass::Value::Boolean do
   describe 'sassTrue' do
-    value = Sass::Value::TRUE
+    value = Sass::Value::Boolean::TRUE
 
     it 'is truthy' do
       expect(value.to_bool).to be(true)
     end
 
     it 'is sassTrue' do
-      expect(value).to eq(Sass::Value::TRUE)
+      expect(value).to eq(Sass::Value::Boolean::TRUE)
     end
 
     it 'is a value' do
@@ -19,7 +19,7 @@ describe Sass::Value::Boolean do
     end
 
     it 'is a boolean' do
-      expect(value.assert_boolean).to eq(Sass::Value::TRUE)
+      expect(value.assert_boolean).to eq(Sass::Value::Boolean::TRUE)
     end
 
     it "isn't any other type" do
@@ -33,14 +33,14 @@ describe Sass::Value::Boolean do
   end
 
   describe 'sassFalse' do
-    value = Sass::Value::FALSE
+    value = Sass::Value::Boolean::FALSE
 
     it 'is falsey' do
       expect(value.to_bool).to be(false)
     end
 
     it 'is sassFalse' do
-      expect(value).to eq(Sass::Value::FALSE)
+      expect(value).to eq(Sass::Value::Boolean::FALSE)
     end
 
     it 'is a value' do
@@ -48,7 +48,7 @@ describe Sass::Value::Boolean do
     end
 
     it 'is a boolean' do
-      expect(value.assert_boolean).to eq(Sass::Value::FALSE)
+      expect(value.assert_boolean).to eq(Sass::Value::Boolean::FALSE)
     end
 
     it "isn't any other type" do

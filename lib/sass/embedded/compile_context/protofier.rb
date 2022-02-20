@@ -133,11 +133,11 @@ module Sass
           when Sass::EmbeddedProtocol::Value::HostFunction
             raise ProtocolError, 'The compiler may not send Value.host_function'
           when :TRUE
-            Sass::Value::TRUE
+            Sass::Value::Boolean::TRUE
           when :FALSE
-            Sass::Value::FALSE
+            Sass::Value::Boolean::FALSE
           when :NULL
-            Sass::Value::NULL
+            Sass::Value::Null::NULL
           else
             raise "The compiler must send Value.value #{value}"
           end

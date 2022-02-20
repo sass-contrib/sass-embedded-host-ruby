@@ -25,15 +25,12 @@ module Sass
       end
 
       def !
-        Value::TRUE
+        Boolean::TRUE
       end
-    end
 
-    # Sass's null value.
-    NULL = Null.new
+      # Sass's null value.
+      NULL = Null.new
 
-    # Sass's null type.
-    class Null
       def self.new
         NULL
       end

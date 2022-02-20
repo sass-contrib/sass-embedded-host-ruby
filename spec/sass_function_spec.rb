@@ -25,7 +25,7 @@ RSpec.describe Sass do
     fn = double
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(0)
-      Sass::Value::NULL
+      Sass::Value::Null::NULL
     }
 
     expect(
@@ -45,7 +45,7 @@ RSpec.describe Sass do
       expect(args[0].assert_string.text).to eq('x')
       expect(args[1].assert_string.text).to eq('y')
       expect(args[2].assert_string.text).to eq('z')
-      Sass::Value::NULL
+      Sass::Value::Null::NULL
     }
 
     expect(
@@ -63,7 +63,7 @@ RSpec.describe Sass do
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(1)
       expect(args[0].assert_string.text).to eq('default')
-      Sass::Value::NULL
+      Sass::Value::Null::NULL
     }
 
     expect(
@@ -117,7 +117,7 @@ RSpec.describe Sass do
   describe 'dash-normalizes function calls' do
     it 'when defined with dashes' do
       fn = double
-      allow(fn).to receive(:call).and_return(Sass::Value::NULL)
+      allow(fn).to receive(:call).and_return(Sass::Value::Null::NULL)
 
       expect(
         described_class.compile_string('a {b: foo_bar()}',
@@ -131,7 +131,7 @@ RSpec.describe Sass do
 
     it 'when defined with underscores' do
       fn = double
-      allow(fn).to receive(:call).and_return(Sass::Value::NULL)
+      allow(fn).to receive(:call).and_return(Sass::Value::Null::NULL)
 
       expect(
         described_class.compile_string('a {b: foo-bar()}',
@@ -147,37 +147,37 @@ RSpec.describe Sass do
   describe 'rejects a function signature that' do
     it 'is empty' do
       expect do
-        described_class.compile_string('', functions: { '': -> { Sass::Value::NULL } })
+        described_class.compile_string('', functions: { '': -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::Embedded::ProtocolError)
     end
 
     it 'has no name' do
       expect do
-        described_class.compile_string('', functions: { '()': -> { Sass::Value::NULL } })
+        described_class.compile_string('', functions: { '()': -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::Embedded::ProtocolError)
     end
 
     it 'has no arguments' do
       expect do
-        described_class.compile_string('', functions: { foo: -> { Sass::Value::NULL } })
+        described_class.compile_string('', functions: { foo: -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::Embedded::ProtocolError)
     end
 
     it 'has invalid arguments' do
       expect do
-        described_class.compile_string('', functions: { 'foo(arg)': -> { Sass::Value::NULL } })
+        described_class.compile_string('', functions: { 'foo(arg)': -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::Embedded::ProtocolError)
     end
 
     it 'has no closing parentheses' do
       expect do
-        described_class.compile_string('', functions: { 'foo(': -> { Sass::Value::NULL } })
+        described_class.compile_string('', functions: { 'foo(': -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::Embedded::ProtocolError)
     end
 
     it 'has a non-identifier name' do
       expect do
-        described_class.compile_string('', functions: { '$foo()': -> { Sass::Value::NULL } })
+        described_class.compile_string('', functions: { '$foo()': -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::Embedded::ProtocolError)
     end
   end

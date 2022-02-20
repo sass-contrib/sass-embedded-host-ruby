@@ -25,20 +25,17 @@ module Sass
       end
 
       def !
-        value ? Value::FALSE : Value::TRUE
+        value ? Boolean::FALSE : Boolean::TRUE
       end
-    end
 
-    # Sass's true value.
-    TRUE = Boolean.new(true)
+      # Sass's true value.
+      TRUE = Boolean.new(true)
 
-    # Sass's false value.
-    FALSE = Boolean.new(false)
+      # Sass's false value.
+      FALSE = Boolean.new(false)
 
-    # Sass's boolean type.
-    class Boolean
       def self.new(value)
-        value ? Value::TRUE : Value::FALSE
+        value ? Boolean::TRUE : Boolean::FALSE
       end
     end
   end

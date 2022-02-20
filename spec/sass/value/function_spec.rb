@@ -68,7 +68,7 @@ describe Sass::Value::Function do
         fn = double
         allow(fn).to receive(:call) { |_args|
           described_class.new(signature, lambda { |_args2|
-            Sass::Value::NULL
+            Sass::Value::Null::NULL
           })
         }
 

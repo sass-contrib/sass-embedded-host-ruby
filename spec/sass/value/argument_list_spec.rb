@@ -13,7 +13,7 @@ describe Sass::Value::ArgumentList do
       expect(arglist.at(0).assert_string.text).to eq('x')
       expect(arglist.at(1).assert_string.text).to eq('y')
       expect(arglist.at(2).assert_string.text).to eq('z')
-      Sass::Value::NULL
+      Sass::Value::Null::NULL
     }
 
     expect(
@@ -36,7 +36,7 @@ describe Sass::Value::ArgumentList do
       expect(keywords).to eq({
                                'bar' => Sass::Value::String.new('baz', quoted: false)
                              })
-      Sass::Value::NULL
+      Sass::Value::Null::NULL
     }
 
     expect(
@@ -54,7 +54,7 @@ describe Sass::Value::ArgumentList do
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(1)
       expect(args[0]).to be_a(described_class)
-      Sass::Value::NULL
+      Sass::Value::Null::NULL
     }
 
     expect do
