@@ -15,6 +15,10 @@ module Sass
 
       attr_reader :id, :signature, :callback
 
+      def assert_function(_name = nil)
+        self
+      end
+
       def ==(other)
         if id.nil?
           other.equal? self
