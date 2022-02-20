@@ -11,6 +11,8 @@ module Sass
     class Compiler
       include Observable
 
+      PROTOCOL_ERROR_ID = 4_294_967_295
+
       def initialize
         @observerable_mutex = Mutex.new
         @id = 0
@@ -72,7 +74,7 @@ module Sass
       private
 
       def half_closed?
-        @id == EmbeddedProtocol::PROTOCOL_ERROR_ID
+        @id == PROTOCOL_ERROR_ID
       end
 
       def poll
