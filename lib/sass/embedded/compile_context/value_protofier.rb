@@ -61,14 +61,14 @@ module Sass
                 id: obj.instance_eval { @id },
                 contents: obj.contents.map { |element| to_proto(element) },
                 keywords: obj.keywords.transform_values { |value| to_proto(value) },
-                separator: to_proto_separator(obj.separator)
+                separator: ListSeparator.to_proto(obj.separator)
               )
             )
           when Sass::Value::List
             Sass::EmbeddedProtocol::Value.new(
               list: Sass::EmbeddedProtocol::Value::List.new(
                 contents: obj.contents.map { |element| to_proto(element) },
-                separator: to_proto_separator(obj.separator),
+                separator: ListSeparator.to_proto(obj.separator),
                 has_brackets: obj.bracketed?
               )
             )
@@ -154,7 +154,7 @@ module Sass
               obj.keywords.entries.to_h do |entry|
                 [entry.first, from_proto(entry.last)]
               end,
-              from_proto_separator(obj.separator)
+              ListSeparator.from_proto(obj.separator)
             ).instance_eval do
               @id = obj.id
               self
@@ -164,7 +164,7 @@ module Sass
               obj.contents.map do |element|
                 from_proto(element)
               end,
-              separator: from_proto_separator(obj.separator),
+              separator: ListSeparator.from_proto(obj.separator),
               bracketed: obj.has_brackets
             )
           when :map
@@ -193,37 +193,42 @@ module Sass
           end
         end
 
-        private
+        # The {ListSeparator} Protofier.
+        module ListSeparator
+          module_function
 
-        def to_proto_separator(separator)
-          case separator
-          when ','
-            :COMMA
-          when ' '
-            :SPACE
-          when '/'
-            :SLASH
-          when nil
-            :UNDECIDED
-          else
-            raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
+          def to_proto(separator)
+            case separator
+            when ','
+              :COMMA
+            when ' '
+              :SPACE
+            when '/'
+              :SLASH
+            when nil
+              :UNDECIDED
+            else
+              raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
+            end
+          end
+
+          def from_proto(separator)
+            case separator
+            when :COMMA
+              ','
+            when :SPACE
+              ' '
+            when :SLASH
+              '/'
+            when :UNDECIDED
+              nil
+            else
+              raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
+            end
           end
         end
 
-        def from_proto_separator(separator)
-          case separator
-          when :COMMA
-            ','
-          when :SPACE
-            ' '
-          when :SLASH
-            '/'
-          when :UNDECIDED
-            nil
-          else
-            raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
-          end
-        end
+        private_constant :ListSeparator
       end
 
       private_constant :ValueProtofier
