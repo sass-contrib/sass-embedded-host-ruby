@@ -20,8 +20,6 @@ module Sass
         end
 
         def register(importer)
-          return if importer.nil?
-
           importer = Structifier.to_struct(importer)
 
           is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)

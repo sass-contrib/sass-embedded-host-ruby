@@ -40,7 +40,7 @@ module Sass
                       source: source,
                       url: url&.to_s,
                       syntax: Protofier.to_proto_syntax(syntax),
-                      importer: @importer_registery.register(importer)
+                      importer: importer.nil? ? nil : @importer_registery.register(importer)
                     )
                   end,
           path: path,
