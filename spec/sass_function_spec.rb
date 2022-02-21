@@ -12,10 +12,12 @@ RSpec.describe Sass do
     }
 
     expect(
-      described_class.compile_string('a {b: foo(bar)}',
-                                     functions: {
-                                       'foo($arg)': fn
-                                     }).css
+      described_class.compile_string(
+        'a {b: foo(bar)}',
+        functions: {
+          'foo($arg)': fn
+        }
+      ).css
     ).to eq("a {\n  b: \"result\";\n}")
 
     expect(fn).to have_received(:call)
@@ -29,10 +31,12 @@ RSpec.describe Sass do
     }
 
     expect(
-      described_class.compile_string('a {b: foo()}',
-                                     functions: {
-                                       'foo()': fn
-                                     }).css
+      described_class.compile_string(
+        'a {b: foo()}',
+        functions: {
+          'foo()': fn
+        }
+      ).css
     ).to eq('')
 
     expect(fn).to have_received(:call)
@@ -49,10 +53,12 @@ RSpec.describe Sass do
     }
 
     expect(
-      described_class.compile_string('a {b: foo(x, y, z)}',
-                                     functions: {
-                                       'foo($arg1, $arg2, $arg3)': fn
-                                     }).css
+      described_class.compile_string(
+        'a {b: foo(x, y, z)}',
+        functions: {
+          'foo($arg1, $arg2, $arg3)': fn
+        }
+      ).css
     ).to eq('')
 
     expect(fn).to have_received(:call)
@@ -67,10 +73,12 @@ RSpec.describe Sass do
     }
 
     expect(
-      described_class.compile_string('a {b: foo()}',
-                                     functions: {
-                                       'foo($arg: default)': fn
-                                     }).css
+      described_class.compile_string(
+        'a {b: foo()}',
+        functions: {
+          'foo($arg: default)': fn
+        }
+      ).css
     ).to eq('')
 
     expect(fn).to have_received(:call)
@@ -79,10 +87,12 @@ RSpec.describe Sass do
   describe 'gracefully handles a custom function' do
     it 'throwing' do
       expect do
-        described_class.compile_string('a {b: foo()}',
-                                       functions: {
-                                         'foo()': -> { raise 'heck' }
-                                       })
+        described_class.compile_string(
+          'a {b: foo()}',
+          functions: {
+            'foo()': -> { raise 'heck' }
+          }
+        )
       end.to raise_error do |error|
         expect(error).to be_a(Sass::CompileError)
         expect(error.span.start.line).to eq(0)
@@ -91,10 +101,12 @@ RSpec.describe Sass do
 
     it 'not returning' do
       expect do
-        described_class.compile_string('a {b: foo()}',
-                                       functions: {
-                                         'foo()': -> {}
-                                       })
+        described_class.compile_string(
+          'a {b: foo()}',
+          functions: {
+            'foo()': -> {}
+          }
+        )
       end.to raise_error do |error|
         expect(error).to be_a(Sass::CompileError)
         expect(error.span.start.line).to eq(0)
@@ -103,10 +115,12 @@ RSpec.describe Sass do
 
     it 'returning a non-Value' do
       expect do
-        described_class.compile_string('a {b: foo()}',
-                                       functions: {
-                                         'foo()': -> { 'wrong' }
-                                       })
+        described_class.compile_string(
+          'a {b: foo()}',
+          functions: {
+            'foo()': -> { 'wrong' }
+          }
+        )
       end.to raise_error do |error|
         expect(error).to be_a(Sass::CompileError)
         expect(error.span.start.line).to eq(0)
@@ -120,10 +134,12 @@ RSpec.describe Sass do
       allow(fn).to receive(:call).and_return(Sass::Value::Null::NULL)
 
       expect(
-        described_class.compile_string('a {b: foo_bar()}',
-                                       functions: {
-                                         'foo-bar()': fn
-                                       }).css
+        described_class.compile_string(
+          'a {b: foo_bar()}',
+          functions: {
+            'foo-bar()': fn
+          }
+        ).css
       ).to eq('')
 
       expect(fn).to have_received(:call)
@@ -134,10 +150,12 @@ RSpec.describe Sass do
       allow(fn).to receive(:call).and_return(Sass::Value::Null::NULL)
 
       expect(
-        described_class.compile_string('a {b: foo-bar()}',
-                                       functions: {
-                                         'foo_bar()': fn
-                                       }).css
+        described_class.compile_string(
+          'a {b: foo-bar()}',
+          functions: {
+            'foo_bar()': fn
+          }
+        ).css
       ).to eq('')
 
       expect(fn).to have_received(:call)

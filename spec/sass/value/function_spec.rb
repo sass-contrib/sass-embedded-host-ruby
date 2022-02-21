@@ -12,15 +12,17 @@ describe Sass::Value::Function do
     }
 
     expect(
-      Sass.compile_string("
-                          @use 'sass:meta';
+      Sass.compile_string(
+        "
+        @use 'sass:meta';
 
-                          @function plusOne($n) {@return $n + 1}
-                          a {b: meta.call(foo(meta.get-function('plusOne')), 2)}
-                          ",
-                          functions: {
-                            'foo($arg)': fn
-                          }).css
+        @function plusOne($n) {@return $n + 1}
+        a {b: meta.call(foo(meta.get-function('plusOne')), 2)}
+        ",
+        functions: {
+          'foo($arg)': fn
+        }
+      ).css
     ).to eq("a {\n  b: 3;\n}")
 
     expect(fn).to have_received(:call)
@@ -38,14 +40,16 @@ describe Sass::Value::Function do
     }
 
     expect(
-      Sass.compile_string("
-                          @use 'sass:meta';
+      Sass.compile_string(
+        "
+        @use 'sass:meta';
 
-                          a {b: meta.call(foo(), 2)}
-                          ",
-                          functions: {
-                            'foo()': fn
-                          }).css
+        a {b: meta.call(foo(), 2)}
+        ",
+        functions: {
+          'foo()': fn
+        }
+      ).css
     ).to eq("a {\n  b: 3;\n}")
 
     expect(fn).to have_received(:call)
@@ -73,10 +77,12 @@ describe Sass::Value::Function do
         }
 
         expect do
-          Sass.compile_string('a {b: inspect(foo())}',
-                              functions: {
-                                'foo()': fn
-                              })
+          Sass.compile_string(
+            'a {b: inspect(foo())}',
+            functions: {
+              'foo()': fn
+            }
+          )
         end.to raise_error do |error|
           expect(error).to be_a(Sass::CompileError)
           expect(error.span.start.line).to eq(0)

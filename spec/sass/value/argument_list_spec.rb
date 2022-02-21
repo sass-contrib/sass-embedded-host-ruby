@@ -17,10 +17,12 @@ describe Sass::Value::ArgumentList do
     }
 
     expect(
-      Sass.compile_string('a {b: foo(x, y, z)}',
-                          functions: {
-                            'foo($arg...)': fn
-                          }).css
+      Sass.compile_string(
+        'a {b: foo(x, y, z)}',
+        functions: {
+          'foo($arg...)': fn
+        }
+      ).css
     ).to eq('')
 
     expect(fn).to have_received(:call)
@@ -40,10 +42,12 @@ describe Sass::Value::ArgumentList do
     }
 
     expect(
-      Sass.compile_string('a {b: foo($bar: baz)}',
-                          functions: {
-                            'foo($arg...)': fn
-                          }).css
+      Sass.compile_string(
+        'a {b: foo($bar: baz)}',
+        functions: {
+          'foo($arg...)': fn
+        }
+      ).css
     ).to eq('')
 
     expect(fn).to have_received(:call)
@@ -58,10 +62,12 @@ describe Sass::Value::ArgumentList do
     }
 
     expect do
-      Sass.compile_string('a {b: foo($bar: baz)}',
-                          functions: {
-                            'foo($arg...)': fn
-                          }).css
+      Sass.compile_string(
+        'a {b: foo($bar: baz)}',
+        functions: {
+          'foo($arg...)': fn
+        }
+      ).css
     end.to raise_error do |error|
       expect(error).to be_a(Sass::CompileError)
       expect(error.span.start.line).to eq(0)

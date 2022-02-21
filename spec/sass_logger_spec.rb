@@ -13,35 +13,42 @@ RSpec.describe Sass do
 
   describe 'with @warn' do
     it 'passes the message and stack trace to the logger' do
-      described_class.compile_string('
-                                     @mixin foo {@warn heck}
-                                     @include foo;
-                                     ', logger: {
-                                       warn: lambda { |message, deprecation:, span:, stack:|
-                                         expect(message).to eq('heck')
-                                         expect(span).to be_nil
-                                         expect(stack).to be_a(String)
-                                         expect(deprecation).to be(false)
-                                       }
-                                     })
+      described_class.compile_string(
+        '
+        @mixin foo {@warn heck}
+        @include foo;
+        ',
+        logger: {
+          warn: lambda { |message, deprecation:, span:, stack:|
+            expect(message).to eq('heck')
+            expect(span).to be_nil
+            expect(stack).to be_a(String)
+            expect(deprecation).to be(false)
+          }
+        }
+      )
     end
 
     it 'stringifies the argument' do
-      described_class.compile_string('@warn #abc',
-                                     logger: {
-                                       warn: lambda { |message, **|
-                                         expect(message).to eq('#abc')
-                                       }
-                                     })
+      described_class.compile_string(
+        '@warn #abc',
+        logger: {
+          warn: lambda { |message, **|
+            expect(message).to eq('#abc')
+          }
+        }
+      )
     end
 
     it "doesn't inspect the argument" do
-      described_class.compile_string('@warn null',
-                                     logger: {
-                                       warn: lambda { |message, **|
-                                         expect(message).to eq('')
-                                       }
-                                     })
+      described_class.compile_string(
+        '@warn null',
+        logger: {
+          warn: lambda { |message, **|
+            expect(message).to eq('')
+          }
+        }
+      )
     end
 
     it 'emits to stderr by default' do
@@ -54,10 +61,12 @@ RSpec.describe Sass do
 
     it "doesn't emit warnings with a warn callback" do
       stdio = capture_stdio do
-        described_class.compile_string('@warn heck',
-                                       logger: {
-                                         warn: ->(*) {}
-                                       })
+        described_class.compile_string(
+          '@warn heck',
+          logger: {
+            warn: ->(*) {}
+          }
+        )
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).to be_empty
@@ -65,10 +74,12 @@ RSpec.describe Sass do
 
     it 'still emits warning with only a debug callback' do
       stdio = capture_stdio do
-        described_class.compile_string('@warn heck',
-                                       logger: {
-                                         debug: ->(*) {}
-                                       })
+        described_class.compile_string(
+          '@warn heck',
+          logger: {
+            debug: ->(*) {}
+          }
+        )
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).not_to be_empty
@@ -76,8 +87,7 @@ RSpec.describe Sass do
 
     it "doesn't emit warnings with Logger.silent" do
       stdio = capture_stdio do
-        described_class.compile_string('@warn heck',
-                                       logger: Sass::Logger.silent)
+        described_class.compile_string('@warn heck', logger: Sass::Logger.silent)
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).to be_empty
@@ -86,34 +96,40 @@ RSpec.describe Sass do
 
   describe 'with @debug' do
     it 'passes the message and span to the logger' do
-      described_class.compile_string('@debug heck',
-                                     logger: {
-                                       debug: lambda { |message, span:, **|
-                                         expect(message).to eq('heck')
-                                         expect(span.start.line).to eq(0)
-                                         expect(span.start.column).to eq(0)
-                                         expect(span.end.line).to eq(0)
-                                         expect(span.end.column).to eq(11)
-                                       }
-                                     })
+      described_class.compile_string(
+        '@debug heck',
+        logger: {
+          debug: lambda { |message, span:, **|
+            expect(message).to eq('heck')
+            expect(span.start.line).to eq(0)
+            expect(span.start.column).to eq(0)
+            expect(span.end.line).to eq(0)
+            expect(span.end.column).to eq(11)
+          }
+        }
+      )
     end
 
     it 'stringifies the argument' do
-      described_class.compile_string('@debug #abc',
-                                     logger: {
-                                       debug: lambda { |message, **|
-                                         expect(message).to eq('#abc')
-                                       }
-                                     })
+      described_class.compile_string(
+        '@debug #abc',
+        logger: {
+          debug: lambda { |message, **|
+            expect(message).to eq('#abc')
+          }
+        }
+      )
     end
 
     it 'inspects the argument' do
-      described_class.compile_string('@debug null',
-                                     logger: {
-                                       debug: lambda { |message, **|
-                                         expect(message).to eq('null')
-                                       }
-                                     })
+      described_class.compile_string(
+        '@debug null',
+        logger: {
+          debug: lambda { |message, **|
+            expect(message).to eq('null')
+          }
+        }
+      )
     end
 
     it 'emits to stderr by default' do
@@ -126,10 +142,12 @@ RSpec.describe Sass do
 
     it "doesn't emit debugs with a debug callback" do
       stdio = capture_stdio do
-        described_class.compile_string('@debug heck',
-                                       logger: {
-                                         debug: ->(*) {}
-                                       })
+        described_class.compile_string(
+          '@debug heck',
+          logger: {
+            debug: ->(*) {}
+          }
+        )
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).to be_empty
@@ -137,10 +155,12 @@ RSpec.describe Sass do
 
     it 'still emits debugs with only a warn callback' do
       stdio = capture_stdio do
-        described_class.compile_string('@debug heck',
-                                       logger: {
-                                         warn: ->(*) {}
-                                       })
+        described_class.compile_string(
+          '@debug heck',
+          logger: {
+            warn: ->(*) {}
+          }
+        )
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).not_to be_empty
@@ -148,8 +168,7 @@ RSpec.describe Sass do
 
     it "doesn't emit debugs with Logger.silent" do
       stdio = capture_stdio do
-        described_class.compile_string('@debug heck',
-                                       logger: Sass::Logger.silent)
+        described_class.compile_string('@debug heck', logger: Sass::Logger.silent)
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).to be_empty
@@ -172,15 +191,17 @@ RSpec.describe Sass do
       sandbox do |dir|
         dir.write({ 'style.scss' => '@warn heck warn; @debug heck debug' })
         stdio = capture_stdio do
-          described_class.compile(dir.path('style.scss'),
-                                  logger: {
-                                    warn: lambda { |message, **|
-                                      expect(message).to eq('heck warn')
-                                    },
-                                    debug: lambda { |message, **|
-                                      expect(message).to eq('heck debug')
-                                    }
-                                  })
+          described_class.compile(
+            dir.path('style.scss'),
+            logger: {
+              warn: lambda { |message, **|
+                expect(message).to eq('heck warn')
+              },
+              debug: lambda { |message, **|
+                expect(message).to eq('heck debug')
+              }
+            }
+          )
         end
         expect(stdio.out).to be_empty
         expect(stdio.err).to be_empty
