@@ -29,7 +29,7 @@ RSpec.describe Sass do
     it 'stringifies the argument' do
       described_class.compile_string('@warn #abc',
                                      logger: {
-                                       warn: lambda { |message, **_kwargs|
+                                       warn: lambda { |message, **|
                                          expect(message).to eq('#abc')
                                        }
                                      })
@@ -38,7 +38,7 @@ RSpec.describe Sass do
     it "doesn't inspect the argument" do
       described_class.compile_string('@warn null',
                                      logger: {
-                                       warn: lambda { |message, **_kwargs|
+                                       warn: lambda { |message, **|
                                          expect(message).to eq('')
                                        }
                                      })
@@ -56,7 +56,7 @@ RSpec.describe Sass do
       stdio = capture_stdio do
         described_class.compile_string('@warn heck',
                                        logger: {
-                                         warn: ->(_message, **_kwargs) {}
+                                         warn: ->(*) {}
                                        })
       end
       expect(stdio.out).to be_empty
@@ -67,7 +67,7 @@ RSpec.describe Sass do
       stdio = capture_stdio do
         described_class.compile_string('@warn heck',
                                        logger: {
-                                         debug: ->(_message, **_kwargs) {}
+                                         debug: ->(*) {}
                                        })
       end
       expect(stdio.out).to be_empty
@@ -88,7 +88,7 @@ RSpec.describe Sass do
     it 'passes the message and span to the logger' do
       described_class.compile_string('@debug heck',
                                      logger: {
-                                       debug: lambda { |message, span:, **_kwargs|
+                                       debug: lambda { |message, span:, **|
                                          expect(message).to eq('heck')
                                          expect(span.start.line).to eq(0)
                                          expect(span.start.column).to eq(0)
@@ -101,7 +101,7 @@ RSpec.describe Sass do
     it 'stringifies the argument' do
       described_class.compile_string('@debug #abc',
                                      logger: {
-                                       debug: lambda { |message, **_kwargs|
+                                       debug: lambda { |message, **|
                                          expect(message).to eq('#abc')
                                        }
                                      })
@@ -110,7 +110,7 @@ RSpec.describe Sass do
     it 'inspects the argument' do
       described_class.compile_string('@debug null',
                                      logger: {
-                                       debug: lambda { |message, **_kwargs|
+                                       debug: lambda { |message, **|
                                          expect(message).to eq('null')
                                        }
                                      })
@@ -128,7 +128,7 @@ RSpec.describe Sass do
       stdio = capture_stdio do
         described_class.compile_string('@debug heck',
                                        logger: {
-                                         debug: ->(_message, **_kwargs) {}
+                                         debug: ->(*) {}
                                        })
       end
       expect(stdio.out).to be_empty
@@ -139,7 +139,7 @@ RSpec.describe Sass do
       stdio = capture_stdio do
         described_class.compile_string('@debug heck',
                                        logger: {
-                                         warn: ->(_message, **_kwargs) {}
+                                         warn: ->(*) {}
                                        })
       end
       expect(stdio.out).to be_empty
@@ -174,10 +174,10 @@ RSpec.describe Sass do
         stdio = capture_stdio do
           described_class.compile(dir.path('style.scss'),
                                   logger: {
-                                    warn: lambda { |message, **_kwargs|
+                                    warn: lambda { |message, **|
                                       expect(message).to eq('heck warn')
                                     },
-                                    debug: lambda { |message, **_kwargs|
+                                    debug: lambda { |message, **|
                                       expect(message).to eq('heck debug')
                                     }
                                   })

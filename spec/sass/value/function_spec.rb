@@ -66,8 +66,8 @@ describe Sass::Value::Function do
     }.each do |scope, signature|
       it scope do
         fn = double
-        allow(fn).to receive(:call) { |_args|
-          described_class.new(signature, lambda { |_args2|
+        allow(fn).to receive(:call) { |*|
+          described_class.new(signature, lambda { |*|
             Sass::Value::Null::NULL
           })
         }

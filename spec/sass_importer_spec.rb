@@ -7,7 +7,7 @@ RSpec.describe Sass do
     result = described_class.compile_string('@import "orange";',
                                             importers: [
                                               {
-                                                canonicalize: ->(url, **_kwargs) { "u:#{url}" },
+                                                canonicalize: ->(url, **) { "u:#{url}" },
                                                 load: lambda { |url|
                                                   color = url.split(':')[1]
                                                   return {
@@ -25,7 +25,7 @@ RSpec.describe Sass do
     result = described_class.compile_string('@import "orange";',
                                             importers: [
                                               {
-                                                canonicalize: ->(_url, **_kwargs) { 'u:blue' },
+                                                canonicalize: ->(*) { 'u:blue' },
                                                 load: lambda { |url|
                                                   color = url.split(':')[1]
                                                   return {
@@ -46,7 +46,7 @@ RSpec.describe Sass do
                                             ',
                                             importers: [
                                               {
-                                                canonicalize: ->(_url, **_kwargs) { 'u:blue' },
+                                                canonicalize: ->(*) { 'u:blue' },
                                                 load: lambda { |url|
                                                   color = url.split(':')[1]
                                                   return {
@@ -67,11 +67,11 @@ RSpec.describe Sass do
       result = described_class.compile_string('@import "/orange";',
                                               importers: [
                                                 {
-                                                  canonicalize: lambda { |url, **_kwargs|
+                                                  canonicalize: lambda { |url, **|
                                                     expect(url).to eq('/orange')
                                                     "u:#{url}"
                                                   },
-                                                  load: lambda { |_url|
+                                                  load: lambda { |*|
                                                     return {
                                                       contents: 'a {b: c}',
                                                       syntax: 'scss'
@@ -87,11 +87,11 @@ RSpec.describe Sass do
       result = described_class.compile_string('@import "C:/orange";',
                                               importers: [
                                                 {
-                                                  canonicalize: lambda { |url, **_kwargs|
+                                                  canonicalize: lambda { |url, **|
                                                     expect(url).to eq('file:///C:/orange')
                                                     "u:#{url}"
                                                   },
-                                                  load: lambda { |_url|
+                                                  load: lambda { |*|
                                                     return {
                                                       contents: 'a {b: c}',
                                                       syntax: 'scss'
@@ -108,7 +108,7 @@ RSpec.describe Sass do
     result = described_class.compile_string('@import "orange";',
                                             importers: [
                                               {
-                                                canonicalize: lambda { |url, **_kwargs|
+                                                canonicalize: lambda { |url, **|
                                                   "u:#{url}"
                                                 },
                                                 load: lambda { |url|
@@ -131,10 +131,10 @@ RSpec.describe Sass do
       described_class.compile_string('@import "orange";',
                                      importers: [
                                        {
-                                         canonicalize: lambda { |_url, **_kwargs|
+                                         canonicalize: lambda { |*|
                                            raise 'this import is bad actually'
                                          },
-                                         load: lambda { |_url|
+                                         load: lambda { |*|
                                            RSpec::Expectations.fail_with 'load() should not be called'
                                          }
                                        }
@@ -150,10 +150,10 @@ RSpec.describe Sass do
       described_class.compile_string('@import "orange";',
                                      importers: [
                                        {
-                                         canonicalize: lambda { |url, **_kwargs|
+                                         canonicalize: lambda { |url, **|
                                            "u:#{url}"
                                          },
-                                         load: lambda { |_url|
+                                         load: lambda { |*|
                                            raise 'this import is bad actually'
                                          }
                                        }
@@ -171,8 +171,8 @@ RSpec.describe Sass do
       result = described_class.compile_string('@import "other";',
                                               importers: [
                                                 {
-                                                  canonicalize: ->(_url, **_kwargs) {},
-                                                  load: lambda { |_url|
+                                                  canonicalize: ->(*) {},
+                                                  load: lambda { |*|
                                                     raise 'this import is bad actually'
                                                   }
                                                 }
@@ -190,10 +190,10 @@ RSpec.describe Sass do
         described_class.compile_string('@import "other";',
                                        importers: [
                                          {
-                                           canonicalize: lambda { |url, **_kwargs|
+                                           canonicalize: lambda { |url, **|
                                              "u:#{url}"
                                            },
-                                           load: ->(_url) {}
+                                           load: ->(*) {}
                                          }
                                        ],
                                        load_paths: [dir.path('dir')])
@@ -214,10 +214,10 @@ RSpec.describe Sass do
       result = described_class.compile(dir.path('input.scss'),
                                        importers: [
                                          {
-                                           canonicalize: lambda { |_url, **_kwargs|
+                                           canonicalize: lambda { |*|
                                              raise 'canonicalize() should not be called'
                                            },
-                                           load: lambda { |_url|
+                                           load: lambda { |*|
                                              raise 'load() should not be called'
                                            }
                                          }
@@ -230,18 +230,18 @@ RSpec.describe Sass do
     result = described_class.compile_string('@import "other";',
                                             importers: [
                                               {
-                                                canonicalize: lambda { |_url, **_kwargs|
+                                                canonicalize: lambda { |*|
                                                   raise 'canonicalize() should not be called'
                                                 },
-                                                load: lambda { |_url|
+                                                load: lambda { |*|
                                                   raise 'load() should not be called'
                                                 }
                                               }
                                             ],
                                             url: 'o:style.scss',
                                             importer: {
-                                              canonicalize: ->(url, **_kwargs) { url },
-                                              load: lambda { |_url|
+                                              canonicalize: ->(url, **) { url },
+                                              load: lambda { |*|
                                                 return {
                                                   contents: 'a {from: relative}',
                                                   syntax: 'scss'
@@ -261,10 +261,10 @@ RSpec.describe Sass do
       result = described_class.compile(dir.path('input.scss'),
                                        importers: [
                                          {
-                                           canonicalize: lambda { |url, **_kwargs|
+                                           canonicalize: lambda { |url, **|
                                              "u:#{url}"
                                            },
-                                           load: lambda { |_url|
+                                           load: lambda { |*|
                                              return {
                                                contents: 'a {from: importer}', syntax: 'scss'
                                              }
@@ -281,8 +281,8 @@ RSpec.describe Sass do
       result = described_class.compile_string('@import "other";',
                                               importers: [
                                                 {
-                                                  canonicalize: ->(_url, **_kwargs) { 'u:other' },
-                                                  load: lambda { |_url|
+                                                  canonicalize: ->(*) { 'u:other' },
+                                                  load: lambda { |*|
                                                           return { contents: '$a: value; b {c: $a}', syntax: 'scss' }
                                                         }
                                                 }
@@ -295,8 +295,8 @@ RSpec.describe Sass do
       result = described_class.compile_string('@import "other";',
                                               importers: [
                                                 {
-                                                  canonicalize: ->(_url, **_kwargs) { 'u:other' },
-                                                  load: lambda { |_url|
+                                                  canonicalize: ->(*) { 'u:other' },
+                                                  load: lambda { |*|
                                                           return { contents: "$a: value\nb\n  c: $a",
                                                                    syntax: 'indented' }
                                                         }
@@ -310,8 +310,8 @@ RSpec.describe Sass do
       result = described_class.compile_string('@import "other";',
                                               importers: [
                                                 {
-                                                  canonicalize: ->(_url, **_kwargs) { 'u:other' },
-                                                  load: lambda { |_url|
+                                                  canonicalize: ->(*) { 'u:other' },
+                                                  load: lambda { |*|
                                                           return { contents: 'a {b: c}',
                                                                    syntax: 'css' }
                                                         }
@@ -326,8 +326,8 @@ RSpec.describe Sass do
         described_class.compile_string('@import "other";',
                                        importers: [
                                          {
-                                           canonicalize: ->(_url, **_kwargs) { 'u:other' },
-                                           load: lambda { |_url|
+                                           canonicalize: ->(*) { 'u:other' },
+                                           load: lambda { |*|
                                                    return { contents: "$a: value\nb\n  c: $a",
                                                             syntax: 'css' }
                                                  }
@@ -347,7 +347,7 @@ RSpec.describe Sass do
           expect(from_import).to be(expected)
           "u:#{url}"
         },
-        load: ->(_url) { return { contents: '', syntax: 'scss' } }
+        load: ->(*) { return { contents: '', syntax: 'scss' } }
       }
     end
 
@@ -376,7 +376,7 @@ RSpec.describe Sass do
 
         result = described_class.compile_string('@import "other";',
                                                 importers: [{
-                                                  find_file_url: ->(_url, **_kwargs) { dir.url('_other.scss') }
+                                                  find_file_url: ->(*) { dir.url('_other.scss') }
                                                 }])
         expect(result.css).to eq("a {\n  b: c;\n}")
       end
@@ -388,7 +388,7 @@ RSpec.describe Sass do
 
         result = described_class.compile_string('@import "other";',
                                                 importers: [{
-                                                  find_file_url: ->(_url, **_kwargs) { dir.url('other') }
+                                                  find_file_url: ->(*) { dir.url('other') }
                                                 }])
         expect(result.css).to eq("a {\n  b: c;\n}")
       end
@@ -400,7 +400,7 @@ RSpec.describe Sass do
 
         result = described_class.compile_string('@import "other";',
                                                 importers: [{
-                                                  find_file_url: ->(_url, **_kwargs) {}
+                                                  find_file_url: ->(*) {}
                                                 }],
                                                 load_paths: [dir.root])
         expect(result.css).to eq("a {\n  from: dir;\n}")
@@ -413,7 +413,7 @@ RSpec.describe Sass do
 
         result = described_class.compile_string('@import "other";',
                                                 importers: [{
-                                                  find_file_url: lambda { |_url, **_kwargs|
+                                                  find_file_url: lambda { |*|
                                                     dir.url('nonexistent/other')
                                                   }
                                                 }],
@@ -428,7 +428,7 @@ RSpec.describe Sass do
 
         result = described_class.compile_string('@import "u:other";',
                                                 importers: [{
-                                                  find_file_url: lambda { |url, **_kwargs|
+                                                  find_file_url: lambda { |url, **|
                                                     expect(url).to eq('u:other')
                                                     dir.url('dir/other')
                                                   }
@@ -444,7 +444,7 @@ RSpec.describe Sass do
 
         result = described_class.compile_string("@import \"#{dir.url('other')}\";",
                                                 importers: [{
-                                                  find_file_url: lambda { |_url, **_kwargs|
+                                                  find_file_url: lambda { |*|
                                                     raise 'find_file_url() should not be called'
                                                   }
                                                 }])
@@ -460,7 +460,7 @@ RSpec.describe Sass do
         count = 0
         result = described_class.compile_string('@import "midstream";',
                                                 importers: [{
-                                                  find_file_url: lambda { |_url, **_kwargs|
+                                                  find_file_url: lambda { |*|
                                                     raise 'find_file_url() should only be called once' if count > 0
 
                                                     count += 1
@@ -476,7 +476,7 @@ RSpec.describe Sass do
         described_class.compile_string('@import "other";',
                                        importers: [
                                          {
-                                           find_file_url: lambda { |_url, **_kwargs|
+                                           find_file_url: lambda { |*|
                                              raise 'this import is bad actually'
                                            }
                                          }
@@ -490,7 +490,7 @@ RSpec.describe Sass do
     it 'rejects a non-file URL' do
       expect do
         described_class.compile_string('@import "other";',
-                                       importers: [{ find_file_url: ->(_url, **_kwargs) { 'u:other.scss' } }])
+                                       importers: [{ find_file_url: ->(*) { 'u:other.scss' } }])
       end.to raise_error do |error|
         expect(error).to be_a(Sass::CompileError)
         expect(error.span.start.line).to eq(0)
@@ -503,7 +503,7 @@ RSpec.describe Sass do
           dir.write({ '_other.scss' => '$a: value; b {c: $a}' })
 
           result = described_class.compile_string('@import "other";',
-                                                  importers: [{ find_file_url: lambda { |_url, **_kwargs|
+                                                  importers: [{ find_file_url: lambda { |*|
                                                                                  dir.url('other')
                                                                                } }])
           expect(result.css).to eq("b {\n  c: value;\n}")
@@ -515,7 +515,7 @@ RSpec.describe Sass do
           dir.write({ '_other.sass' => "$a: value\nb\n  c: $a" })
 
           result = described_class.compile_string('@import "other";',
-                                                  importers: [{ find_file_url: lambda { |_url, **_kwargs|
+                                                  importers: [{ find_file_url: lambda { |*|
                                                                                  dir.url('other')
                                                                                } }])
           expect(result.css).to eq("b {\n  c: value;\n}")
@@ -527,7 +527,7 @@ RSpec.describe Sass do
           dir.write({ '_other.css' => 'a {b: c}' })
 
           result = described_class.compile_string('@import "other";',
-                                                  importers: [{ find_file_url: lambda { |_url, **_kwargs|
+                                                  importers: [{ find_file_url: lambda { |*|
                                                                                  dir.url('other')
                                                                                } }])
           expect(result.css).to eq("a {\n  b: c;\n}")
@@ -540,7 +540,7 @@ RSpec.describe Sass do
 
           expect do
             described_class.compile_string('@import "other";',
-                                           importers: [{ find_file_url: lambda { |_url, **_kwargs|
+                                           importers: [{ find_file_url: lambda { |*|
                                                                           dir.url('other')
                                                                         } }])
           end.to raise_error do |error|
@@ -558,7 +558,7 @@ RSpec.describe Sass do
           dir.write({ '_other.scss' => 'a {b: c}' })
 
           described_class.compile_string('@import "other";',
-                                         importers: [{ find_file_url: lambda { |_url, from_import:|
+                                         importers: [{ find_file_url: lambda { |*, from_import:|
                                                                         expect(from_import).to be(true)
                                                                         dir.url('other')
                                                                       } }])
@@ -570,7 +570,7 @@ RSpec.describe Sass do
           dir.write({ '_other.scss' => 'a {b: c}' })
 
           described_class.compile_string('@use "other";',
-                                         importers: [{ find_file_url: lambda { |_url, from_import:|
+                                         importers: [{ find_file_url: lambda { |*, from_import:|
                                                                         expect(from_import).to be(false)
                                                                         dir.url('other')
                                                                       } }])
@@ -586,13 +586,13 @@ RSpec.describe Sass do
       expect do
         described_class.compile_string('@import "other";',
                                        importers: [{
-                                         find_file_url: lambda { |_url, **_kwargs|
+                                         find_file_url: lambda { |*|
                                            dir.url('other')
                                          },
-                                         canonicalize: lambda { |_url, **_kwargs|
+                                         canonicalize: lambda { |*|
                                            dir.url('other')
                                          },
-                                         load: lambda { |_url|
+                                         load: lambda { |*|
                                            return { contents: 'a {b: c}', syntax: 'scss' }
                                          }
                                        }])
