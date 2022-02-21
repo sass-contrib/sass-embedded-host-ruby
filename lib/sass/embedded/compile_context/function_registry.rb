@@ -7,7 +7,7 @@ module Sass
       class FunctionRegistry
         attr_reader :global_functions
 
-        def initialize(functions, highlight:)
+        def initialize(functions, alert_color:)
           functions = functions.transform_keys(&:to_s)
 
           @global_functions = functions.keys
@@ -25,7 +25,7 @@ module Sass
           @functions_by_id = {}
           @ids_by_function = {}
 
-          @highlight = highlight
+          @highlight = alert_color
         end
 
         def register(function)

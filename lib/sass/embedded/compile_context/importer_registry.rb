@@ -7,7 +7,7 @@ module Sass
       class ImporterRegistry
         attr_reader :importers
 
-        def initialize(importers, load_paths, highlight:)
+        def initialize(importers, load_paths, alert_color:)
           @id = 0
           @importers_by_id = {}
           @importers = importers
@@ -20,7 +20,7 @@ module Sass
                          end
                        )
 
-          @highlight = highlight
+          @highlight = alert_color
         end
 
         def register(importer)
