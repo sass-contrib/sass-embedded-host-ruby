@@ -33,11 +33,11 @@ module Sass
         end
       end
 
-      def add_observer(*args)
+      def add_observer(*)
         @observerable_mutex.synchronize do
           raise ProtocolError, 'half-closed compiler' if half_closed?
 
-          super(*args)
+          super
 
           id = @id
           @id = @id.next
@@ -45,9 +45,9 @@ module Sass
         end
       end
 
-      def delete_observer(*args)
+      def delete_observer(*)
         @observerable_mutex.synchronize do
-          super(*args)
+          super
 
           close if half_closed? && count_observers.zero?
         end

@@ -3,6 +3,37 @@
 require 'spec_helper'
 
 RSpec.describe Sass do
+  def remote_eq(lhs, rhs)
+    to_host_value = lambda { |value|
+      if value.is_a? Sass::Value::ArgumentList
+        value.dup.instance_eval do
+          @id = 0
+          self
+        end
+      else
+        value
+      end
+    }
+
+    result = nil
+    Sass.compile_string(
+      'a{b:yield(lhs()==rhs())}',
+      functions: {
+        'yield($value)' => lambda { |args|
+          result = args[0].assert_boolean.to_bool
+          Sass::Value::Null::NULL
+        },
+        'lhs()' => lambda { |*|
+          to_host_value.call lhs
+        },
+        'rhs()' => lambda { |*|
+          to_host_value.call rhs
+        }
+      }
+    )
+    result
+  end
+
   {
     __LINE__ => Sass::Value::String.new('a'),
     __LINE__ => Sass::Value::String.new('b', quoted: false),
@@ -56,11 +87,14 @@ RSpec.describe Sass do
     __LINE__ => Sass::Value::Null::NULL
   }.each do |line, value|
     it "can round-trip #{value.class} from Sass (#{File.basename(__FILE__)}:#{line})" do
+      result = nil
+
       foo = double
       allow(foo).to receive(:call) { |args|
         expect(args.length).to eq(1)
-        expect(args[0]).to eq(value)
         expect(args[0].class).to eq(value.class)
+        expect(args[0]).to eq(value)
+        result = args[0]
         Sass::Value::Null::NULL
       }
 
@@ -80,6 +114,8 @@ RSpec.describe Sass do
 
       expect(foo).to have_received(:call)
       expect(bar).to have_received(:call)
+
+      expect(remote_eq(value, result)).to be(true)
     end
   end
 end
