@@ -85,9 +85,7 @@ module Sass
         Thread.new do
           loop do
             yield
-          rescue StandardError => e
-            notify_observers(e, nil)
-            close
+          rescue StandardError
             break
           end
         end
@@ -103,7 +101,8 @@ module Sass
       def receive_message(message)
         case message
         when EmbeddedProtocol::ProtocolError
-          raise ProtocolError, message.message
+          notify_observers(ProtocolError.new(message.message), nil)
+          close
         else
           notify_observers(nil, message)
         end
@@ -112,6 +111,10 @@ module Sass
       def read
         length = Varint.read(@stdout)
         @stdout.read(length)
+      rescue IOError => e
+        notify_observers(e, nil)
+        close
+        raise e
       end
 
       def write(payload)
