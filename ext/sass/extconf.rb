@@ -215,9 +215,11 @@ module Sass
       def default_sass_embedded_protocol
         repo = 'sass/embedded-protocol'
 
-        tag_name = IO.popen([Compiler::PATH, '--version']) do |file|
-          JSON.parse(file.read)['protocolVersion']
-        end
+        stdout, stderr, status = Open3.capture3(Compiler::PATH, '--version')
+
+        raise stderr unless status.success?
+
+        tag_name = JSON.parse(stdout)['protocolVersion']
 
         "https://raw.githubusercontent.com/#{repo}/#{tag_name}/embedded_sass.proto"
       end
