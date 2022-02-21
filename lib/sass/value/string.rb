@@ -20,8 +20,7 @@ module Sass
         raise error('String index may not be 0', name) if index.zero?
 
         if index.abs > text.length
-          raise error("Invalid index #{sass_index} for a string with #{text.length} characters",
-                      name)
+          raise error("Invalid index #{sass_index} for a string with #{text.length} characters", name)
         end
 
         index.negative? ? text.length + index : index - 1

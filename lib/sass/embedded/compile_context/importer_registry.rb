@@ -12,11 +12,13 @@ module Sass
           @importers_by_id = {}
           @importers = importers
                        .map { |importer| register(importer) }
-                       .concat(load_paths.map do |load_path|
-                                 EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-                                   path: File.absolute_path(load_path)
-                                 )
-                               end)
+                       .concat(
+                         load_paths.map do |load_path|
+                           EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
+                             path: File.absolute_path(load_path)
+                           )
+                         end
+                       )
 
           @highlight = highlight
         end

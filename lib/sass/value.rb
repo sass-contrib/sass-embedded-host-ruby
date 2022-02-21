@@ -32,8 +32,7 @@ module Sass
       raise error('List index may not be 0', name) if index.zero?
 
       if index.abs > to_a_length
-        raise error("Invalid index #{sass_index} for a list with #{to_a_length} elements",
-                    name)
+        raise error("Invalid index #{sass_index} for a list with #{to_a_length} elements", name)
       end
 
       index.negative? ? to_a_length + index : index - 1
