@@ -61,12 +61,7 @@ RSpec.describe Sass do
 
     it "doesn't emit warnings with a warn callback" do
       stdio = capture_stdio do
-        described_class.compile_string(
-          '@warn heck',
-          logger: {
-            warn: ->(*) {}
-          }
-        )
+        described_class.compile_string('@warn heck', logger: { warn: ->(*) {} })
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).to be_empty
@@ -74,12 +69,7 @@ RSpec.describe Sass do
 
     it 'still emits warning with only a debug callback' do
       stdio = capture_stdio do
-        described_class.compile_string(
-          '@warn heck',
-          logger: {
-            debug: ->(*) {}
-          }
-        )
+        described_class.compile_string('@warn heck', logger: { debug: ->(*) {} })
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).not_to be_empty
@@ -142,12 +132,7 @@ RSpec.describe Sass do
 
     it "doesn't emit debugs with a debug callback" do
       stdio = capture_stdio do
-        described_class.compile_string(
-          '@debug heck',
-          logger: {
-            debug: ->(*) {}
-          }
-        )
+        described_class.compile_string('@debug heck', logger: { debug: ->(*) {} })
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).to be_empty
@@ -155,12 +140,7 @@ RSpec.describe Sass do
 
     it 'still emits debugs with only a warn callback' do
       stdio = capture_stdio do
-        described_class.compile_string(
-          '@debug heck',
-          logger: {
-            warn: ->(*) {}
-          }
-        )
+        described_class.compile_string('@debug heck', logger: { warn: ->(*) {} })
       end
       expect(stdio.out).to be_empty
       expect(stdio.err).not_to be_empty

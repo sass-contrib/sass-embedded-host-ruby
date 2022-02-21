@@ -31,23 +31,25 @@ describe Sass::Value::Map do
     end
 
     it 'returns its contents as a map' do
-      expect(map.contents).to eq({
-                                   Sass::Value::String.new('a') => Sass::Value::String.new('b'),
-                                   Sass::Value::String.new('c') => Sass::Value::String.new('d')
-                                 })
+      expect(map.contents)
+        .to eq({
+                 Sass::Value::String.new('a') => Sass::Value::String.new('b'),
+                 Sass::Value::String.new('c') => Sass::Value::String.new('d')
+               })
     end
 
     it 'returns its contents as a list' do
-      expect(map.to_a).to eq([
-                               Sass::Value::List.new(
-                                 [Sass::Value::String.new('a'), Sass::Value::String.new('b')],
-                                 separator: ' '
-                               ),
-                               Sass::Value::List.new(
-                                 [Sass::Value::String.new('c'), Sass::Value::String.new('d')],
-                                 separator: ' '
-                               )
-                             ])
+      expect(map.to_a)
+        .to eq([
+                 Sass::Value::List.new(
+                   [Sass::Value::String.new('a'), Sass::Value::String.new('b')],
+                   separator: ' '
+                 ),
+                 Sass::Value::List.new(
+                   [Sass::Value::String.new('c'), Sass::Value::String.new('d')],
+                   separator: ' '
+                 )
+               ])
     end
 
     it 'has a comma separator' do
