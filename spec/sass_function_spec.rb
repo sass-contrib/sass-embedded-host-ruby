@@ -166,37 +166,37 @@ RSpec.describe Sass do
     it 'is empty' do
       expect do
         described_class.compile_string('', functions: { '': -> { Sass::Value::Null::NULL } })
-      end.to raise_error(Sass::Embedded::ProtocolError)
+      end.to raise_error(Sass::CompileError)
     end
 
     it 'has no name' do
       expect do
         described_class.compile_string('', functions: { '()': -> { Sass::Value::Null::NULL } })
-      end.to raise_error(Sass::Embedded::ProtocolError)
+      end.to raise_error(Sass::CompileError)
     end
 
     it 'has no arguments' do
       expect do
         described_class.compile_string('', functions: { foo: -> { Sass::Value::Null::NULL } })
-      end.to raise_error(Sass::Embedded::ProtocolError)
+      end.to raise_error(Sass::CompileError)
     end
 
     it 'has invalid arguments' do
       expect do
         described_class.compile_string('', functions: { 'foo(arg)': -> { Sass::Value::Null::NULL } })
-      end.to raise_error(Sass::Embedded::ProtocolError)
+      end.to raise_error(Sass::CompileError)
     end
 
     it 'has no closing parentheses' do
       expect do
         described_class.compile_string('', functions: { 'foo(': -> { Sass::Value::Null::NULL } })
-      end.to raise_error(Sass::Embedded::ProtocolError)
+      end.to raise_error(Sass::CompileError)
     end
 
     it 'has a non-identifier name' do
       expect do
         described_class.compile_string('', functions: { '$foo()': -> { Sass::Value::Null::NULL } })
-      end.to raise_error(Sass::Embedded::ProtocolError)
+      end.to raise_error(Sass::CompileError)
     end
   end
 end

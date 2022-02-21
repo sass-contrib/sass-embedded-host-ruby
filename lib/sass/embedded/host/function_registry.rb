@@ -2,8 +2,10 @@
 
 module Sass
   class Embedded
-    class CompileContext
-      # The {FunctionRegistry} for {CompileContext}.
+    class Host
+      # The {FunctionRegistry} class.
+      #
+      # It stores sass custom functions and handles function calls.
       class FunctionRegistry
         attr_reader :global_functions
 

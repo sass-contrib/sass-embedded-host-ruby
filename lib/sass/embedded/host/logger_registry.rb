@@ -2,8 +2,10 @@
 
 module Sass
   class Embedded
-    class CompileContext
-      # The {LoggerRegistry} for {CompileContext}.
+    class Host
+      # The {LoggerRegistry} class.
+      #
+      # It stores logger and handles log events.
       class LoggerRegistry
         attr_reader :logger
 

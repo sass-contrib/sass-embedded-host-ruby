@@ -2,8 +2,10 @@
 
 module Sass
   class Embedded
-    class CompileContext
-      # The {ImporterRegistry} for {CompileContext}.
+    class Host
+      # The {ImporterRegistry} class.
+      #
+      # It stores importers and handles import requests.
       class ImporterRegistry
         attr_reader :importers
 

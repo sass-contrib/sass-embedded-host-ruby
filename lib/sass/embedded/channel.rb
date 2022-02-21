@@ -2,59 +2,58 @@
 
 module Sass
   class Embedded
-    # The {Channel} for {Compiler} calls. Each instance creates its own
-    # {Compiler}. A new {Compiler} is automatically created when the existing
-    # {Compiler} runs out of unique request id.
+    # The {Channel} class.
+    #
+    # It establishes connection between {Host} and {Dispatcher}.
     class Channel
       def initialize
         @mutex = Mutex.new
-        @compiler = Compiler.new
+        @dispatcher = Dispatcher.new
       end
 
       def close
         @mutex.synchronize do
-          @compiler.close
+          @dispatcher.close
         end
       end
 
       def closed?
         @mutex.synchronize do
-          @compiler.closed?
+          @dispatcher.closed?
         end
       end
 
-      def subscribe(observer)
+      def connect(observer)
         @mutex.synchronize do
           begin
-            id = @compiler.add_observer(observer)
-          rescue ProtocolError
-            @compiler = Compiler.new
-            id = @compiler.add_observer(observer)
+            id = @dispatcher.subscribe(observer)
+          rescue EOFError
+            @dispatcher = Dispatcher.new
+            id = @dispatcher.subscribe(observer)
           end
-          Subscription.new @compiler, observer, id
+          Connection.new(@dispatcher, id)
         end
       end
 
-      # The {Subscription} between {Compiler} and {Observer}.
-      class Subscription
+      # The {Connection} between {Host} to {Dispatcher}.
+      class Connection
         attr_reader :id
 
-        def initialize(compiler, observer, id)
-          @compiler = compiler
-          @observer = observer
+        def initialize(dispatcher, id)
+          @dispatcher = dispatcher
           @id = id
         end
 
-        def unsubscribe
-          @compiler.delete_observer(@observer)
+        def disconnect
+          @dispatcher.unsubscribe(id)
         end
 
-        def send_message(*args)
-          @compiler.send_message(*args)
+        def send_message(message)
+          @dispatcher.send_message(message)
         end
       end
 
-      private_constant :Subscription
+      private_constant :Connection
     end
 
     private_constant :Channel

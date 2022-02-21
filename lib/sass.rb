@@ -3,22 +3,21 @@
 require_relative 'sass/compile_error'
 require_relative 'sass/compile_result'
 require_relative 'sass/embedded'
+require_relative 'sass/embedded/async'
 require_relative 'sass/embedded/channel'
-require_relative 'sass/embedded/observer'
-require_relative 'sass/embedded/compile_context'
-require_relative 'sass/embedded/compile_context/function_registry'
-require_relative 'sass/embedded/compile_context/importer_registry'
-require_relative 'sass/embedded/compile_context/logger_registry'
-require_relative 'sass/embedded/compile_context/value_protofier'
 require_relative 'sass/embedded/compiler'
-require_relative 'sass/embedded_protocol'
+require_relative 'sass/embedded/dispatcher'
+require_relative 'sass/embedded/host'
+require_relative 'sass/embedded/host/function_registry'
+require_relative 'sass/embedded/host/importer_registry'
+require_relative 'sass/embedded/host/logger_registry'
+require_relative 'sass/embedded/host/value_protofier'
 require_relative 'sass/embedded/legacy'
-require_relative 'sass/embedded/protocol_error'
 require_relative 'sass/embedded/protofier'
 require_relative 'sass/embedded/structifier'
 require_relative 'sass/embedded/varint'
 require_relative 'sass/embedded/version'
-require_relative 'sass/embedded/version_context'
+require_relative 'sass/embedded_protocol'
 require_relative 'sass/logger'
 require_relative 'sass/logger/source_location'
 require_relative 'sass/logger/source_span'
@@ -51,7 +50,6 @@ module Sass
     #   Sass.compile('style.scss')
     # @return [CompileResult]
     # @raise [CompileError]
-    # @raise [Embedded::ProtocolError]
     def compile(path, **kwargs)
       instance.compile(path, **kwargs)
     end
@@ -66,7 +64,6 @@ module Sass
     #   Sass.compile_string('h1 { font-size: 40px; }')
     # @return [CompileResult]
     # @raise [CompileError]
-    # @raise [Embedded::ProtocolError]
     def compile_string(source, **kwargs)
       instance.compile_string(source, **kwargs)
     end
@@ -74,8 +71,6 @@ module Sass
     # The global {.info} method.
     #
     # This instantiates a global {Embedded} instance and calls {Embedded#info}.
-    #
-    # @raise [Embedded::ProtocolError]
     def info
       instance.info
     end

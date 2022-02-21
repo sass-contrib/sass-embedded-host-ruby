@@ -2,7 +2,9 @@
 
 module Sass
   class Embedded
-    # Read and write {Varint} from {::IO}.
+    # The {Varint} module.
+    #
+    # It reads and writes varints.
     module Varint
       module_function
 

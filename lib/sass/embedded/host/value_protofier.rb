@@ -2,8 +2,10 @@
 
 module Sass
   class Embedded
-    class CompileContext
-      # The {ValueProtofier} between Pure Ruby types and Protobuf Ruby types.
+    class Host
+      # The {ValueProtofier} class.
+      #
+      # It converts Pure Ruby types and Protobuf Ruby types.
       class ValueProtofier
         def initialize(function_registry)
           @function_registry = function_registry

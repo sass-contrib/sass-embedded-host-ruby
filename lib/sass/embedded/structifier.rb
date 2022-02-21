@@ -2,7 +2,9 @@
 
 module Sass
   class Embedded
-    # The {Structifier} that convert {::Hash} to {Struct}-like object.
+    # The {Structifier} module.
+    #
+    # It converts {::Hash} to {Struct}-like objects.
     module Structifier
       module_function
 

@@ -1,65 +1,34 @@
 # frozen_string_literal: true
 
-require 'observer'
 require 'open3'
 
 module Sass
   class Embedded
-    # The {::Observable} {Compiler} for low level communication with
-    # `dart-sass-embedded` using protocol buffers via stdio. Received messages
-    # can be observed by an {Observer}.
+    # The {Compiler} class.
+    #
+    # It runs the `dart-sass-embedded` process.
     class Compiler
-      include Observable
-
       PATH = File.absolute_path(
         "../../../ext/sass/sass_embedded/dart-sass-embedded#{Gem.win_platform? ? '.bat' : ''}", __dir__
       )
 
-      PROTOCOL_ERROR_ID = 4_294_967_295
-
       def initialize
-        @observerable_mutex = Mutex.new
-        @id = 0
         @stdin_mutex = Mutex.new
+        @stdout_mutex = Mutex.new
         @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(PATH)
 
         [@stdin, @stdout].each(&:binmode)
 
-        poll do
-          warn(@stderr.readline, uplevel: 1)
+        Thread.new do
+          loop do
+            warn(@stderr.readline, uplevel: 1)
+          rescue IOError
+            break
+          end
         end
-        poll do
-          receive_message Protofier.from_proto_message read
-        end
-      end
-
-      def add_observer(*)
-        @observerable_mutex.synchronize do
-          raise ProtocolError, 'half-closed compiler' if half_closed?
-
-          super
-
-          id = @id
-          @id = @id.next
-          id
-        end
-      end
-
-      def delete_observer(*)
-        @observerable_mutex.synchronize do
-          super
-
-          close if half_closed? && count_observers.zero?
-        end
-      end
-
-      def send_message(message)
-        write Protofier.to_proto_message message
       end
 
       def close
-        delete_observers
-
         @stdin_mutex.synchronize do
           @stdin.close unless @stdin.closed?
           @stdout.close unless @stdout.closed?
@@ -75,52 +44,17 @@ module Sass
         end
       end
 
-      private
-
-      def half_closed?
-        @id == PROTOCOL_ERROR_ID
-      end
-
-      def poll
-        Thread.new do
-          loop do
-            yield
-          rescue StandardError
-            break
-          end
-        end
-      end
-
-      def notify_observers(*args)
-        @observerable_mutex.synchronize do
-          changed
-          super(*args)
-        end
-      end
-
-      def receive_message(message)
-        case message
-        when EmbeddedProtocol::ProtocolError
-          notify_observers(ProtocolError.new(message.message), nil)
-          close
-        else
-          notify_observers(nil, message)
-        end
-      end
-
-      def read
-        length = Varint.read(@stdout)
-        @stdout.read(length)
-      rescue IOError => e
-        notify_observers(e, nil)
-        close
-        raise e
-      end
-
       def write(payload)
         @stdin_mutex.synchronize do
           Varint.write(@stdin, payload.length)
           @stdin.write(payload)
+        end
+      end
+
+      def read
+        @stdout_mutex.synchronize do
+          length = Varint.read(@stdout)
+          @stdout.read(length)
         end
       end
     end

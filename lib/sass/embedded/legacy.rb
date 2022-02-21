@@ -40,7 +40,6 @@ module Sass
     # @example
     #   Sass.render(file: 'style.css')
     # @return [Result]
-    # @raise [ProtocolError]
     # @raise [RenderError]
     def render(**kwargs)
       instance.render(**kwargs)
@@ -71,7 +70,6 @@ module Sass
     # See {file:README.md#options} for supported options.
     #
     # @return [RenderResult]
-    # @raise [ProtocolError]
     # @raise [RenderError]
     def render(data: nil,
                file: nil,

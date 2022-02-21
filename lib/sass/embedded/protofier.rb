@@ -2,17 +2,10 @@
 
 module Sass
   class Embedded
-    # The {Protofier} between Pure Ruby types and Protobuf Ruby types.
+    # The {Protofier} class.
+    #
+    # It converts Pure Ruby types and Protobuf Ruby types.
     module Protofier
-      ONEOF_MESSAGE = EmbeddedProtocol::InboundMessage
-                      .descriptor
-                      .lookup_oneof('message')
-                      .to_h do |field_descriptor|
-        [field_descriptor.subtype, field_descriptor.name]
-      end
-
-      private_constant :ONEOF_MESSAGE
-
       module_function
 
       def from_proto_compile_response(compile_response)
@@ -48,17 +41,6 @@ module Sass
         Logger::SourceLocation.new(source_location.offset,
                                    source_location.line,
                                    source_location.column)
-      end
-
-      def from_proto_message(proto)
-        message = EmbeddedProtocol::OutboundMessage.decode(proto)
-        message.send(message.message)
-      end
-
-      def to_proto_message(message)
-        EmbeddedProtocol::InboundMessage.new(
-          ONEOF_MESSAGE[message.class.descriptor] => message
-        ).to_proto
       end
 
       def to_proto_syntax(syntax)
