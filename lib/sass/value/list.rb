@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's list type.
-    class List < Sass::Value
-      def initialize(contents = [], separator: ',', bracketed: false) # rubocop:disable Lint/MissingSuper
+    class List
+      include Value
+
+      def initialize(contents = [], separator: ',', bracketed: false)
         if separator.nil? && contents.length > 1
           raise error 'A list with more than one element must have an explicit separator'
         end

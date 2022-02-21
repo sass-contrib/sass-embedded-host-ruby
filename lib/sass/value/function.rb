@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's function type.
-    class Function < Sass::Value
-      def initialize(id_or_signature, callback = nil) # rubocop:disable Lint/MissingSuper
+    class Function
+      include Value
+
+      def initialize(id_or_signature, callback = nil)
         if id_or_signature.is_a? Numeric
           @id = id_or_signature
         else

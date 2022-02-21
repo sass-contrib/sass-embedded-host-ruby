@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's argument list type.
     #
     # An argument list comes from a rest argument. It's distinct from a normal {List} in that it may contain a keyword
     # map as well as the positional arguments.
-    class ArgumentList < Sass::Value::List
+    class ArgumentList < Value::List
       def initialize(contents = [], keywords = {}, separator = ',')
         super(contents, separator: separator)
 

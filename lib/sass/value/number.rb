@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's number type.
-    class Number < Sass::Value
-      def initialize(value, numerator_units = [], denominator_units = []) # rubocop:disable Lint/MissingSuper
+    class Number
+      include Value
+
+      def initialize(value, numerator_units = [], denominator_units = [])
         numerator_units = [numerator_units] if numerator_units.is_a?(::String)
         denominator_units = [denominator_units] if denominator_units.is_a?(::String)
 

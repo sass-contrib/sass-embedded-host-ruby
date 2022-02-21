@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's map type.
-    class Map < Sass::Value
-      def initialize(contents = {}) # rubocop:disable Lint/MissingSuper
+    class Map
+      include Value
+
+      def initialize(contents = {})
         @contents = contents.freeze
       end
 

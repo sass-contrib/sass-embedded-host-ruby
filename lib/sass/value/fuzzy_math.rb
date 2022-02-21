@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's {FuzzyMath} module.
     module FuzzyMath
       PRECISION = 10

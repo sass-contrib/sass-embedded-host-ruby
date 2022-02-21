@@ -1,14 +1,21 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's color type.
     #
     # No matter what representation was originally used to create this color, all of its channels are accessible.
-    class Color < Sass::Value
-      def initialize(red: nil, green: nil, blue: nil, # rubocop:disable Lint/MissingSuper
-                     hue: nil, saturation: nil, lightness: nil,
-                     whiteness: nil, blackness: nil,
+    class Color
+      include Value
+
+      def initialize(red: nil,
+                     green: nil,
+                     blue: nil,
+                     hue: nil,
+                     saturation: nil,
+                     lightness: nil,
+                     whiteness: nil,
+                     blackness: nil,
                      alpha: nil)
         @alpha = alpha.nil? ? 1 : FuzzyMath.assert_between(alpha, 0, 1, 'alpha')
         if red && green && blue

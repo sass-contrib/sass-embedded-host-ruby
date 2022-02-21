@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's string type.
-    class String < Sass::Value
-      def initialize(text = '', quoted: true) # rubocop:disable Lint/MissingSuper
+    class String
+      include Value
+
+      def initialize(text = '', quoted: true)
         @text = text.freeze
         @quoted = quoted
       end

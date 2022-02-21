@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     class Number
       # The {Unit} module.
       module Unit

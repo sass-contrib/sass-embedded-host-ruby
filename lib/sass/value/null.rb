@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's null type.
-    class Null < Sass::Value
-      def initialize # rubocop:disable Lint/MissingSuper
+    class Null
+      include Value
+
+      def initialize
         @value = nil
       end
 

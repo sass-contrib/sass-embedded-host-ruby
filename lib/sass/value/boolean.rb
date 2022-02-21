@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Sass
-  class Value
+  module Value
     # Sass's boolean type.
-    class Boolean < Sass::Value
-      def initialize(value) # rubocop:disable Lint/MissingSuper
+    class Boolean
+      include Value
+
+      def initialize(value)
         @value = value
       end
 

@@ -2,7 +2,7 @@
 
 module Sass
   # The abstract base class of Sass's value types.
-  class Value
+  module Value
     def to_a
       [self]
     end
