@@ -105,11 +105,13 @@ RSpec.describe Sass do
       }
 
       expect(
-        described_class.compile_string('a {b: foo(bar())}',
-                                       functions: {
-                                         'foo($arg)': foo,
-                                         'bar()': bar
-                                       }).css
+        described_class.compile_string(
+          'a {b: foo(bar())}',
+          functions: {
+            'foo($arg)': foo,
+            'bar()': bar
+          }
+        ).css
       ).to eq('')
 
       expect(foo).to have_received(:call)
