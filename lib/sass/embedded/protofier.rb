@@ -2,7 +2,7 @@
 
 module Sass
   class Embedded
-    # The {Protofier} class.
+    # The {Protofier} module.
     #
     # It converts Pure Ruby types and Protobuf Ruby types.
     module Protofier
