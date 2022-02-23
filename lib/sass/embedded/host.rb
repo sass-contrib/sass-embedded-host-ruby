@@ -4,10 +4,11 @@ module Sass
   class Embedded
     # The {Host} class.
     #
-    # It communicates with {Dispatcher} and handles the host logic for a single request.
+    # It communicates with {Dispatcher} and handles the host logic.
     class Host
       def initialize(channel)
-        @connection = channel.connect(self)
+        @channel = channel
+        @mutex = Mutex.new
       end
 
       def id
@@ -81,12 +82,10 @@ module Sass
 
       def compile_response(message)
         @async.resolve(message)
-        @connection.disconnect
       end
 
       def version_response(message)
         @async.resolve(message)
-        @connection.disconnect
       end
 
       def canonicalize_request(message)
@@ -115,17 +114,19 @@ module Sass
 
       def error(message)
         @async.reject(CompileError.new(message.message, nil, nil, nil))
-        @connection.disconnect
       end
 
       private
 
       def async
-        raise IOError unless @async.nil?
-
-        @async = Async.new
-        yield
-        @async.await
+        @mutex.synchronize do
+          @connection = @channel.connect(self)
+          @async = Async.new
+          yield
+          @async.await
+        ensure
+          @connection.disconnect
+        end
       end
     end
 
