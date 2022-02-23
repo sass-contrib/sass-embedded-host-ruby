@@ -33,7 +33,7 @@ module Sass
 
           id = @id
           @id = id.next
-          @observers.store(id, observer)
+          @observers[id] = observer
           id
         end
       end
@@ -76,9 +76,11 @@ module Sass
           half_close
           @observers[message.id]&.send(outbound_message.message, message)
         when :compile_response, :version_response
-          @observers[message.id]&.send(outbound_message.message, message)
+          @observers[message.id].send(outbound_message.message, message)
         when :log_event, :canonicalize_request, :import_request, :file_import_request, :function_call_request
-          @observers[message.compilation_id]&.send(outbound_message.message, message)
+          Thread.new(@observers[message.compilation_id]) do |observer|
+            observer.send(outbound_message.message, message)
+          end
         else
           raise ArgumentError, "Unknown OutboundMessage.message #{message}"
         end
