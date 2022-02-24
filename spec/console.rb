@@ -11,7 +11,9 @@ module Console
 
     queue = Queue.new
     allow(Thread).to receive(:new).and_wrap_original do |method, *args, &block|
-      queue.push method.call(*args, &block)
+      thread = method.call(*args, &block)
+      queue.push(thread)
+      thread
     end
 
     yield
