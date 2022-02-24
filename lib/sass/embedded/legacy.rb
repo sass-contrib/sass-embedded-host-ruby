@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require 'base64'
-require 'json'
-require 'pathname'
-require 'uri'
-
 # The Sass module.
 #
 # This communicates with Embedded Dart Sass using the Embedded Sass protocol.
@@ -87,9 +82,12 @@ module Sass
                source_map_root: '',
                functions: {},
                importer: [])
-      start = now
-
       raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
+
+      require 'pathname'
+      require 'uri'
+
+      start = now
 
       indent_type = parse_indent_type(indent_type)
       indent_width = parse_indent_width(indent_width)
@@ -216,6 +214,9 @@ module Sass
                          source_map:,
                          source_map_root:)
       return if map.nil? || map.empty?
+
+      require 'base64'
+      require 'json'
 
       map_data = JSON.parse(map)
 
