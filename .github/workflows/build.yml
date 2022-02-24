@@ -10,12 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        ruby-version: ['2.6', 'ruby', 'jruby', 'truffleruby', 'truffleruby+graalvm']
-        exclude:
-          - os: windows-latest
-            ruby-version: truffleruby
-          - os: windows-latest
-            ruby-version: truffleruby+graalvm
+        ruby-version: ['2.6', '3.0', 'ruby', 'jruby']
 
     steps:
     - name: Checkout
