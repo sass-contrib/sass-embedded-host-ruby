@@ -9,20 +9,24 @@ module Sass
       module_function
 
       def from_proto_compile_response(compile_response)
-        if compile_response.result == :failure
+        result = compile_response.send(compile_response.result)
+        case compile_response.result
+        when :failure
           raise CompileError.new(
-            compile_response.failure.message,
-            compile_response.failure.formatted,
-            compile_response.failure.stack_trace,
-            from_proto_source_span(compile_response.failure.span)
+            result.message,
+            result.formatted,
+            result.stack_trace,
+            from_proto_source_span(result.span)
           )
+        when :success
+          CompileResult.new(
+            result.css,
+            result.source_map,
+            result.loaded_urls
+          )
+        else
+          raise ArgumentError, "Unknown CompileResponse.result #{result}"
         end
-
-        CompileResult.new(
-          compile_response.success.css,
-          compile_response.success.source_map,
-          compile_response.success.loaded_urls
-        )
       end
 
       def from_proto_source_span(source_span)
