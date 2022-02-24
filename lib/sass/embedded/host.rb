@@ -35,7 +35,7 @@ module Sass
                           logger:,
                           quiet_deps:,
                           verbose:)
-        async do
+        await do
           @function_registry = FunctionRegistry.new(functions, alert_color: alert_color)
           @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color: alert_color)
           @logger_registry = LoggerRegistry.new(logger)
@@ -67,7 +67,7 @@ module Sass
       end
 
       def version_request
-        async do
+        await do
           send_message EmbeddedProtocol::InboundMessage.new(
             version_request: EmbeddedProtocol::InboundMessage::VersionRequest.new(
               id: id
@@ -118,7 +118,7 @@ module Sass
 
       private
 
-      def async
+      def await
         @mutex.synchronize do
           @connection = @channel.connect(self)
           @async = Async.new
