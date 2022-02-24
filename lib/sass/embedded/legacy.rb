@@ -84,9 +84,6 @@ module Sass
                importer: [])
       raise ArgumentError, 'either data or file must be set' if file.nil? && data.nil?
 
-      require 'pathname'
-      require 'uri'
-
       start = now
 
       indent_type = parse_indent_type(indent_type)
@@ -215,7 +212,6 @@ module Sass
                          source_map_root:)
       return if map.nil? || map.empty?
 
-      require 'base64'
       require 'json'
 
       map_data = JSON.parse(map)
@@ -272,6 +268,8 @@ module Sass
 
       unless map.nil? || omit_source_map_url == true
         url = if source_map_embed
+                require 'base64'
+
                 "data:application/json;base64,#{Base64.strict_encode64(map)}"
               elsif out_file
                 relative_path(File.dirname(out_file), source_map)
@@ -327,6 +325,8 @@ module Sass
 
     # @deprecated
     def relative_path(from, to)
+      require 'pathname'
+
       Pathname.new(File.absolute_path(to)).relative_path_from(Pathname.new(File.absolute_path(from))).to_s
     end
 
@@ -380,23 +380,23 @@ module Sass
 
       def path_to_file_url(path)
         if File.absolute_path? path
-          uri_parser.escape "#{FILE_SCHEME}#{Gem.win_platform? ? '/' : ''}#{path}"
+          Url.uri_parser.escape "#{FILE_SCHEME}#{Gem.win_platform? ? '/' : ''}#{path}"
         else
-          uri_parser.escape path
+          Url.uri_parser.escape path
         end
       end
 
       def file_url_to_path(url)
         if url.start_with? FILE_SCHEME
-          uri_parser.unescape url[(FILE_SCHEME.length + (Gem.win_platform? ? 1 : 0))..]
+          Url.uri_parser.unescape url[(FILE_SCHEME.length + (Gem.win_platform? ? 1 : 0))..]
         else
-          uri_parser.unescape url
+          Url.uri_parser.unescape url
         end
       end
 
-      private
-
       def uri_parser
+        require 'uri'
+
         @uri_parser ||= URI::Parser.new({ RESERVED: ';/?:@&=+$,' })
       end
     end
