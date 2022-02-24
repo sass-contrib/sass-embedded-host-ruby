@@ -9,16 +9,13 @@ module Console
     stderr = $stderr
     $stderr = StringIO.new
 
-    queue = Queue.new
-    allow(Thread).to receive(:new).and_wrap_original do |method, *args, &block|
-      thread = method.call(*args, &block)
-      queue.push(thread)
-      thread
-    end
+    thread_list = Thread.list
 
     yield
 
-    queue.pop.join until queue.empty?
+    Thread.list.each do |thread|
+      thread.join unless thread_list.include? thread
+    end
 
     ConsoleOutput.new $stdout.string, $stderr.string
   ensure
