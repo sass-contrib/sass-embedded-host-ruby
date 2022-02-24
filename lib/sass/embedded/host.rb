@@ -8,7 +8,6 @@ module Sass
     class Host
       def initialize(channel)
         @channel = channel
-        @mutex = Mutex.new
       end
 
       def id
@@ -119,14 +118,14 @@ module Sass
       private
 
       def await
-        @mutex.synchronize do
-          @connection = @channel.connect(self)
-          @async = Async.new
-          yield
-          @async.await
-        ensure
-          @connection.disconnect
-        end
+        raise EOFError unless @async.nil?
+
+        @connection = @channel.connect(self)
+        @async = Async.new
+        yield
+        @async.await
+      ensure
+        @connection.disconnect
       end
     end
 
