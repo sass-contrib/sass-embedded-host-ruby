@@ -13,11 +13,11 @@ module Sass
       )
 
       def initialize
+        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(PATH)
+        @stdin.binmode
+        @stdout.binmode
         @stdin_mutex = Mutex.new
         @stdout_mutex = Mutex.new
-        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(PATH)
-
-        [@stdin, @stdout].each(&:binmode)
 
         Thread.new do
           loop do

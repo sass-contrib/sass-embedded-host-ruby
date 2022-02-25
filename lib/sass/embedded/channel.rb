@@ -7,8 +7,8 @@ module Sass
     # It establishes connection between {Host} and {Dispatcher}.
     class Channel
       def initialize
-        @mutex = Mutex.new
         @dispatcher = Dispatcher.new
+        @mutex = Mutex.new
       end
 
       def close
