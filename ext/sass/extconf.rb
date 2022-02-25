@@ -108,17 +108,23 @@ module Sass
         uri = URI.parse(uri_s)
         path = File.absolute_path(File.basename(uri.path), __dir__)
         if uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
-          FileUtils.copy_file uri.path, path
+          source = uri_parser.unescape(uri.path)
+          puts "cp -- #{source} #{path}"
+          FileUtils.copy_file(source, path)
         elsif uri.respond_to? :open
           puts "curl -fsSLo #{path} -- #{uri}"
-          uri.open do |source|
-            File.binwrite(path, source.read)
+          uri.open do |stream|
+            File.binwrite(path, stream.read)
           end
         else
           raise
         end
       rescue StandardError
         raise "Failed to fetch #{uri_s}"
+      end
+
+      def uri_parser
+        @uri_parser ||= URI::Parser.new({ RESERVED: ';/?:@&=+$,' })
       end
 
       def default_sass_embedded
