@@ -118,8 +118,7 @@ module Sass
           raise
         end
       rescue StandardError
-        warn "ERROR:  Error fetching #{uri_s}:"
-        raise
+        raise "Failed to fetch #{uri_s}"
       end
 
       def default_sass_embedded
