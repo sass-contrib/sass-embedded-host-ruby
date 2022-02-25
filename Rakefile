@@ -10,7 +10,7 @@ task default: %i[compile rubocop spec]
 
 desc 'Compile all the extensions'
 task :compile do
-  system('make', '-C', 'ext/sass')
+  raise unless system('make', '-C', 'ext/sass')
 end
 
 RSpec::Core::RakeTask.new
