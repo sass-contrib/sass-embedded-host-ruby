@@ -77,13 +77,13 @@ module Sass
     private
 
     def instance
-      if @instance.nil?
+      if defined? @instance
+        @instance = Embedded.new if @instance.closed?
+      else
         @instance = Embedded.new
         at_exit do
           @instance.close
         end
-      elsif @instance.closed?
-        @instance = Embedded.new
       end
       @instance
     end
