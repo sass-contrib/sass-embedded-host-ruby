@@ -49,7 +49,7 @@ module Sass
 
           success = value_protofier.to_proto(get(function_call_request).call(arguments))
           accessed_argument_lists = arguments
-                                    .filter do |argument|
+                                    .select do |argument|
                                       argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval do
                                         @keywords_accessed
                                       end

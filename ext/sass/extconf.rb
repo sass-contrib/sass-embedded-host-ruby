@@ -214,7 +214,7 @@ module Sass
 
         ext = 'zip'
 
-        "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name[1..]}-#{os_arch}.#{ext}"
+        "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{tag_name.delete_prefix('v')}-#{os_arch}.#{ext}"
       end
 
       def default_sass_embedded_protocol
