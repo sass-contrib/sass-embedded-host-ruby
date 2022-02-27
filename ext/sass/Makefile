@@ -6,18 +6,18 @@ endif
 EXTCONF = ruby -- extconf.rb
 
 .PHONY: all
-all: sass_embedded embedded_sass_pb.rb
+all: embedded_sass_pb.rb sass_embedded
 
 .PHONY: install
-install:
+install: clean
+
+.PHONY: uninstall
+uninstall:
+	$(RM) embedded_sass_pb.rb sass_embedded
 
 .PHONY: clean
 clean:
-	$(RM) embedded_sass_pb.rb protoc sass_embedded
-
-.PHONY: distclean
-distclean: clean
-	$(RM) embedded_sass.proto protoc-*.zip sass_embedded-*.tar.gz
+	$(RM) embedded_sass.proto protoc protoc-* sass_embedded-*
 
 ifeq ($(OS),Windows_NT)
 sass_embedded-*.zip:
