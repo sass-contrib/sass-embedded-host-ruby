@@ -70,37 +70,37 @@ module Sass
       end
 
       def red
-        hsl_to_rgb if @red.nil?
+        hsl_to_rgb unless defined? @red
 
         @red
       end
 
       def green
-        hsl_to_rgb if @green.nil?
+        hsl_to_rgb unless defined? @green
 
         @green
       end
 
       def blue
-        hsl_to_rgb if @blue.nil?
+        hsl_to_rgb unless defined? @blue
 
         @blue
       end
 
       def hue
-        rgb_to_hsl if @hue.nil?
+        rgb_to_hsl unless defined? @hue
 
         @hue
       end
 
       def saturation
-        rgb_to_hsl if @saturation.nil?
+        rgb_to_hsl unless defined? @saturation
 
         @saturation
       end
 
       def lightness
-        rgb_to_hsl if @lightness.nil?
+        rgb_to_hsl unless defined? @lightness
 
         @lightness
       end
