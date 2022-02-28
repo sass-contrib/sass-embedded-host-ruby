@@ -10,7 +10,7 @@ describe Sass::Value::Null do
   end
 
   it 'returns nil in realNull check' do
-    expect(value.to_nil).to be(nil)
+    expect(value.to_nil).to be_nil
   end
 
   it 'is equal to itself' do
@@ -26,7 +26,7 @@ describe Sass::Value::Null do
     expect { value.assert_color }.to raise_error(Sass::ScriptError)
     expect { value.assert_function }.to raise_error(Sass::ScriptError)
     expect { value.assert_map }.to raise_error(Sass::ScriptError)
-    expect(value.to_map).to be(nil)
+    expect(value.to_map).to be_nil
     expect { value.assert_number }.to raise_error(Sass::ScriptError)
     expect { value.assert_string }.to raise_error(Sass::ScriptError)
   end

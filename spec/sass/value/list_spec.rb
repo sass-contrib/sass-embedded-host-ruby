@@ -21,7 +21,7 @@ describe Sass::Value::List do
       expect { list.assert_color }.to raise_error(Sass::ScriptError)
       expect { list.assert_function }.to raise_error(Sass::ScriptError)
       expect { list.assert_map }.to raise_error(Sass::ScriptError)
-      expect(list.to_map).to be(nil)
+      expect(list.to_map).to be_nil
       expect { list.assert_number }.to raise_error(Sass::ScriptError)
       expect { list.assert_string }.to raise_error(Sass::ScriptError)
     end
@@ -153,9 +153,9 @@ describe Sass::Value::List do
 
     it 'allows an undecided separator for empty and single-element lists' do
       list = described_class.new(separator: nil)
-      expect(list.separator).to be(nil)
+      expect(list.separator).to be_nil
       list = described_class.new([Sass::Value::String.new('a')], separator: nil)
-      expect(list.separator).to be(nil)
+      expect(list.separator).to be_nil
     end
 
     it 'does not allow an undecided separator for lists with more than one element' do
@@ -213,17 +213,17 @@ describe Sass::Value::List do
     end
 
     it 'returns nil for out-of-bounds values' do
-      expect(list.at(3)).to be(nil)
-      expect(list.at(-4)).to be(nil)
+      expect(list.at(3)).to be_nil
+      expect(list.at(-4)).to be_nil
     end
 
     it 'rounds indices down' do
       expect(list.at(0.1)).to eq(Sass::Value::String.new('a'))
       expect(list.at(2.9)).to eq(Sass::Value::String.new('c'))
-      expect(list.at(3.1)).to be(nil)
+      expect(list.at(3.1)).to be_nil
       expect(list.at(-0.1)).to eq(Sass::Value::String.new('c'))
       expect(list.at(-2.9)).to eq(Sass::Value::String.new('a'))
-      expect(list.at(3.1)).to be(nil)
+      expect(list.at(3.1)).to be_nil
     end
   end
 
@@ -253,7 +253,7 @@ describe Sass::Value::List do
     end
 
     it 'has an undecided separator' do
-      expect(string.separator).to be(nil)
+      expect(string.separator).to be_nil
     end
 
     it 'returns itself as a list' do
@@ -288,15 +288,15 @@ describe Sass::Value::List do
       end
 
       it 'returns nil for out-of-bounds values' do
-        expect(string.at(1)).to be(nil)
-        expect(string.at(-2)).to be(nil)
+        expect(string.at(1)).to be_nil
+        expect(string.at(-2)).to be_nil
       end
 
       it 'rounds indices down' do
         expect(string.at(0.1)).to eq(string)
-        expect(string.at(1.9)).to be(nil)
+        expect(string.at(1.9)).to be_nil
         expect(string.at(-0.1)).to eq(string)
-        expect(string.at(-1.9)).to be(nil)
+        expect(string.at(-1.9)).to be_nil
       end
     end
   end
@@ -344,9 +344,9 @@ describe Sass::Value::List do
     end
 
     it 'at() always returns nil' do
-      expect(list.at(0)).to be(nil)
-      expect(list.at(1)).to be(nil)
-      expect(list.at(-1)).to be(nil)
+      expect(list.at(0)).to be_nil
+      expect(list.at(1)).to be_nil
+      expect(list.at(-1)).to be_nil
     end
   end
 end

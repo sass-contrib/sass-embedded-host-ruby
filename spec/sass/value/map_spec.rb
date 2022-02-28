@@ -180,8 +180,8 @@ describe Sass::Value::Map do
       end
 
       it 'returns nil for out-of-bounds values' do
-        expect(map.at(2)).to be(nil)
-        expect(map.at(-3)).to be(nil)
+        expect(map.at(2)).to be_nil
+        expect(map.at(-3)).to be_nil
       end
 
       it 'rounds indices down' do
@@ -193,7 +193,7 @@ describe Sass::Value::Map do
           Sass::Value::List.new([Sass::Value::String.new('c'), Sass::Value::String.new('d')],
                                 separator: ' ')
         )
-        expect(map.at(2.1)).to be(nil)
+        expect(map.at(2.1)).to be_nil
         expect(map.at(-0.1)).to eq(
           Sass::Value::List.new([Sass::Value::String.new('c'), Sass::Value::String.new('d')],
                                 separator: ' ')
@@ -202,7 +202,7 @@ describe Sass::Value::Map do
           Sass::Value::List.new([Sass::Value::String.new('a'), Sass::Value::String.new('b')],
                                 separator: ' ')
         )
-        expect(map.at(-2.1)).to be(nil)
+        expect(map.at(-2.1)).to be_nil
       end
     end
 
@@ -217,8 +217,8 @@ describe Sass::Value::Map do
       end
 
       it 'returns undefined for keys that have no values' do
-        expect(map.at(Sass::Value::String.new('b'))).to be(nil)
-        expect(map.at(Sass::Value::String.new('d'))).to be(nil)
+        expect(map.at(Sass::Value::String.new('b'))).to be_nil
+        expect(map.at(Sass::Value::String.new('d'))).to be_nil
       end
     end
   end
@@ -230,7 +230,7 @@ describe Sass::Value::Map do
     end
 
     it 'has a nil separator' do
-      expect(map.separator).to be(nil)
+      expect(map.separator).to be_nil
     end
 
     it 'returns its contents as a map' do

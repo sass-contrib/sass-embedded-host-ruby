@@ -99,7 +99,7 @@ describe Sass::Value::ArgumentList do
       expect { list.assert_color }.to raise_error(Sass::ScriptError)
       expect { list.assert_function }.to raise_error(Sass::ScriptError)
       expect { list.assert_map }.to raise_error(Sass::ScriptError)
-      expect(list.to_map).to be(nil)
+      expect(list.to_map).to be_nil
       expect { list.assert_number }.to raise_error(Sass::ScriptError)
       expect { list.assert_string }.to raise_error(Sass::ScriptError)
     end
@@ -175,10 +175,10 @@ describe Sass::Value::ArgumentList do
 
     it 'allows an undecided separator for empty and single-element lists' do
       list = described_class.new([], {}, nil)
-      expect(list.separator).to be(nil)
+      expect(list.separator).to be_nil
 
       list = described_class.new([Sass::Value::String.new('a')], {}, nil)
-      expect(list.separator).to eq(nil)
+      expect(list.separator).to be_nil
     end
 
     it 'does not allow an undecided separator for lists with more than one element' do
