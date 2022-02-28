@@ -6,7 +6,7 @@ require 'rubocop/rake_task'
 
 ENV['gem_push'] = ENV['CI'] || 'false'
 
-task default: %i[compile rubocop spec]
+task default: (ENV['CI'] ? [] : %i[rubocop]).concat(%i[compile spec])
 
 desc 'Compile all the extensions'
 task :compile do

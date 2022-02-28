@@ -3,6 +3,23 @@ name: build
 on: [push, pull_request]
 
 jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+
+    - name: Lint
+      run: bundle exec rake rubocop
+
   build:
 
     runs-on: ${{ matrix.os }}
