@@ -9,14 +9,14 @@ EXTCONF = ruby -- extconf.rb
 all: embedded_sass_pb.rb sass_embedded
 
 .PHONY: install
-install: clean
-
-.PHONY: uninstall
-uninstall:
-	$(RM) embedded_sass_pb.rb sass_embedded
+install: distclean
 
 .PHONY: clean
 clean:
+	$(RM) embedded_sass_pb.rb sass_embedded
+
+.PHONY: distclean
+distclean:
 	$(RM) embedded_sass.proto protoc protoc-* sass_embedded-*
 
 ifeq ($(OS),Windows_NT)

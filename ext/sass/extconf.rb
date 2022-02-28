@@ -104,14 +104,24 @@ module Sass
         end
       end
 
-      def fetch(uri_s)
-        uri = URI.parse(uri_s)
-        path = URI::DEFAULT_PARSER.unescape(uri.path)
+      def fetch(uri_or_path)
+        begin
+          uri = URI.parse(uri_or_path)
+          path = URI::DEFAULT_PARSER.unescape(uri.path)
+          raise if uri.instance_of?(URI::Generic) && !File.file?(path)
+        rescue StandardError
+          raise unless File.file?(uri_or_path)
+
+          uri = nil
+          path = uri_or_path
+        end
+
         dest = File.absolute_path(File.basename(path), __dir__)
-        if uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
+
+        if uri.nil? || uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
           puts "cp -- #{path} #{dest}"
           FileUtils.copy_file(path, dest)
-        elsif uri.respond_to? :open
+        elsif uri.respond_to?(:open)
           puts "curl -fsSLo #{dest} -- #{uri}"
           uri.open do |stream|
             File.binwrite(dest, stream.read)
@@ -120,7 +130,7 @@ module Sass
           raise
         end
       rescue StandardError
-        raise "Failed to fetch #{uri_s}"
+        raise "Failed to fetch #{uri_or_path}"
       end
 
       def default_sass_embedded
