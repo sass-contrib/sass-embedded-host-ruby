@@ -108,7 +108,10 @@ module Sass
         begin
           uri = URI.parse(uri_or_path)
           path = URI::DEFAULT_PARSER.unescape(uri.path)
-          raise if uri.instance_of?(URI::Generic) && !File.file?(path)
+          if uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
+            path = path.delete_prefix('/') if Platform::OS == 'windows' && !File.file?(path)
+            raise unless File.file?(path)
+          end
         rescue StandardError
           raise unless File.file?(uri_or_path)
 
@@ -118,7 +121,7 @@ module Sass
 
         dest = File.absolute_path(File.basename(path), __dir__)
 
-        if uri.nil? || uri.is_a?(URI::File) || uri.instance_of?(URI::Generic)
+        if uri.nil? || uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
           puts "cp -- #{path} #{dest}"
           FileUtils.copy_file(path, dest)
         elsif uri.respond_to?(:open)
