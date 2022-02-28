@@ -20,7 +20,7 @@ jobs:
     - name: Lint
       run: bundle exec rake rubocop
 
-  build:
+  spec:
 
     runs-on: ${{ matrix.os }}
 
@@ -39,5 +39,8 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
 
-    - name: Test
-      run: bundle exec rake
+    - name: Compile
+      run: bundle exec rake compile
+
+    - name: Spec
+      run: bundle exec rake spec
