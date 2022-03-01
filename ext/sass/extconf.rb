@@ -160,9 +160,7 @@ module Sass
                when 'i386'
                  'ia32'
                when 'aarch64'
-                 raise "Unsupported Arch: #{Platform::ARCH}" unless Platform::OS == 'darwin'
-
-                 'x64'
+                 Platform::OS == 'darwin' ? 'x64' : 'arm64'
                else
                  raise "Unsupported Arch: #{Platform::ARCH}"
                end
@@ -197,11 +195,7 @@ module Sass
 
         arch = case Platform::ARCH
                when 'aarch64'
-                 if Platform::OS == 'darwin'
-                   'x86_64'
-                 else
-                   'aarch_64'
-                 end
+                 Platform::OS == 'darwin' ? 'x86_64' : 'aarch_64'
                when 'sparcv9'
                  's390'
                when 'i386'
