@@ -151,7 +151,7 @@ module Sass
              when 'windows'
                'windows'
              else
-               raise "Unsupported OS: #{Platform::OS}"
+               raise release_asset_not_available_error(repo, tag_name)
              end
 
         arch = case Platform::ARCH
@@ -162,7 +162,7 @@ module Sass
                when 'aarch64'
                  Platform::OS == 'darwin' ? 'x64' : 'arm64'
                else
-                 raise "Unsupported Arch: #{Platform::ARCH}"
+                 raise release_asset_not_available_error(repo, tag_name)
                end
 
         ext = case os
@@ -190,7 +190,7 @@ module Sass
              when 'windows'
                'win'
              else
-               raise "Unsupported OS: #{Platform::OS}"
+               raise release_asset_not_available_error(repo, tag_name)
              end
 
         arch = case Platform::ARCH
@@ -205,7 +205,7 @@ module Sass
                when 'powerpc64'
                  'ppcle_64'
                else
-                 raise "Unsupported Arch: #{Platform::ARCH}"
+                 raise release_asset_not_available_error(repo, tag_name)
                end
 
         os_arch = case os
@@ -230,6 +230,12 @@ module Sass
         tag_name = JSON.parse(stdout)['protocolVersion']
 
         "https://github.com/#{repo}/raw/#{tag_name}/embedded_sass.proto"
+      end
+
+      def release_asset_not_available_error(repo, tag_name)
+        platform = "#{Platform::OS} #{Platform::ARCH}"
+        url = "https://github.com/#{repo}/releases/tag/#{tag_name}"
+        NotImplementedError.new("Release asset for #{platform} not available at #{url}")
       end
     end
   end
