@@ -235,7 +235,7 @@ module Sass
 
         tag_name = JSON.parse(stdout)['protocolVersion']
 
-        "https://raw.githubusercontent.com/#{repo}/#{tag_name}/embedded_sass.proto"
+        "https://github.com/#{repo}/raw/#{tag_name}/embedded_sass.proto"
       end
     end
   end
