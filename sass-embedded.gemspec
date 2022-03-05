@@ -17,12 +17,12 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     'funding_uri' => 'https://github.com/sponsors/ntkme'
   }
 
-  spec.extensions    = ['ext/sass/extconf.rb']
+  spec.extensions    = ['ext/sass/mkrf_conf.rb']
   spec.files         = Dir['lib/**/*.rb'] + [
-    'ext/sass/extconf.rb',
+    'ext/sass/mkrf_conf.rb',
     'ext/sass/package.json',
     'ext/sass/unzip.vbs',
-    'ext/sass/Makefile',
+    'ext/sass/Rakefile',
     'LICENSE',
     'README.md'
   ]

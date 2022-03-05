@@ -1,0 +1,36 @@
+# frozen_string_literal: true
+
+require 'rake/clean'
+require_relative 'mkrf_conf'
+
+task default: %i[install clean]
+
+task install: %w[sass_embedded embedded_sass_pb.rb]
+
+CLEAN.include %w[protoc *.proto *.tar.gz *.zip]
+
+CLOBBER.include %w[sass_embedded embedded_sass_pb.rb]
+
+file 'protoc' do |t|
+  archive = fetch(ENV.fetch(t.name.upcase) { MkrfConf.default_protoc })
+  unzip archive, t.name
+  rm archive
+end
+
+file 'sass_embedded' do |t|
+  archive = fetch(ENV.fetch(t.name.upcase) { MkrfConf.default_sass_embedded })
+  if Gem.win_platform?
+    unzip archive
+  else
+    sh "tar -vxzf #{archive}"
+  end
+  rm archive
+end
+
+file 'embedded_sass.proto' => %w[sass_embedded] do |t|
+  fetch(ENV.fetch('sass_embedded_protocol'.upcase) { MkrfConf.default_sass_embedded_protocol }, t.name)
+end
+
+rule '_pb.rb' => ['.proto', 'protoc'] do |t|
+  sh "./protoc/bin/protoc --ruby_out=. #{t.source}"
+end
