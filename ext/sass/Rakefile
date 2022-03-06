@@ -73,9 +73,11 @@ module FileUtils
     if uri.nil? || uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
       cp path, dest
     elsif uri.respond_to?(:open)
-      puts "curl -fsSLo #{dest} -- #{uri}"
-      uri.open do |stream|
-        File.binwrite(dest, stream.read)
+      Rake.rake_output_message "curl -fsSLo #{dest} -- #{uri}" if Rake::FileUtilsExt.verbose_flag
+      unless Rake::FileUtilsExt.nowrite_flag
+        uri.open do |stream|
+          File.binwrite(dest, stream.read)
+        end
       end
     else
       raise
