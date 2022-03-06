@@ -24,7 +24,7 @@ file 'sass_embedded' do |t|
   if Gem.win_platform?
     unzip archive
   else
-    sh "tar -vxzf #{archive}"
+    sh 'tar', '-vxzf', archive
   end
   rm archive
 end
@@ -34,7 +34,7 @@ file 'embedded_sass.proto' => %w[sass_embedded] do |t|
 end
 
 rule '_pb.rb' => ['.proto', 'protoc'] do |t|
-  sh "./protoc/bin/protoc --ruby_out=. #{t.source}"
+  sh './protoc/bin/protoc', '--ruby_out=.', t.source
 end
 
 # This is a FileUtils extension that defines several additional commands to be
@@ -42,14 +42,14 @@ end
 module FileUtils
   def unzip(source, dest = '.')
     if Gem.win_platform?
-      sh 'powershell -c "'\
+      sh 'powershell', '-c',
          'if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {'\
          " Get-Item #{source} | Expand-Archive -DestinationPath #{dest} -Force "\
          '} else {'\
          " cscript.exe unzip.vbs #{source} #{dest} "\
-         '}"'
+         '}'
     else
-      sh "unzip -od #{dest} #{source}"
+      sh 'unzip', '-od', dest, source
     end
   end
 
