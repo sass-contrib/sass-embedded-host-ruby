@@ -40,11 +40,11 @@ end
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
-  def unzip(source, dest = '.')
+  def unzip(archive, dest = '.')
     if Gem.win_platform?
-      sh 'powershell', '-File', 'unzip.ps1', '-Archive', source, '-DestinationPath', dest
+      sh 'powershell', '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
     else
-      sh 'unzip', '-od', dest, source
+      sh 'unzip', '-od', dest, archive
     end
   end
 
