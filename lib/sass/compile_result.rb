@@ -2,6 +2,8 @@
 
 module Sass
   # The result of compiling Sass to CSS. Returned by {Sass.compile} and {Sass.compile_string}.
+  #
+  # @see https://sass-lang.com/documentation/js-api/interfaces/CompileResult
   class CompileResult
     # @return [String]
     attr_reader :css
