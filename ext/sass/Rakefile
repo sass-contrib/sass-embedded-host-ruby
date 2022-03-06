@@ -33,7 +33,7 @@ file 'embedded_sass.proto' => %w[sass_embedded] do |t|
   fetch(ENV.fetch('sass_embedded_protocol'.upcase) { Configuration.default_sass_embedded_protocol }, t.name)
 end
 
-rule '_pb.rb' => ['.proto', 'protoc'] do |t|
+rule '_pb.rb' => %w[.proto protoc] do |t|
   sh './protoc/bin/protoc', '--ruby_out=.', t.source
 end
 
