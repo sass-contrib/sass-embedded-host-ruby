@@ -108,11 +108,13 @@ module Sass
         !unitless?
       end
 
+      # @param unit [::String]
       # @return [::Boolean]
       def unit?(unit)
         single_unit? && numerator_units.first == unit
       end
 
+      # @param unit [::String]
       # @return [Number]
       # @raise [ScriptError]
       def assert_unit(unit, name = nil)
@@ -139,23 +141,30 @@ module Sass
         FuzzyMath.to_i(value)
       end
 
+      # @param min [Numeric]
+      # @param max [Numeric]
       # @return [Numeric]
       # @raise [ScriptError]
       def assert_between(min, max, name = nil)
         FuzzyMath.assert_between(value, min, max, name)
       end
 
+      # @param unit [::String]
       # @return [::Boolean]
       def compatible_with_unit?(unit)
         single_unit? && !Unit.conversion_factor(numerator_units.first, unit).nil?
       end
 
+      # @param new_numerator_units [Array<::String>]
+      # @param new_denominator_units [Array<::String>]
       # @return [Number]
       def convert(new_numerator_units, new_denominator_units, name = nil)
         Number.new(convert_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
                    new_denominator_units)
       end
 
+      # @param new_numerator_units [Array<::String>]
+      # @param new_denominator_units [Array<::String>]
       # @return [Numeric]
       def convert_value(new_numerator_units, new_denominator_units, name = nil)
         coerce_or_convert_value(new_numerator_units, new_denominator_units,
@@ -163,11 +172,13 @@ module Sass
                                 name: name)
       end
 
+      # @param other [Number]
       # @return [Number]
       def convert_to_match(other, name = nil, other_name = nil)
         Number.new(convert_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
       end
 
+      # @param other [Number]
       # @return [Numeric]
       def convert_value_to_match(other, name = nil, other_name = nil)
         coerce_or_convert_value(other.numerator_units, other.denominator_units,
@@ -177,12 +188,16 @@ module Sass
                                 other_name: other_name)
       end
 
+      # @param new_numerator_units [Array<::String>]
+      # @param new_denominator_units [Array<::String>]
       # @return [Number]
       def coerce(new_numerator_units, new_denominator_units, name = nil)
         Number.new(coerce_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
                    new_denominator_units)
       end
 
+      # @param new_numerator_units [Array<::String>]
+      # @param new_denominator_units [Array<::String>]
       # @return [Numeric]
       def coerce_value(new_numerator_units, new_denominator_units, name = nil)
         coerce_or_convert_value(new_numerator_units, new_denominator_units,
@@ -190,16 +205,19 @@ module Sass
                                 name: name)
       end
 
+      # @param unit [::String]
       # @return [Numeric]
       def coerce_value_to_unit(unit, name = nil)
         coerce_value([unit], [], name)
       end
 
+      # @param other [Number]
       # @return [Number]
       def coerce_to_match(other, name = nil, other_name = nil)
         Number.new(coerce_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
       end
 
+      # @param other [Number]
       # @return [Numeric]
       def coerce_value_to_match(other, name = nil, other_name = nil)
         coerce_or_convert_value(other.numerator_units, other.denominator_units,
