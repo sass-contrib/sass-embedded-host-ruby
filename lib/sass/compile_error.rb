@@ -7,14 +7,14 @@ module Sass
 
     def initialize(message, full_message, sass_stack, span)
       super(message)
-      @full_message = full_message
+      @full_message = full_message == '' ? nil : full_message.dup
       @sass_stack = sass_stack
       @span = span
     end
 
-    def full_message(*)
+    def full_message(*args, **kwargs)
       if @full_message.nil?
-        super
+        super(*args, **kwargs)
       else
         @full_message
       end
