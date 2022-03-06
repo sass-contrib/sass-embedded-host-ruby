@@ -20,11 +20,13 @@ module Sass
       self == other
     end
 
+    # @param index [Numeric]
     # @return [Value]
     def [](index)
       at(index)
     end
 
+    # @param index [Numeric]
     # @return [Value]
     def at(index)
       index < 1 && index >= -1 ? self : nil

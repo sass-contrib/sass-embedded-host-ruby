@@ -27,6 +27,7 @@ module Sass
           (contents.empty? && other.is_a?(Sass::Value::List) && other.to_a.empty?)
       end
 
+      # @param index [Numeric, Value]
       # @return [List<(Value, Value)>, Value]
       def at(index)
         if index.is_a? Numeric

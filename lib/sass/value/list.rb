@@ -41,6 +41,7 @@ module Sass
           (to_a.empty? && other.is_a?(Sass::Value::Map) && other.to_a.empty?)
       end
 
+      # @param index [Numeric]
       # @return [Value]
       def at(index)
         index = index.floor
