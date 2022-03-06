@@ -2,6 +2,8 @@
 
 module Sass
   # A namespace for built-in Loggers.
+  #
+  # @see https://sass-lang.com/documentation/js-api/modules/Logger
   module Logger
     module_function
 
