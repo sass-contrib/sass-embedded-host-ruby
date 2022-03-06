@@ -14,10 +14,31 @@ module Sass
       @channel = Channel.new
     end
 
-    # The {Embedded#compile} method.
-    #
+    # Compiles the Sass file at +path+ to CSS.
+    # @param path [String]
+    # @param load_paths [Array<String>] Paths in which to look for stylesheets loaded by rules like
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    # @param source_map [Boolean] Whether or not Sass should generate a source map.
+    # @param source_map_include_sources [Boolean] Whether Sass should include the sources in the generated source map.
+    # @param style [String, Symbol] The OutputStyle of the compiled CSS.
+    # @param functions [Hash<String, Proc>] Additional built-in Sass functions that are available in all stylesheets.
+    # @param importers [Array<Object>] Custom importers that control how Sass resolves loads from rules like
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    # @param alert_ascii [Boolean] If this is +true+, the compiler will exclusively use ASCII characters in its error
+    #   and warning messages. Otherwise, it may use non-ASCII Unicode characters as well.
+    # @param alert_color [Boolean] If this is +true+, the compiler will use ANSI color escape codes in its error and
+    #   warning messages. If it's +false+, it won't use these. If it's +nil+, the compiler will determine whether or
+    #   not to use colors depending on whether the user is using an interactive terminal.
+    # @param logger [Object] An object to use to handle warnings and/or debug messages from Sass.
+    # @param quiet_deps [Boolean] If this option is set to +true+, Sass won’t print warnings that are caused by
+    #   dependencies. A “dependency” is defined as any file that’s loaded through +load_paths+ or +importer+.
+    #   Stylesheets that are imported relative to the entrypoint are not considered dependencies.
+    # @param verbose [Boolean] By default, Dart Sass will print only five instances of the same deprecation warning per
+    #   compilation to avoid deluging users in console noise. If you set verbose to +true+, it will instead print every
+    #   deprecation warning it encounters.
     # @return [CompileResult]
     # @raise [CompileError]
+    # @see https://sass-lang.com/documentation/js-api/modules#compile
     def compile(path,
                 load_paths: [],
 
@@ -29,7 +50,7 @@ module Sass
                 importers: [],
 
                 alert_ascii: false,
-                alert_color: $stderr.tty?,
+                alert_color: nil,
                 logger: nil,
                 quiet_deps: false,
                 verbose: false)
@@ -58,10 +79,35 @@ module Sass
       )
     end
 
-    # The {Embedded#compile_string} method.
-    #
+    # Compiles a stylesheet whose contents is +source+ to CSS.
+    # @param source [String]
+    # @param importer [Object] The importer to use to handle loads that are relative to the entrypoint stylesheet.
+    # @param load_paths [Array<String>] Paths in which to look for stylesheets loaded by rules like
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    # @param syntax [String, Symbol] The Syntax to use to parse the entrypoint stylesheet.
+    # @param url [String] The canonical URL of the entrypoint stylesheet. If this is passed along with +importer+, it's
+    #   used to resolve relative loads in the entrypoint stylesheet.
+    # @param source_map [Boolean] Whether or not Sass should generate a source map.
+    # @param source_map_include_sources [Boolean] Whether Sass should include the sources in the generated source map.
+    # @param style [String, Symbol] The OutputStyle of the compiled CSS.
+    # @param functions [Hash<String, Proc>] Additional built-in Sass functions that are available in all stylesheets.
+    # @param importers [Array<Object>] Custom importers that control how Sass resolves loads from rules like
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    # @param alert_ascii [Boolean] If this is +true+, the compiler will exclusively use ASCII characters in its error
+    #   and warning messages. Otherwise, it may use non-ASCII Unicode characters as well.
+    # @param alert_color [Boolean] If this is +true+, the compiler will use ANSI color escape codes in its error and
+    #   warning messages. If it's +false+, it won't use these. If it's +nil+, the compiler will determine whether or
+    #   not to use colors depending on whether the user is using an interactive terminal.
+    # @param logger [Object] An object to use to handle warnings and/or debug messages from Sass.
+    # @param quiet_deps [Boolean] If this option is set to +true+, Sass won’t print warnings that are caused by
+    #   dependencies. A “dependency” is defined as any file that’s loaded through +load_paths+ or +importer+.
+    #   Stylesheets that are imported relative to the entrypoint are not considered dependencies.
+    # @param verbose [Boolean] By default, Dart Sass will print only five instances of the same deprecation warning per
+    #   compilation to avoid deluging users in console noise. If you set verbose to +true+, it will instead print every
+    #   deprecation warning it encounters.
     # @return [CompileResult]
     # @raise [CompileError]
+    # @see https://sass-lang.com/documentation/js-api/modules#compileString
     def compile_string(source,
                        importer: nil,
                        load_paths: [],
@@ -76,7 +122,7 @@ module Sass
                        importers: [],
 
                        alert_ascii: false,
-                       alert_color: $stderr.tty?,
+                       alert_color: nil,
                        logger: nil,
                        quiet_deps: false,
                        verbose: false)
@@ -104,7 +150,8 @@ module Sass
       )
     end
 
-    # The {Embedded#info} method.
+    # @return [String] Information about the Sass implementation.
+    # @see https://sass-lang.com/documentation/js-api/modules#info
     def info
       @info ||= "sass-embedded\t#{Host.new(@channel).version_request.implementation_version}"
     end
