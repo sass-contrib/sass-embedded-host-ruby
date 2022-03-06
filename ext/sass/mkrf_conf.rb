@@ -172,9 +172,9 @@ module MkrfConf
     def default_protoc
       repo = 'protocolbuffers/protobuf'
 
-      spec = Gem::Dependency.new('google-protobuf').to_spec
+      version = Gem::Dependency.new('google-protobuf').to_spec.version
 
-      tag_name = "v#{spec.version}"
+      tag_name = "v#{version}"
 
       os = case Platform::OS
            when 'darwin'
@@ -211,7 +211,7 @@ module MkrfConf
 
       ext = 'zip'
 
-      "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{spec.version}-#{os_arch}.#{ext}"
+      "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{version}-#{os_arch}.#{ext}"
     end
 
     def default_sass_embedded_protocol
