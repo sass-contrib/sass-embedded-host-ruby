@@ -37,39 +37,30 @@ require_relative 'sass/value/string'
 # The Sass module.
 #
 # This communicates with Embedded Dart Sass using the Embedded Sass protocol.
+#
+# @example
+#   Sass.compile('style.scss')
+#
+# @example
+#   Sass.compile_string('h1 { font-size: 40px; }')
 module Sass
   class << self
-    # The global {.compile} method.
-    #
-    # This instantiates a global {Embedded} instance and calls {Embedded#compile}.
-    #
-    # See {Embedded#compile} for keyword arguments.
-    #
-    # @example
-    #   Sass.compile('style.scss')
     # @return [CompileResult]
     # @raise [CompileError]
+    # @see Embedded#compile
     def compile(path, **kwargs)
       instance.compile(path, **kwargs)
     end
 
-    # The global {.compile_string} method.
-    #
-    # This instantiates a global {Embedded} instance and calls {Embedded#compile_string}.
-    #
-    # See {Embedded#compile_string} for keyword arguments.
-    #
-    # @example
-    #   Sass.compile_string('h1 { font-size: 40px; }')
     # @return [CompileResult]
     # @raise [CompileError]
+    # @see Embedded#compile_string
     def compile_string(source, **kwargs)
       instance.compile_string(source, **kwargs)
     end
 
-    # The global {.info} method.
-    #
-    # This instantiates a global {Embedded} instance and calls {Embedded#info}.
+    # @return [String]
+    # @see Embedded#info
     def info
       instance.info
     end

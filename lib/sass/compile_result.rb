@@ -3,7 +3,14 @@
 module Sass
   # The result of compiling Sass to CSS. Returned by {Sass.compile} and {Sass.compile_string}.
   class CompileResult
-    attr_reader :css, :source_map, :loaded_urls
+    # @return [String]
+    attr_reader :css
+
+    # @return [String, nil]
+    attr_reader :source_map
+
+    # @return [Array<String>]
+    attr_reader :loaded_urls
 
     def initialize(css, source_map, loaded_urls)
       @css = css

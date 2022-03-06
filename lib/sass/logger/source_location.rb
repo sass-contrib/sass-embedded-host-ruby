@@ -6,6 +6,7 @@ module Sass
     #
     # This is always associated with a {SourceSpan} which indicates which file it refers to.
     class SourceLocation
+      # @return [Integer]
       attr_reader :offset, :line, :column
 
       def initialize(offset, line, column)

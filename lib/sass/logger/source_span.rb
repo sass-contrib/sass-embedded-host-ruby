@@ -4,7 +4,14 @@ module Sass
   module Logger
     # A span of text within a source file.
     class SourceSpan
-      attr_reader :start, :end, :text, :url, :context
+      # @return [SourceLocation]
+      attr_reader :start, :end
+
+      # @return [String]
+      attr_reader :text
+
+      # @return [String, nil]
+      attr_reader :url, :context
 
       def initialize(start, end_, text, url, context)
         @start = start
