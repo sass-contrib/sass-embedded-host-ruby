@@ -3,9 +3,14 @@
 module Sass
   module Value
     # Sass's number type.
+    #
+    # @see https://sass-lang.com/documentation/js-api/classes/SassNumber
     class Number
       include Value
 
+      # @param value [Numeric]
+      # @param numerator_units [Array<::String>, ::String]
+      # @param denominator_units [Array<::String>, ::String]
       def initialize(value, numerator_units = [], denominator_units = [])
         numerator_units = [numerator_units] if numerator_units.is_a?(::String)
         denominator_units = [denominator_units] if denominator_units.is_a?(::String)
@@ -40,104 +45,13 @@ module Sass
         @denominator_units = denominator_units.freeze
       end
 
-      attr_reader :value, :numerator_units, :denominator_units
+      # @return [Numeric]
+      attr_reader :value
 
-      def unitless?
-        numerator_units.empty? && denominator_units.empty?
-      end
+      # @return [Array<::String>]
+      attr_reader :numerator_units, :denominator_units
 
-      def assert_unitless(name = nil)
-        raise error "Expected #{self} to have no units", name unless unitless?
-      end
-
-      def units?
-        !unitless?
-      end
-
-      def unit?(unit)
-        single_unit? && numerator_units.first == unit
-      end
-
-      def assert_unit(unit, name = nil)
-        raise error "Expected #{self} to have no unit \"#{unit}\"", name unless unit?(unit)
-      end
-
-      def integer?
-        FuzzyMath.integer?(value)
-      end
-
-      def assert_integer(name = nil)
-        raise error "#{self} is not an integer", name unless integer?
-
-        to_i
-      end
-
-      def to_i
-        FuzzyMath.to_i(value)
-      end
-
-      def assert_between(min, max, name = nil)
-        FuzzyMath.assert_between(value, min, max, name)
-      end
-
-      def compatible_with_unit?(unit)
-        single_unit? && !Unit.conversion_factor(numerator_units.first, unit).nil?
-      end
-
-      def convert(new_numerator_units, new_denominator_units, name = nil)
-        Number.new(convert_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
-                   new_denominator_units)
-      end
-
-      def convert_value(new_numerator_units, new_denominator_units, name = nil)
-        coerce_or_convert_value(new_numerator_units, new_denominator_units,
-                                coerce_unitless: false,
-                                name: name)
-      end
-
-      def convert_to_match(other, name = nil, other_name = nil)
-        Number.new(convert_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
-      end
-
-      def convert_value_to_match(other, name = nil, other_name = nil)
-        coerce_or_convert_value(other.numerator_units, other.denominator_units,
-                                coerce_unitless: false,
-                                name: name,
-                                other: other,
-                                other_name: other_name)
-      end
-
-      def coerce(new_numerator_units, new_denominator_units, name = nil)
-        Number.new(coerce_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
-                   new_denominator_units)
-      end
-
-      def coerce_value(new_numerator_units, new_denominator_units, name = nil)
-        coerce_or_convert_value(new_numerator_units, new_denominator_units,
-                                coerce_unitless: true,
-                                name: name)
-      end
-
-      def coerce_value_to_unit(unit, name = nil)
-        coerce_value([unit], [], name)
-      end
-
-      def coerce_to_match(other, name = nil, other_name = nil)
-        Number.new(coerce_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
-      end
-
-      def coerce_value_to_match(other, name = nil, other_name = nil)
-        coerce_or_convert_value(other.numerator_units, other.denominator_units,
-                                coerce_unitless: true,
-                                name: name,
-                                other: other,
-                                other_name: other_name)
-      end
-
-      def assert_number(_name = nil)
-        self
-      end
-
+      # @return [::Boolean]
       def ==(other)
         return false unless other.is_a? Sass::Value::Number
 
@@ -161,6 +75,7 @@ module Sass
         )
       end
 
+      # @return [Integer]
       def hash
         @hash ||= if unitless?
                     FuzzyMath.hash(value)
@@ -173,6 +88,130 @@ module Sass
                       value * Unit.canonical_multiplier(numerator_units) / Unit.canonical_multiplier(denominator_units)
                     )
                   end
+      end
+
+      # @return [::Boolean]
+      def unitless?
+        numerator_units.empty? && denominator_units.empty?
+      end
+
+      # @return [Number]
+      # @raise [ScriptError]
+      def assert_unitless(name = nil)
+        raise error "Expected #{self} to have no units", name unless unitless?
+
+        self
+      end
+
+      # @return [::Boolean]
+      def units?
+        !unitless?
+      end
+
+      # @return [::Boolean]
+      def unit?(unit)
+        single_unit? && numerator_units.first == unit
+      end
+
+      # @return [Number]
+      # @raise [ScriptError]
+      def assert_unit(unit, name = nil)
+        raise error "Expected #{self} to have no unit \"#{unit}\"", name unless unit?(unit)
+
+        self
+      end
+
+      # @return [::Boolean]
+      def integer?
+        FuzzyMath.integer?(value)
+      end
+
+      # @return [Integer]
+      # @raise [ScriptError]
+      def assert_integer(name = nil)
+        raise error "#{self} is not an integer", name unless integer?
+
+        to_i
+      end
+
+      # @return [Integer]
+      def to_i
+        FuzzyMath.to_i(value)
+      end
+
+      # @return [Numeric]
+      # @raise [ScriptError]
+      def assert_between(min, max, name = nil)
+        FuzzyMath.assert_between(value, min, max, name)
+      end
+
+      # @return [::Boolean]
+      def compatible_with_unit?(unit)
+        single_unit? && !Unit.conversion_factor(numerator_units.first, unit).nil?
+      end
+
+      # @return [Number]
+      def convert(new_numerator_units, new_denominator_units, name = nil)
+        Number.new(convert_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
+                   new_denominator_units)
+      end
+
+      # @return [Numeric]
+      def convert_value(new_numerator_units, new_denominator_units, name = nil)
+        coerce_or_convert_value(new_numerator_units, new_denominator_units,
+                                coerce_unitless: false,
+                                name: name)
+      end
+
+      # @return [Number]
+      def convert_to_match(other, name = nil, other_name = nil)
+        Number.new(convert_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
+      end
+
+      # @return [Numeric]
+      def convert_value_to_match(other, name = nil, other_name = nil)
+        coerce_or_convert_value(other.numerator_units, other.denominator_units,
+                                coerce_unitless: false,
+                                name: name,
+                                other: other,
+                                other_name: other_name)
+      end
+
+      # @return [Number]
+      def coerce(new_numerator_units, new_denominator_units, name = nil)
+        Number.new(coerce_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
+                   new_denominator_units)
+      end
+
+      # @return [Numeric]
+      def coerce_value(new_numerator_units, new_denominator_units, name = nil)
+        coerce_or_convert_value(new_numerator_units, new_denominator_units,
+                                coerce_unitless: true,
+                                name: name)
+      end
+
+      # @return [Numeric]
+      def coerce_value_to_unit(unit, name = nil)
+        coerce_value([unit], [], name)
+      end
+
+      # @return [Number]
+      def coerce_to_match(other, name = nil, other_name = nil)
+        Number.new(coerce_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
+      end
+
+      # @return [Numeric]
+      def coerce_value_to_match(other, name = nil, other_name = nil)
+        coerce_or_convert_value(other.numerator_units, other.denominator_units,
+                                coerce_unitless: true,
+                                name: name,
+                                other: other,
+                                other_name: other_name)
+      end
+
+      # @return [Number]
+      def assert_number(_name = nil)
+        self
       end
 
       protected

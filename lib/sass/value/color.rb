@@ -5,9 +5,20 @@ module Sass
     # Sass's color type.
     #
     # No matter what representation was originally used to create this color, all of its channels are accessible.
+    #
+    # @see https://sass-lang.com/documentation/js-api/classes/SassColor
     class Color
       include Value
 
+      # @param red [Numeric]
+      # @param green [Numeric]
+      # @param blue [Numeric]
+      # @param hue [Numeric]
+      # @param saturation [Numeric]
+      # @param lightness [Numeric]
+      # @param whiteness [Numeric]
+      # @param blackness [Numeric]
+      # @param alpha [Numeric]
       def initialize(red: nil,
                      green: nil,
                      blue: nil,
@@ -37,6 +48,71 @@ module Sass
         end
       end
 
+      # @return [Integer]
+      def red
+        hsl_to_rgb unless defined? @red
+
+        @red
+      end
+
+      # @return [Integer]
+      def green
+        hsl_to_rgb unless defined? @green
+
+        @green
+      end
+
+      # @return [Integer]
+      def blue
+        hsl_to_rgb unless defined? @blue
+
+        @blue
+      end
+
+      # @return [Numeric]
+      def hue
+        rgb_to_hsl unless defined? @hue
+
+        @hue
+      end
+
+      # @return [Numeric]
+      def saturation
+        rgb_to_hsl unless defined? @saturation
+
+        @saturation
+      end
+
+      # @return [Numeric]
+      def lightness
+        rgb_to_hsl unless defined? @lightness
+
+        @lightness
+      end
+
+      # @return [Numeric]
+      def whiteness
+        @whiteness ||= Rational([red, green, blue].min, 255) * 100
+      end
+
+      # @return [Numeric]
+      def blackness
+        @blackness ||= 100 - (Rational([red, green, blue].max, 255) * 100)
+      end
+
+      # @return [Numeric]
+      attr_reader :alpha
+
+      # @param red [Numeric]
+      # @param green [Numeric]
+      # @param blue [Numeric]
+      # @param hue [Numeric]
+      # @param saturation [Numeric]
+      # @param lightness [Numeric]
+      # @param whiteness [Numeric]
+      # @param blackness [Numeric]
+      # @param alpha [Numeric]
+      # @return [Color]
       def change(red: nil,
                  green: nil,
                  blue: nil,
@@ -69,56 +145,7 @@ module Sass
         end
       end
 
-      def red
-        hsl_to_rgb unless defined? @red
-
-        @red
-      end
-
-      def green
-        hsl_to_rgb unless defined? @green
-
-        @green
-      end
-
-      def blue
-        hsl_to_rgb unless defined? @blue
-
-        @blue
-      end
-
-      def hue
-        rgb_to_hsl unless defined? @hue
-
-        @hue
-      end
-
-      def saturation
-        rgb_to_hsl unless defined? @saturation
-
-        @saturation
-      end
-
-      def lightness
-        rgb_to_hsl unless defined? @lightness
-
-        @lightness
-      end
-
-      def whiteness
-        @whiteness ||= Rational([red, green, blue].min, 255) * 100
-      end
-
-      def blackness
-        @blackness ||= 100 - (Rational([red, green, blue].max, 255) * 100)
-      end
-
-      attr_reader :alpha
-
-      def assert_color(_name = nil)
-        self
-      end
-
+      # @return [::Boolean]
       def ==(other)
         other.is_a?(Sass::Value::Color) &&
           other.red == red &&
@@ -127,8 +154,14 @@ module Sass
           other.alpha == alpha
       end
 
+      # @return [Integer]
       def hash
         @hash ||= red.hash ^ green.hash ^ blue.hash ^ alpha.hash
+      end
+
+      # @return [Color]
+      def assert_color(_name = nil)
+        self
       end
 
       private

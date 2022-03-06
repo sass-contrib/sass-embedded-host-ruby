@@ -3,31 +3,31 @@
 module Sass
   module Value
     # Sass's map type.
+    #
+    # @see https://sass-lang.com/documentation/js-api/classes/SassMap
     class Map
       include Value
 
+      # @param contents [Hash<Value, Value>]
       def initialize(contents = {})
         @contents = contents.freeze
       end
 
+      # @return [Hash<Value, Value>]
       attr_reader :contents
 
+      # @return [::String, nil]
       def separator
         contents.empty? ? nil : ','
       end
 
-      def assert_map(_name = nil)
-        self
+      # @return [::Boolean]
+      def ==(other)
+        (other.is_a?(Sass::Value::Map) && other.contents == contents) ||
+          (contents.empty? && other.is_a?(Sass::Value::List) && other.to_a.empty?)
       end
 
-      def to_map
-        self
-      end
-
-      def to_a
-        contents.to_a.map { |entry| Sass::Value::List.new(entry, separator: ' ') }
-      end
-
+      # @return [List<(Value, Value)>, Value]
       def at(index)
         if index.is_a? Numeric
           index = index.floor
@@ -40,13 +40,24 @@ module Sass
         end
       end
 
-      def ==(other)
-        (other.is_a?(Sass::Value::Map) && other.contents == contents) ||
-          (contents.empty? && other.is_a?(Sass::Value::List) && other.to_a.empty?)
-      end
-
+      # @return [Integer]
       def hash
         @hash ||= contents.hash
+      end
+
+      # @return [Array<List<(Value, Value)>>]
+      def to_a
+        contents.to_a.map { |entry| Sass::Value::List.new(entry, separator: ' ') }
+      end
+
+      # @return [Map]
+      def to_map
+        self
+      end
+
+      # @return [Map]
+      def assert_map(_name = nil)
+        self
       end
 
       private

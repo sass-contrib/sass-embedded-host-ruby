@@ -2,31 +2,97 @@
 
 module Sass
   # The abstract base class of Sass's value types.
+  #
+  # @see https://sass-lang.com/documentation/js-api/classes/Value
   module Value
-    def to_a
-      [self]
-    end
-
-    def to_bool
-      true
-    end
-
-    def to_map
-      nil
-    end
-
-    def to_nil
-      self
-    end
-
+    # @return [::String, nil]
     def separator
       nil
     end
 
+    # @return [::Boolean]
     def bracketed?
       false
     end
 
+    # @return [::Boolean]
+    def eql?(other)
+      self == other
+    end
+
+    # @return [Value]
+    def [](index)
+      at(index)
+    end
+
+    # @return [Value]
+    def at(index)
+      index < 1 && index >= -1 ? self : nil
+    end
+
+    # @return [Array<Value>]
+    def to_a
+      [self]
+    end
+
+    # @return [::Boolean]
+    def to_bool
+      true
+    end
+
+    # @return [Map, nil]
+    def to_map
+      nil
+    end
+
+    # @return [Value, nil]
+    def to_nil
+      self
+    end
+
+    # @return [Boolean]
+    # @raise [ScriptError]
+    def assert_boolean(name = nil)
+      raise error("#{self} is not a boolean", name)
+    end
+
+    # @raise [ScriptError]
+    def assert_calculation(name = nil)
+      raise error("#{self} is not a calculation", name)
+    end
+
+    # @return [Color]
+    # @raise [ScriptError]
+    def assert_color(name = nil)
+      raise error("#{self} is not a color", name)
+    end
+
+    # @return [Function]
+    # @raise [ScriptError]
+    def assert_function(name = nil)
+      raise error("#{self} is not a function", name)
+    end
+
+    # @return [Map]
+    # @raise [ScriptError]
+    def assert_map(name = nil)
+      raise error("#{self} is not a map", name)
+    end
+
+    # @return [Number]
+    # @raise [ScriptError]
+    def assert_number(name = nil)
+      raise error("#{self} is not a number", name)
+    end
+
+    # @return [String]
+    # @raise [ScriptError]
+    def assert_string(name = nil)
+      raise error("#{self} is not a string", name)
+    end
+
+    # @param sass_index [Number]
+    # @return [Integer]
     def sass_index_to_array_index(sass_index, name = nil)
       index = sass_index.assert_number(name).assert_integer(name)
       raise error('List index may not be 0', name) if index.zero?
@@ -36,46 +102,6 @@ module Sass
       end
 
       index.negative? ? to_a_length + index : index - 1
-    end
-
-    def at(index)
-      index < 1 && index >= -1 ? self : nil
-    end
-
-    def [](index)
-      at(index)
-    end
-
-    def assert_boolean(name = nil)
-      raise error("#{self} is not a boolean", name)
-    end
-
-    def assert_calculation(name = nil)
-      raise error("#{self} is not a calculation", name)
-    end
-
-    def assert_color(name = nil)
-      raise error("#{self} is not a color", name)
-    end
-
-    def assert_function(name = nil)
-      raise error("#{self} is not a function", name)
-    end
-
-    def assert_map(name = nil)
-      raise error("#{self} is not a map", name)
-    end
-
-    def assert_number(name = nil)
-      raise error("#{self} is not a number", name)
-    end
-
-    def assert_string(name = nil)
-      raise error("#{self} is not a string", name)
-    end
-
-    def eql?(other)
-      self == other
     end
 
     private
