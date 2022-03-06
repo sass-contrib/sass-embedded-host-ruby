@@ -27,7 +27,7 @@ module FileUtils
       uri = URI.parse(uri_or_path)
       path = URI::DEFAULT_PARSER.unescape(uri.path)
       if uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
-        path = path.delete_prefix('/') if Platform::OS == 'windows' && !File.file?(path)
+        path = path.delete_prefix('/') if Gem.win_platform? && !File.file?(path)
         raise unless File.file?(path)
       end
     rescue StandardError
