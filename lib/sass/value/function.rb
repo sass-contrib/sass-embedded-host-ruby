@@ -19,13 +19,13 @@ module Sass
         end
       end
 
-      # @return [Integer]
+      # @return [Integer, nil]
       attr_reader :id
 
-      # @return [::String]
+      # @return [::String, nil]
       attr_reader :signature
 
-      # @return [Proc]
+      # @return [Proc, nil]
       attr_reader :callback
 
       # @return [::Boolean]

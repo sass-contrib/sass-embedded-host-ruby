@@ -24,7 +24,7 @@ module Sass
       # @return [Array<Value>]
       attr_reader :contents
 
-      # @return [::String]
+      # @return [::String, nil]
       attr_reader :separator
 
       # @return [::Boolean]
