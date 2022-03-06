@@ -38,6 +38,7 @@ module Sass
         self
       end
 
+      # @param sass_index [Number]
       # @return [Integer]
       def sass_index_to_string_index(sass_index, name = nil)
         index = sass_index.assert_number(name).assert_integer(name)
