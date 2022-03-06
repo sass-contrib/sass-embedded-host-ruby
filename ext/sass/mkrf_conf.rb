@@ -40,7 +40,6 @@ module FileUtils
     dest = File.basename(path) if dest.nil?
 
     if uri.nil? || uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
-      puts "cp -- #{path} #{dest}"
       cp path, dest
     elsif uri.respond_to?(:open)
       puts "curl -fsSLo #{dest} -- #{uri}"
