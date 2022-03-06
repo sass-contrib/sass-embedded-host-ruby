@@ -15,17 +15,13 @@ CLOBBER.include %w[sass_embedded embedded_sass_pb.rb]
 
 file 'protoc' do |t|
   archive = fetch(ENV.fetch(t.name.upcase) { Configuration.default_protoc })
-  unzip archive, t.name
+  unarchive archive, t.name
   rm archive
 end
 
 file 'sass_embedded' do |t|
   archive = fetch(ENV.fetch(t.name.upcase) { Configuration.default_sass_embedded })
-  if Gem.win_platform?
-    unzip archive
-  else
-    sh 'tar', '-vxzf', archive
-  end
+  unarchive archive
   rm archive
 end
 
@@ -40,11 +36,19 @@ end
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
-  def unzip(archive, dest = '.')
-    if Gem.win_platform?
-      sh 'powershell', '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
+  def unarchive(archive, dest = '.')
+    case archive.downcase
+    when ->(name) { name.end_with? '.zip' }
+      if Gem.win_platform?
+        sh 'powershell', '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
+      else
+        sh 'unzip', '-od', dest, archive
+      end
+    when ->(name) { name.end_with? '.tar.gz' }
+      mkdir_p dest
+      sh 'tar', '-vxzC', dest, '-f', archive
     else
-      sh 'unzip', '-od', dest, archive
+      raise "Unknown archive format #{archive}"
     end
   end
 
