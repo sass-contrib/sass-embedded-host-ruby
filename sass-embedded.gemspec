@@ -30,8 +30,8 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
 
   spec.required_ruby_version = '>= 2.6.0'
 
-  spec.add_dependency 'google-protobuf', '~> 3.19.0'
-  spec.add_dependency 'rake'
+  spec.add_runtime_dependency 'google-protobuf', '~> 3.19.0'
+  spec.add_runtime_dependency 'rake'
 
   spec.add_development_dependency 'rake', '~> 13.0.0'
   spec.add_development_dependency 'rspec', '~> 3.11.0'
