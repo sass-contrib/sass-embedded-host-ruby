@@ -53,7 +53,7 @@ module Sass
                           importer: importer.nil? ? nil : @importer_registry.register(importer)
                         )
                       end,
-              path: path,
+              path: path.nil? ? nil : File.absolute_path(path),
               style: Protofier.to_proto_output_style(style),
               source_map: source_map,
               source_map_include_sources: source_map_include_sources,
