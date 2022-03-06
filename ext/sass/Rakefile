@@ -42,12 +42,7 @@ end
 module FileUtils
   def unzip(source, dest = '.')
     if Gem.win_platform?
-      sh 'powershell', '-c',
-         'if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {'\
-         " Get-Item #{source} | Expand-Archive -DestinationPath #{dest} -Force "\
-         '} else {'\
-         " cscript.exe unzip.vbs #{source} #{dest} "\
-         '}'
+      sh 'powershell', '-File', 'unzip.ps1', '-Archive', source, '-DestinationPath', dest
     else
       sh 'unzip', '-od', dest, source
     end
