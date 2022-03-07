@@ -96,16 +96,6 @@ module Configuration
            'linux'
          when /darwin/
            'darwin'
-         when /freebsd/
-           'freebsd'
-         when /netbsd/
-           'netbsd'
-         when /openbsd/
-           'openbsd'
-         when /dragonfly/
-           'dragonflybsd'
-         when /sunos|solaris/
-           'solaris'
          when *Gem::WIN_PATTERNS
            'windows'
          else
@@ -121,20 +111,11 @@ module Configuration
              'x86_64'
            when /i\d86|x86|i86pc/
              'i386'
-           when /ppc64|powerpc64/
-             'powerpc64'
-           when /ppc|powerpc/
-             'powerpc'
-           when /sparcv9|sparc64/
-             'sparcv9'
-           when /arm64|aarch64/ # MacOS calls it "arm64", other operating systems "aarch64"
+           when /arm64|aarch64/
              'aarch64'
            when /^arm/
-             if OS == 'darwin' # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
-               'aarch64'
-             else
-               'arm'
-             end
+             # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
+             OS == 'darwin' ? 'aarch64' : 'arm'
            else
              RbConfig::CONFIG['host_cpu']
            end
@@ -203,14 +184,10 @@ module Configuration
       arch = case Platform::ARCH
              when 'aarch64'
                Platform::OS == 'darwin' ? 'x86_64' : 'aarch_64'
-             when 'sparcv9'
-               's390'
              when 'i386'
                'x86_32'
              when 'x86_64'
                'x86_64'
-             when 'powerpc64'
-               'ppcle_64'
              else
                raise release_asset_not_available_error(repo, tag_name)
              end
