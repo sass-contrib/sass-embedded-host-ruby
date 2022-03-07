@@ -38,15 +38,15 @@ end
 module FileUtils
   def unarchive(archive, dest = '.')
     case archive.downcase
-    when ->(name) { name.end_with? '.zip' }
+    when ->(name) { name.include?('.tar.') || name.end_with?('.tar') }
+      mkdir_p dest
+      sh 'tar', '-vxC', dest, '-f', archive
+    when ->(name) { name.end_with?('.zip') }
       if Gem.win_platform?
         sh 'powershell', '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
       else
         sh 'unzip', '-od', dest, archive
       end
-    when ->(name) { name.end_with? '.tar.gz' }
-      mkdir_p dest
-      sh 'tar', '-vxzC', dest, '-f', archive
     else
       raise "Unknown archive format #{archive}"
     end
