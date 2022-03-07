@@ -17,9 +17,8 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     'funding_uri' => 'https://github.com/sponsors/ntkme'
   }
 
-  spec.extensions    = ['ext/sass/mkrf_conf.rb']
+  spec.extensions    = ['ext/sass/Rakefile']
   spec.files         = Dir['lib/**/*.rb'] + [
-    'ext/sass/mkrf_conf.rb',
     'ext/sass/package.json',
     'ext/sass/unzip.ps1',
     'ext/sass/unzip.vbs',
@@ -31,7 +30,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.required_ruby_version = '>= 2.6.0'
 
   spec.add_runtime_dependency 'google-protobuf', '~> 3.19.0'
-  spec.add_runtime_dependency 'rake', '>= 12.0.0'
+  spec.add_runtime_dependency 'rake', '>= 12.3.0'
 
   spec.add_development_dependency 'rspec', '~> 3.11.0'
   spec.add_development_dependency 'rubocop', '~> 1.25.0'
