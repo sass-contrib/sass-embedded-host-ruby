@@ -92,10 +92,10 @@ end
 module Configuration
   module Platform
     OS = case RbConfig::CONFIG['host_os'].downcase
-         when /linux/
-           'linux'
          when /darwin/
            'darwin'
+         when /linux/
+           'linux'
          when *Gem::WIN_PATTERNS
            'windows'
          else
@@ -178,12 +178,12 @@ module Configuration
            end
 
       arch = case Platform::ARCH
-             when 'aarch64'
-               Platform::OS == 'darwin' ? 'x86_64' : 'aarch_64'
-             when 'i386'
-               'x86_32'
              when 'x86_64'
                'x86_64'
+             when 'i386'
+               'x86_32'
+             when 'aarch64'
+               Platform::OS == 'darwin' ? 'x86_64' : 'aarch_64'
              else
                raise release_asset_not_available_error(repo, tag_name)
              end
