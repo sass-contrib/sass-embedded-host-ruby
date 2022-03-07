@@ -102,11 +102,7 @@ module Configuration
            RbConfig::CONFIG['host_os'].downcase
          end
 
-    OSVERSION = RbConfig::CONFIG['host_os'].gsub(/[^\d]/, '').to_i
-
-    CPU = RbConfig::CONFIG['host_cpu']
-
-    ARCH = case CPU.downcase
+    ARCH = case RbConfig::CONFIG['host_cpu'].downcase
            when /amd64|x86_64|x64/
              'x86_64'
            when /i\d86|x86|i86pc/
