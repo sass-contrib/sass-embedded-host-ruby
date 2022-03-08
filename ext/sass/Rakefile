@@ -9,14 +9,13 @@ task default: %i[install clean]
 
 task install: %w[sass_embedded embedded_sass_pb.rb]
 
-CLEAN.include %w[protoc *.proto *.tar.gz *.zip]
+CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 
 CLOBBER.include %w[sass_embedded embedded_sass_pb.rb]
 
-file 'protoc' do |t|
-  archive = fetch(ENV.fetch(t.name.upcase) { Configuration.default_protoc })
-  unarchive archive, t.name
-  rm archive
+file 'protoc.exe' do |t|
+  fetch(ENV.fetch(t.name.upcase) { Configuration.default_protoc }, t.name)
+  chmod 'a+x', t.name
 end
 
 file 'sass_embedded' do |t|
@@ -29,8 +28,8 @@ file 'embedded_sass.proto' => %w[sass_embedded] do |t|
   fetch(ENV.fetch('sass_embedded_protocol'.upcase) { Configuration.default_sass_embedded_protocol }, t.name)
 end
 
-rule '_pb.rb' => %w[.proto protoc] do |t|
-  sh './protoc/bin/protoc', '--ruby_out=.', t.source
+rule '_pb.rb' => %w[.proto protoc.exe] do |t|
+  sh './protoc.exe', '--ruby_out=.', t.source
 end
 
 # This is a FileUtils extension that defines several additional commands to be
@@ -172,7 +171,7 @@ module Configuration
            when 'linux'
              'linux'
            when 'windows'
-             'win'
+             'windows'
            else
              raise release_asset_not_available_error(repo, tag_name)
            end
@@ -188,16 +187,7 @@ module Configuration
                raise release_asset_not_available_error(repo, tag_name)
              end
 
-      os_arch = case os
-                when 'win'
-                  os + arch.split('_').last
-                else
-                  "#{os}-#{arch}"
-                end
-
-      ext = 'zip'
-
-      "https://github.com/#{repo}/releases/download/#{tag_name}/protoc-#{version}-#{os_arch}.#{ext}"
+      "https://repo.maven.apache.org/maven2/com/google/protobuf/protoc/#{version}/protoc-#{version}-#{os}-#{arch}.exe"
     end
 
     def default_sass_embedded_protocol
