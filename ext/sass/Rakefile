@@ -14,7 +14,7 @@ CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 CLOBBER.include %w[sass_embedded embedded_sass_pb.rb]
 
 file 'protoc.exe' do |t|
-  fetch(ENV.fetch(t.name.upcase) { Configuration.default_protoc }, t.name)
+  fetch(ENV.fetch('PROTOC_BIN') { Configuration.default_protoc }, t.name)
   chmod 'a+x', t.name
 end
 
@@ -25,7 +25,7 @@ file 'sass_embedded' do |t|
 end
 
 file 'embedded_sass.proto' => %w[sass_embedded] do |t|
-  fetch(ENV.fetch('sass_embedded_protocol'.upcase) { Configuration.default_sass_embedded_protocol }, t.name)
+  fetch(ENV.fetch('SASS_EMBEDDED_PROTO') { Configuration.default_sass_embedded_protocol }, t.name)
 end
 
 rule '_pb.rb' => %w[.proto protoc.exe] do |t|
