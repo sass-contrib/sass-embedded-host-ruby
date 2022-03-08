@@ -42,7 +42,8 @@ module FileUtils
       sh 'tar', '-vxC', dest, '-f', archive
     when ->(name) { name.end_with?('.zip') }
       if Gem.win_platform?
-        sh 'powershell', '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
+        sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive',
+           '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
       else
         sh 'unzip', '-od', dest, archive
       end
