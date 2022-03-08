@@ -182,7 +182,7 @@ module Configuration
              when 'i386'
                'x86_32'
              when 'aarch64'
-               Platform::OS == 'darwin' ? 'x86_64' : 'aarch_64'
+               'aarch_64'
              else
                raise release_asset_not_available_error(repo, tag_name)
              end
