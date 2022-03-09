@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-    paths:
-      - 'lib/**/version.rb'
 
 jobs:
   release:
