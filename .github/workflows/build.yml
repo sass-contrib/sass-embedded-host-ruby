@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        ruby-version: ['2.6', '3.0', 'ruby', 'jruby']
+        ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby']
 
     steps:
     - name: Checkout
@@ -45,9 +45,30 @@ jobs:
     - name: Spec
       run: bundle exec rake spec
 
+  install:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby']
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+
+    - name: Install
+      run: rake -f -r bundler/gem_tasks install
+
   release:
 
-    needs: [lint, spec]
+    needs: [lint, spec, install]
 
     runs-on: ubuntu-latest
 
@@ -61,6 +82,11 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ruby
+
+    - name: Git Config
+      run: |
+        git config user.email github-actions[bot]@users.noreply.github.com
+        git config user.name github-actions[bot]
 
     - name: Release
       run: rake -f -r bundler/gem_tasks release gem_push=no

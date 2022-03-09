@@ -20,9 +20,8 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ruby
-        bundler-cache: true
 
     - name: Release
-      run: bundle exec rake release
+      run: rake -f -r bundler/gem_tasks release
       env:
         GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
