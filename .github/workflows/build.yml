@@ -44,3 +44,23 @@ jobs:
 
     - name: Spec
       run: bundle exec rake spec
+
+  release:
+
+    needs: [lint, spec]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+
+    - name: Release
+      run: rake -f -r bundler/gem_tasks release gem_push=no
