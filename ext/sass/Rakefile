@@ -83,7 +83,7 @@ module FileUtils
 
     dest
   rescue StandardError
-    raise "Failed to fetch #{uri_or_path}"
+    raise IOError, "Failed to fetch #{uri_or_path}"
   end
 end
 
@@ -131,6 +131,8 @@ module Configuration
 
     tag_name = spec['dependencies']['sass-embedded']
 
+    message = "sass_embedded for #{Platform::OS}/#{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
+
     os = case Platform::OS
          when 'darwin'
            'macos'
@@ -139,7 +141,7 @@ module Configuration
          when 'windows'
            'windows'
          else
-           raise NotImplementedError
+           raise NotImplementedError, message
          end
 
     arch = case Platform::ARCH
@@ -150,7 +152,7 @@ module Configuration
            when 'aarch64'
              Platform::OS == 'darwin' ? 'x64' : 'arm64'
            else
-             raise NotImplementedError
+             raise NotImplementedError, message
            end
 
     ext = case os
@@ -161,14 +163,14 @@ module Configuration
           end
 
     "#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{arch}.#{ext}"
-  rescue NotImplementedError
-    raise "Release asset for #{Platform::OS}/#{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
   end
 
   def default_protoc
     repo = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protoc'
 
     version = Gem::Dependency.new('google-protobuf').to_spec.version
+
+    message = "protoc for #{Platform::OS}/#{Platform::ARCH} not available at #{repo}/#{version}"
 
     os = case Platform::OS
          when 'darwin'
@@ -178,7 +180,7 @@ module Configuration
          when 'windows'
            'windows'
          else
-           raise NotImplementedError
+           raise NotImplementedError, message
          end
 
     arch = case Platform::ARCH
@@ -193,12 +195,10 @@ module Configuration
            when 's390x'
              's390_64'
            else
-             raise NotImplementedError
+             raise NotImplementedError, message
            end
 
     "#{repo}/#{version}/protoc-#{version}-#{os}-#{arch}.exe"
-  rescue NotImplementedError
-    raise "Release asset for #{Platform::OS}/#{Platform::ARCH} not available at #{repo}/#{version}"
   end
 
   def default_sass_embedded_protocol
