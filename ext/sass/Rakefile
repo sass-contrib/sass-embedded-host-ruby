@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
-require 'open-uri'
-require 'open3'
 require 'rake/clean'
 
 task default: %i[install clean]
@@ -52,6 +49,8 @@ module FileUtils
   end
 
   def fetch(uri_or_path, dest = nil)
+    require 'open-uri'
+
     begin
       uri = URI.parse(uri_or_path)
       path = URI::DEFAULT_PARSER.unescape(uri.path)
@@ -125,6 +124,8 @@ module Configuration
   module_function
 
   def default_sass_embedded
+    require 'json'
+
     repo = 'https://github.com/sass/dart-sass-embedded'
 
     spec = JSON.parse(File.read(File.absolute_path('package.json', __dir__)))
@@ -202,6 +203,9 @@ module Configuration
   end
 
   def default_sass_embedded_protocol
+    require 'json'
+    require 'open3'
+
     stdout, stderr, status = Open3.capture3(
       File.absolute_path("sass_embedded/dart-sass-embedded#{Gem.win_platform? ? '.bat' : ''}", __dir__), '--version'
     )
