@@ -107,7 +107,7 @@ module Configuration
              'i386'
            when /arm64|aarch64/
              'aarch64'
-           when /^arm/
+           when /arm/
              # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
              OS == 'darwin' ? 'aarch64' : 'arm'
            when /ppc64le|powerpc64le/
