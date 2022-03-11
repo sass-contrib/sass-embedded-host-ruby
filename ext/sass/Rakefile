@@ -4,11 +4,11 @@ require 'rake/clean'
 
 task default: %i[install clean]
 
-task install: %w[sass_embedded embedded_sass_pb.rb]
+task install: %w[sass_embedded embedded.rb embedded_sass_pb.rb]
 
 CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 
-CLOBBER.include %w[sass_embedded embedded_sass_pb.rb]
+CLOBBER.include %w[sass_embedded embedded.rb embedded_sass_pb.rb]
 
 file 'protoc.exe' do |t|
   fetch(ENV.fetch('PROTOC_BIN') { Configuration.default_protoc }, t.name)
@@ -21,7 +21,26 @@ file 'sass_embedded' do |t|
   rm archive
 end
 
-file 'embedded_sass.proto' => %w[sass_embedded] do |t|
+file 'embedded.rb' => %w[sass_embedded] do |t|
+  path = 'sass_embedded/dart-sass-embedded'
+  path = "#{path}#{(Gem.win_platform? ? ['.exe', '.bat'] : ['', '.sh']).find { |ext| File.exist? "#{path}#{ext}" }}"
+
+  raise "#{path} not found" unless File.exist? path
+
+  File.write(t.name, <<~EMBEDDED_RB)
+    # frozen_string_literal: true
+
+    module Sass
+      class Embedded
+        class Compiler
+          PATH = File.absolute_path('#{path}', __dir__)
+        end
+      end
+    end
+  EMBEDDED_RB
+end
+
+file 'embedded_sass.proto' => %w[embedded.rb] do |t|
   fetch(ENV.fetch('SASS_EMBEDDED_PROTOCOL') { Configuration.default_sass_embedded_protocol }, t.name)
 end
 
@@ -156,12 +175,7 @@ module Configuration
              raise NotImplementedError, message
            end
 
-    ext = case os
-          when 'windows'
-            'zip'
-          else
-            'tar.gz'
-          end
+    ext = Gem.win_platform? ? 'zip' : 'tar.gz'
 
     "#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{arch}.#{ext}"
   end
@@ -205,10 +219,10 @@ module Configuration
   def default_sass_embedded_protocol
     require 'json'
     require 'open3'
+    require_relative 'embedded'
 
-    stdout, stderr, status = Open3.capture3(
-      File.absolute_path("sass_embedded/dart-sass-embedded#{Gem.win_platform? ? '.bat' : ''}", __dir__), '--version'
-    )
+    stdout, stderr, status = Open3.capture3(Sass::Embedded::Compiler::PATH, '--version')
+
     raise stderr unless status.success?
 
     tag_name = JSON.parse(stdout)['protocolVersion']

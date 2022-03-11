@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../../ext/sass/embedded'
+
 module Sass
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
   # its own communication {Channel} with a dedicated compiler process.

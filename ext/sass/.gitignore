@@ -1,3 +1,7 @@
-/embedded_sass*
-/sass_embedded*
-/protoc*
+/*.tar.gz
+/*.zip
+/embedded.rb
+/embedded_sass.proto
+/embedded_sass_pb.rb
+/protoc.exe
+/sass_embedded

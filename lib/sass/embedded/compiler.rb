@@ -8,10 +8,6 @@ module Sass
     #
     # It runs the `dart-sass-embedded` process.
     class Compiler
-      PATH = File.absolute_path(
-        "../../../ext/sass/sass_embedded/dart-sass-embedded#{Gem.win_platform? ? '.bat' : ''}", __dir__
-      )
-
       def initialize
         @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(PATH)
         @stdin.binmode
