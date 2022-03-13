@@ -9,7 +9,7 @@ module Sass
       module_function
 
       def from_proto_compile_response(compile_response)
-        result = compile_response.send(compile_response.result)
+        result = compile_response.public_send(compile_response.result)
         case compile_response.result
         when :failure
           raise CompileError.new(

@@ -114,7 +114,7 @@ module Sass
         end
 
         def from_proto(proto)
-          obj = proto.send(proto.value)
+          obj = proto.public_send(proto.value)
           case proto.value
           when :string
             Sass::Value::String.new(
