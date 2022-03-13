@@ -85,7 +85,9 @@ module Sass
           importer = @importers_by_id[file_import_request.importer_id]
           file_url = importer.find_file_url(file_import_request.url, from_import: file_import_request.from_import)&.to_s
 
-          raise "file_url must be a file: URL, was \"#{file_url}\"" if !file_url.nil? && !file_url.start_with?('file:')
+          if !file_url.nil? && !file_url.start_with?('file:')
+            raise "file_url must be a file: URL, was #{file_url.inspect}"
+          end
 
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,

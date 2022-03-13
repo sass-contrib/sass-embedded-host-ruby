@@ -118,7 +118,7 @@ module Sass
       # @return [Number]
       # @raise [ScriptError]
       def assert_unit(unit, name = nil)
-        raise error "Expected #{self} to have no unit \"#{unit}\"", name unless unit?(unit)
+        raise error "Expected #{self} to have unit #{unit.inspect}", name unless unit?(unit)
 
         self
       end
@@ -244,7 +244,7 @@ module Sass
                                   other: nil,
                                   other_name: nil)
         if other && (other.numerator_units != new_denominator_units && other.denominator_units != new_denominator_units)
-          raise error "Expect #{other} to have units #{unit_string(new_numerator_units, new_denominator_units)}"
+          raise error "Expect #{other} to have units #{unit_string(new_numerator_units, new_denominator_units).inspect}"
         end
 
         return value if numerator_units == new_numerator_units && denominator_units == new_denominator_units
