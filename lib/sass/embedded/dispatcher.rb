@@ -69,17 +69,17 @@ module Sass
       end
 
       def receive_message(outbound_message)
-        message = outbound_message.public_send(outbound_message.message)
-
-        case outbound_message.message
+        oneof = outbound_message.message
+        message = outbound_message.public_send(oneof)
+        case oneof
         when :error
           half_close
-          @observers[message.id]&.public_send(outbound_message.message, message)
+          @observers[message.id]&.public_send(oneof, message)
         when :compile_response, :version_response
-          @observers[message.id].public_send(outbound_message.message, message)
+          @observers[message.id].public_send(oneof, message)
         when :log_event, :canonicalize_request, :import_request, :file_import_request, :function_call_request
           Thread.new(@observers[message.compilation_id]) do |observer|
-            observer.public_send(outbound_message.message, message)
+            observer.public_send(oneof, message)
           end
         else
           raise ArgumentError, "Unknown OutboundMessage.message #{message}"

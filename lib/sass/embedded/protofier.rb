@@ -9,8 +9,9 @@ module Sass
       module_function
 
       def from_proto_compile_response(compile_response)
-        result = compile_response.public_send(compile_response.result)
-        case compile_response.result
+        oneof = compile_response.result
+        result = compile_response.public_send(oneof)
+        case oneof
         when :failure
           raise CompileError.new(
             result.message,
