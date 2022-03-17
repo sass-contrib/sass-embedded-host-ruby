@@ -121,23 +121,25 @@ module Configuration
            RbConfig::CONFIG['host_os'].downcase
          end
 
-    ARCH = case RbConfig::CONFIG['host_cpu'].downcase
-           when /amd64|x86_64|x64/
-             'x86_64'
-           when /i\d86|x86|i86pc/
-             'i386'
-           when /arm64|aarch64/
-             'aarch64'
-           when /arm/
-             # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
-             OS == 'darwin' ? 'aarch64' : 'arm'
-           when /ppc64le|powerpc64le/
-             'powerpc64le'
-           when /s390x/
-             's390x'
-           else
-             RbConfig::CONFIG['host_cpu']
-           end
+    CPU = case RbConfig::CONFIG['host_cpu'].downcase
+          when /amd64|x86_64|x64/
+            'x86_64'
+          when /i\d86|x86|i86pc/
+            'i386'
+          when /arm64|aarch64/
+            'aarch64'
+          when /arm/
+            # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
+            OS == 'darwin' ? 'aarch64' : 'arm'
+          when /ppc64le|powerpc64le/
+            'powerpc64le'
+          when /s390x/
+            's390x'
+          else
+            RbConfig::CONFIG['host_cpu']
+          end
+
+    ARCH = "#{CPU}-#{OS}"
   end
 
   private_constant :Platform
@@ -153,7 +155,7 @@ module Configuration
 
     tag_name = spec['dependencies']['sass-embedded']
 
-    message = "sass_embedded for #{Platform::OS}/#{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
+    message = "sass_embedded for #{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
 
     os = case Platform::OS
          when 'darwin'
@@ -166,20 +168,20 @@ module Configuration
            raise NotImplementedError, message
          end
 
-    arch = case Platform::ARCH
-           when 'i386'
-             'ia32'
-           when 'x86_64'
-             'x64'
-           when 'aarch64'
-             Platform::OS == 'darwin' ? 'x64' : 'arm64'
-           else
-             raise NotImplementedError, message
-           end
+    cpu = case Platform::CPU
+          when 'i386'
+            'ia32'
+          when 'x86_64'
+            'x64'
+          when 'aarch64'
+            Platform::OS == 'darwin' ? 'x64' : 'arm64'
+          else
+            raise NotImplementedError, message
+          end
 
     ext = Gem.win_platform? ? 'zip' : 'tar.gz'
 
-    "#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{arch}.#{ext}"
+    "#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{cpu}.#{ext}"
   end
 
   def default_protoc
@@ -187,7 +189,7 @@ module Configuration
 
     version = Gem::Dependency.new('google-protobuf').to_spec.version
 
-    message = "protoc for #{Platform::OS}/#{Platform::ARCH} not available at #{repo}/#{version}"
+    message = "protoc for #{Platform::ARCH} not available at #{repo}/#{version}"
 
     os = case Platform::OS
          when 'darwin'
@@ -200,22 +202,22 @@ module Configuration
            raise NotImplementedError, message
          end
 
-    arch = case Platform::ARCH
-           when 'i386'
-             'x86_32'
-           when 'x86_64'
-             'x86_64'
-           when 'aarch64'
-             'aarch_64'
-           when 'powerpc64le'
-             'ppcle_64'
-           when 's390x'
-             's390_64'
-           else
-             raise NotImplementedError, message
-           end
+    cpu = case Platform::CPU
+          when 'i386'
+            'x86_32'
+          when 'x86_64'
+            'x86_64'
+          when 'aarch64'
+            'aarch_64'
+          when 'powerpc64le'
+            'ppcle_64'
+          when 's390x'
+            's390_64'
+          else
+            raise NotImplementedError, message
+          end
 
-    "#{repo}/#{version}/protoc-#{version}-#{os}-#{arch}.exe"
+    "#{repo}/#{version}/protoc-#{version}-#{os}-#{cpu}.exe"
   end
 
   def default_sass_embedded_protocol
