@@ -111,6 +111,8 @@ module Configuration
     OS = case RbConfig::CONFIG['host_os'].downcase
          when /darwin/
            'darwin'
+         when /linux-musl/
+           'linux-musl'
          when /linux/
            'linux'
          when *Gem::WIN_PATTERNS
