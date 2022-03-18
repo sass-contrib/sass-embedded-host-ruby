@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+require_relative 'host/function_registry'
+require_relative 'host/importer_registry'
+require_relative 'host/logger_registry'
+require_relative 'host/value_protofier'
+
 module Sass
   class Embedded
     # The {Host} class.

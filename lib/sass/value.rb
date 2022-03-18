@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'script_error'
+
 module Sass
   # The abstract base class of Sass's value types.
   #
@@ -117,3 +119,14 @@ module Sass
     end
   end
 end
+
+require_relative 'value/list'
+require_relative 'value/argument_list'
+require_relative 'value/boolean'
+require_relative 'value/color'
+require_relative 'value/function'
+require_relative 'value/fuzzy_math'
+require_relative 'value/map'
+require_relative 'value/null'
+require_relative 'value/number'
+require_relative 'value/string'

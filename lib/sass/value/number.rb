@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'number/unit'
+
 module Sass
   module Value
     # Sass's number type.
