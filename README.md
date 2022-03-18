@@ -35,6 +35,8 @@ result = Sass.compile_string('h1 { font-size: 40px; }')
 puts result.css
 ```
 
+See [rubydoc.info/gems/sass-embedded](https://rubydoc.info/gems/sass-embedded) for full API documentation.
+
 ---
 
 Disclaimer: this is not an official Google product.
