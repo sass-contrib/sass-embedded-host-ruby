@@ -441,10 +441,11 @@ describe Sass::Value::Number do
 
       it 'can be converted to compatible units' do
         expect(number.convert(['px'], ['ms'])).to eq(number)
-        expect(number.convert(['in'], ['s'])).to eq(described_class.new(1281.25, {
-                                                                          numerator_units: ['in'],
-                                                                          denominator_units: ['s']
-                                                                        }))
+        expect(number.convert(['in'], ['s']))
+          .to eq(described_class.new(1281.25, {
+                                       numerator_units: ['in'],
+                                       denominator_units: ['s']
+                                     }))
       end
 
       it 'can be converted to match compatible units' do
@@ -529,10 +530,11 @@ describe Sass::Value::Number do
         expect(number.coerce_to_match(described_class.new(456, {
                                                             numerator_units: ['in'],
                                                             denominator_units: ['s']
-                                                          }))).to eq(described_class.new(1281.25, {
-                                                                                           numerator_units: ['in'],
-                                                                                           denominator_units: ['s']
-                                                                                         }))
+                                                          })))
+          .to eq(described_class.new(1281.25, {
+                                       numerator_units: ['in'],
+                                       denominator_units: ['s']
+                                     }))
       end
 
       it 'cannot be coerced to incompatible units' do
