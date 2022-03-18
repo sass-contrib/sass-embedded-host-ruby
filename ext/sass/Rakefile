@@ -63,45 +63,54 @@ module FileUtils
         sh 'unzip', '-od', dest, archive
       end
     else
-      raise "Unknown archive format #{archive}"
+      raise ArgumentError, "Unknown archive format #{archive}"
     end
   end
 
-  def fetch(uri_or_path, dest = nil)
-    require 'open-uri'
+  def fetch(source_uri, dest_path = nil)
+    require 'rubygems/remote_fetcher'
 
-    begin
-      uri = URI.parse(uri_or_path)
-      path = URI::DEFAULT_PARSER.unescape(uri.path)
-      if uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
-        path = path.delete_prefix('/') if Gem.win_platform? && !File.file?(path)
-        raise unless File.file?(path)
+    unless source_uri.is_a?(URI::Generic)
+      begin
+        source_uri = URI.parse(source_uri)
+      rescue StandardError
+        source_uri = URI.parse(URI::DEFAULT_PARSER.escape(source_uri.to_s))
       end
-    rescue StandardError
-      raise unless File.file?(uri_or_path)
-
-      uri = nil
-      path = uri_or_path
     end
 
-    dest = File.basename(path) if dest.nil?
+    scheme = source_uri.scheme
+    source_path = URI::DEFAULT_PARSER.unescape(source_uri.path)
 
-    if uri.nil? || uri.instance_of?(URI::File) || uri.instance_of?(URI::Generic)
-      cp path, dest
-    elsif uri.respond_to?(:open)
-      Rake.rake_output_message "curl -fsSLo #{dest} -- #{uri}" if Rake::FileUtilsExt.verbose_flag
-      unless Rake::FileUtilsExt.nowrite_flag
-        uri.open do |stream|
-          File.binwrite(dest, stream.read)
-        end
+    if Gem.win_platform? && scheme =~ /^[a-z]$/i && !source_path.include?(':')
+      source_path = "#{scheme}:#{source_path}"
+      scheme = nil
+    end
+
+    dest_path = File.basename(source_path) if dest_path.nil?
+
+    case scheme
+    when nil, 'file'
+      if Gem.win_platform? && source_path[0].chr == '/' && source_path[1].chr =~ /[a-z]/i && source_path[2].chr == ':'
+        source_path = source_path[1..]
       end
+      cp source_path, dest_path
     else
-      raise
+      fetcher = Gem::RemoteFetcher.fetcher
+      symbol = "fetch_#{scheme}".to_sym
+      raise ArgumentError, "Unsupported URI scheme #{scheme}" unless fetcher.respond_to?(symbol)
+
+      if Rake::FileUtilsExt.verbose_flag
+        redacted_uri = Gem::RemoteFetcher::FetchError.new('', source_uri).uri
+        Rake.rake_output_message "fetch #{redacted_uri}"
+      end
+
+      unless Rake::FileUtilsExt.nowrite_flag
+        data = fetcher.public_send(symbol, source_uri)
+        Gem.write_binary(dest_path, data)
+      end
     end
 
-    dest
-  rescue StandardError
-    raise IOError, "Failed to fetch #{uri_or_path}"
+    dest_path
   end
 end
 
