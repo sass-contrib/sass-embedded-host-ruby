@@ -9,11 +9,22 @@ module Sass
       include Value
 
       # @param value [Numeric]
-      # @param numerator_units [Array<::String>, ::String]
-      # @param denominator_units [Array<::String>, ::String]
-      def initialize(value, numerator_units = [], denominator_units = [])
-        numerator_units = [numerator_units] if numerator_units.is_a?(::String)
-        denominator_units = [denominator_units] if denominator_units.is_a?(::String)
+      # @param unit [::String, Hash]
+      # @option unit [Array<::String>] :numerator_units
+      # @option unit [Array<::String>] :denominator_units
+      def initialize(value, unit = nil)
+        if unit.nil?
+          numerator_units = []
+          denominator_units = []
+        elsif unit.is_a?(::String)
+          numerator_units = [unit]
+          denominator_units = []
+        elsif unit.is_a?(::Hash)
+          numerator_units = unit.fetch(:numerator_units, [])
+          denominator_units = unit.fetch(:denominator_units, [])
+        else
+          raise error "invalid unit #{unit.inspect}"
+        end
 
         unless denominator_units.empty? && numerator_units.empty?
           value = value.dup
@@ -159,8 +170,10 @@ module Sass
       # @param new_denominator_units [Array<::String>]
       # @return [Number]
       def convert(new_numerator_units, new_denominator_units, name = nil)
-        Number.new(convert_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
-                   new_denominator_units)
+        Number.new(convert_value(new_numerator_units, new_denominator_units, name), {
+                     numerator_units: new_numerator_units,
+                     denominator_units: new_denominator_units
+                   })
       end
 
       # @param new_numerator_units [Array<::String>]
@@ -175,7 +188,10 @@ module Sass
       # @param other [Number]
       # @return [Number]
       def convert_to_match(other, name = nil, other_name = nil)
-        Number.new(convert_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
+        Number.new(convert_value_to_match(other, name, other_name), {
+                     numerator_units: other.numerator_units,
+                     denominator_units: other.denominator_units
+                   })
       end
 
       # @param other [Number]
@@ -192,8 +208,10 @@ module Sass
       # @param new_denominator_units [Array<::String>]
       # @return [Number]
       def coerce(new_numerator_units, new_denominator_units, name = nil)
-        Number.new(coerce_value(new_numerator_units, new_denominator_units, name), new_numerator_units,
-                   new_denominator_units)
+        Number.new(coerce_value(new_numerator_units, new_denominator_units, name), {
+                     numerator_units: new_numerator_units,
+                     denominator_units: new_denominator_units
+                   })
       end
 
       # @param new_numerator_units [Array<::String>]
@@ -214,7 +232,10 @@ module Sass
       # @param other [Number]
       # @return [Number]
       def coerce_to_match(other, name = nil, other_name = nil)
-        Number.new(coerce_value_to_match(other, name, other_name), other.numerator_units, other.denominator_units)
+        Number.new(coerce_value_to_match(other, name, other_name), {
+                     numerator_units: other.numerator_units,
+                     denominator_units: other.denominator_units
+                   })
       end
 
       # @param other [Number]

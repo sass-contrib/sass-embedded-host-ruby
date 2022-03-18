@@ -41,7 +41,7 @@ RSpec.describe Sass do
     __LINE__ => Sass::Value::String.new('c', quoted: true),
     __LINE__ => Sass::Value::Number.new(Math::PI),
     __LINE__ => Sass::Value::Number.new(42, 'px'),
-    __LINE__ => Sass::Value::Number.new(42, 'px', 'ms'),
+    __LINE__ => Sass::Value::Number.new(42, { numerator_units: ['px'], denominator_units: ['ms'] }),
     __LINE__ => Sass::Value::Color.new(red: 0, green: 0, blue: 0, alpha: 1),
     __LINE__ => Sass::Value::Color.new(hue: 0, saturation: 0, lightness: 0, alpha: 1),
     __LINE__ => Sass::Value::Color.new(hue: 0, whiteness: 0, blackness: 0, alpha: 1),

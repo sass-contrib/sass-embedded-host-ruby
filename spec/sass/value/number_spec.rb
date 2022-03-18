@@ -137,12 +137,12 @@ describe Sass::Value::Number do
         end
 
         it 'can be coerced to a unit' do
-          expect(number.coerce(['px'], [])).to eq(described_class.new(123, 'px'))
+          expect(number.coerce(['px'], [])).to eq(described_class.new(123, { numerator_units: ['px'] }))
         end
 
         it 'can be coerced to match a unit' do
-          expect(number.coerce_to_match(described_class.new(456, 'px')))
-            .to eq(described_class.new(123, 'px'))
+          expect(number.coerce_to_match(described_class.new(456, { numerator_units: ['px'] })))
+            .to eq(described_class.new(123, { numerator_units: ['px'] }))
         end
 
         it 'can coerce its value to unitless' do
@@ -158,7 +158,7 @@ describe Sass::Value::Number do
         end
 
         it 'can coerce its value to match a unit' do
-          expect(number.coerce_value_to_match(described_class.new(456, 'px'))).to eq(123)
+          expect(number.coerce_value_to_match(described_class.new(456, { numerator_units: ['px'] }))).to eq(123)
         end
       end
     end
@@ -379,9 +379,9 @@ describe Sass::Value::Number do
 
       it "doesn't equal a number with different units" do
         expect(number).not_to eq(described_class.new(123, 'abc'))
-        expect(number).not_to eq(described_class.new(123, %w[px px]))
-        expect(number).not_to eq(described_class.new(123, ['px'], ['abc']))
-        expect(number).not_to eq(described_class.new(123, [], ['px']))
+        expect(number).not_to eq(described_class.new(123, { numerator_units: %w[px px] }))
+        expect(number).not_to eq(described_class.new(123, { numerator_units: ['px'], denominator_units: ['abc'] }))
+        expect(number).not_to eq(described_class.new(123, { denominator_units: ['px'] }))
       end
     end
   end
@@ -389,7 +389,7 @@ describe Sass::Value::Number do
   describe 'numerator and denominator units' do
     number = nil
     before do
-      number = described_class.new(123, 'px', 'ms')
+      number = described_class.new(123, { numerator_units: ['px'], denominator_units: ['ms'] })
     end
 
     describe 'construction' do
@@ -406,14 +406,14 @@ describe Sass::Value::Number do
       end
 
       it 'simplifies compatible units' do
-        number = described_class.new(123, %w[px s], ['ms'])
+        number = described_class.new(123, { numerator_units: %w[px s], denominator_units: ['ms'] })
         expect(number.value).to eq(123_000)
         expect(number.numerator_units).to eq(['px'])
         expect(number.denominator_units).to be_empty
       end
 
       it 'does not simplify unknown units' do
-        number = described_class.new(123, ['abc'], ['def'])
+        number = described_class.new(123, { numerator_units: ['abc'], denominator_units: ['def'] })
         expect(number.value).to eq(123)
         expect(number.numerator_units).to eq(['abc'])
         expect(number.denominator_units).to eq(['def'])
@@ -441,14 +441,26 @@ describe Sass::Value::Number do
 
       it 'can be converted to compatible units' do
         expect(number.convert(['px'], ['ms'])).to eq(number)
-        expect(number.convert(['in'], ['s'])).to eq(described_class.new(1281.25, ['in'], ['s']))
+        expect(number.convert(['in'], ['s'])).to eq(described_class.new(1281.25, {
+                                                                          numerator_units: ['in'],
+                                                                          denominator_units: ['s']
+                                                                        }))
       end
 
       it 'can be converted to match compatible units' do
-        expect(number.convert_to_match(described_class.new(456, ['px'], ['ms'])))
+        expect(number.convert_to_match(described_class.new(456, {
+                                                             numerator_units: ['px'],
+                                                             denominator_units: ['ms']
+                                                           })))
           .to eq(number)
-        expect(number.convert_to_match(described_class.new(456, ['in'], ['s'])))
-          .to eq(described_class.new(1281.25, ['in'], ['s']))
+        expect(number.convert_to_match(described_class.new(456, {
+                                                             numerator_units: ['in'],
+                                                             denominator_units: ['s']
+                                                           })))
+          .to eq(described_class.new(1281.25, {
+                                       numerator_units: ['in'],
+                                       denominator_units: ['s']
+                                     }))
       end
 
       it 'cannot be converted to incompatible units' do
@@ -473,8 +485,14 @@ describe Sass::Value::Number do
       end
 
       it 'can convert its value to match compatible units' do
-        expect(number.convert_value_to_match(described_class.new(456, ['px'], ['ms']))).to eq(123)
-        expect(number.convert_value_to_match(described_class.new(456, ['in'], ['s']))).to eq(1281.25)
+        expect(number.convert_value_to_match(described_class.new(456, {
+                                                                   numerator_units: ['px'],
+                                                                   denominator_units: ['ms']
+                                                                 }))).to eq(123)
+        expect(number.convert_value_to_match(described_class.new(456, {
+                                                                   numerator_units: ['in'],
+                                                                   denominator_units: ['s']
+                                                                 }))).to eq(1281.25)
       end
 
       it 'cannot convert its value to incompatible units' do
@@ -497,13 +515,24 @@ describe Sass::Value::Number do
 
       it 'can be coerced to compatible units' do
         expect(number.coerce(['px'], ['ms'])).to eq(number)
-        expect(number.coerce(['in'], ['s'])).to eq(described_class.new(1281.25, ['in'], ['s']))
+        expect(number.coerce(['in'], ['s'])).to eq(described_class.new(1281.25, {
+                                                                         numerator_units: ['in'],
+                                                                         denominator_units: ['s']
+                                                                       }))
       end
 
       it 'can be coerced to match compatible units' do
-        expect(number.coerce_to_match(described_class.new(456, ['px'], ['ms']))).to eq(number)
-        expect(number.coerce_to_match(described_class.new(456, ['in'],
-                                                          ['s']))).to eq(described_class.new(1281.25, ['in'], ['s']))
+        expect(number.coerce_to_match(described_class.new(456, {
+                                                            numerator_units: ['px'],
+                                                            denominator_units: ['ms']
+                                                          }))).to eq(number)
+        expect(number.coerce_to_match(described_class.new(456, {
+                                                            numerator_units: ['in'],
+                                                            denominator_units: ['s']
+                                                          }))).to eq(described_class.new(1281.25, {
+                                                                                           numerator_units: ['in'],
+                                                                                           denominator_units: ['s']
+                                                                                         }))
       end
 
       it 'cannot be coerced to incompatible units' do
@@ -511,7 +540,12 @@ describe Sass::Value::Number do
       end
 
       it 'cannot be coerced to match incompatible units' do
-        expect { number.coerce_to_match(described_class.new(456, ['abc'], [])) }.to raise_error(Sass::ScriptError)
+        expect do
+          number.coerce_to_match(described_class.new(456, {
+                                                       numerator_units: ['abc'],
+                                                       denominator_units: []
+                                                     }))
+        end.to raise_error(Sass::ScriptError)
       end
 
       it 'can coerce its value to unitless' do
@@ -519,7 +553,10 @@ describe Sass::Value::Number do
       end
 
       it 'can coerce its value to match unitless' do
-        expect(number.coerce_value_to_match(described_class.new(456, [], []))).to eq(123)
+        expect(number.coerce_value_to_match(described_class.new(456, {
+                                                                  numerator_units: [],
+                                                                  denominator_units: []
+                                                                }))).to eq(123)
       end
 
       it 'can coerce its value to compatible units' do
@@ -528,8 +565,14 @@ describe Sass::Value::Number do
       end
 
       it 'can coerce its value to match compatible units' do
-        expect(number.coerce_value_to_match(described_class.new(456, ['px'], ['ms']))).to eq(123)
-        expect(number.coerce_value_to_match(described_class.new(456, ['in'], ['s']))).to eq(1281.25)
+        expect(number.coerce_value_to_match(described_class.new(456, {
+                                                                  numerator_units: ['px'],
+                                                                  denominator_units: ['ms']
+                                                                }))).to eq(123)
+        expect(number.coerce_value_to_match(described_class.new(456, {
+                                                                  numerator_units: ['in'],
+                                                                  denominator_units: ['s']
+                                                                }))).to eq(1281.25)
       end
 
       it 'cannot coerce its value to incompatible units' do
@@ -538,18 +581,27 @@ describe Sass::Value::Number do
 
       it 'cannot coerce its value to match incompatible units' do
         expect do
-          number.coerce_value_to_match(described_class.new(456, ['abc'], []))
+          number.coerce_value_to_match(described_class.new(456, {
+                                                             numerator_units: ['abc'],
+                                                             denominator_units: []
+                                                           }))
         end.to raise_error(Sass::ScriptError)
       end
     end
 
     describe 'equality' do
       it 'equals the same number' do
-        expect(number).to eq(described_class.new(123, ['px'], ['ms']))
+        expect(number).to eq(described_class.new(123, {
+                                                   numerator_units: ['px'],
+                                                   denominator_units: ['ms']
+                                                 }))
       end
 
       it 'equals an equivalent number' do
-        expect(number).to eq(described_class.new(1281.25, ['in'], ['s']))
+        expect(number).to eq(described_class.new(1281.25, {
+                                                   numerator_units: ['in'],
+                                                   denominator_units: ['s']
+                                                 }))
       end
 
       it "doesn't equal a unitless number" do
@@ -558,9 +610,15 @@ describe Sass::Value::Number do
 
       it "doesn't equal a number with different units" do
         expect(number).not_to eq(described_class.new(123, 'px'))
-        expect(number).not_to eq(described_class.new(123, [], ['ms']))
-        expect(number).not_to eq(described_class.new(123, ['ms'], ['px']))
-        expect(number).not_to eq(described_class.new(123, ['in'], ['s']))
+        expect(number).not_to eq(described_class.new(123, { denominator_units: ['ms'] }))
+        expect(number).not_to eq(described_class.new(123, {
+                                                       numerator_units: ['ms'],
+                                                       denominator_units: ['px']
+                                                     }))
+        expect(number).not_to eq(described_class.new(123, {
+                                                       numerator_units: ['in'],
+                                                       denominator_units: ['s']
+                                                     }))
       end
     end
   end

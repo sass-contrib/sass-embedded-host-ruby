@@ -124,9 +124,10 @@ module Sass
             )
           when :number
             Sass::Value::Number.new(
-              obj.value,
-              obj.numerators.to_a,
-              obj.denominators.to_a
+              obj.value, {
+                numerator_units: obj.numerators.to_a,
+                denominator_units: obj.denominators.to_a
+              }
             )
           when :rgb_color
             Sass::Value::Color.new(
