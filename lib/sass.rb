@@ -13,21 +13,27 @@ require_relative 'sass/embedded'
 #   Sass.compile_string('h1 { font-size: 40px; }')
 module Sass
   class << self
-    # @return [CompileResult]
-    # @raise [CompileError]
+    # Compiles the Sass file at +path+ to CSS.
+    # @param (see Embedded#compile)
+    # @return (see Embedded#compile)
+    # @raise (see Embedded#compile)
     # @see Embedded#compile
     def compile(path, **kwargs)
       instance.compile(path, **kwargs)
     end
 
-    # @return [CompileResult]
-    # @raise [CompileError]
+    # Compiles a stylesheet whose contents is +source+ to CSS.
+    # @param (see Embedded#compile_string)
+    # @return (see Embedded#compile_string)
+    # @raise (see Embedded#compile_string)
     # @see Embedded#compile_string
     def compile_string(source, **kwargs)
       instance.compile_string(source, **kwargs)
     end
 
-    # @return [String]
+    # @param (see Embedded#info)
+    # @return (see Embedded#info)
+    # @raise (see Embedded#info)
     # @see Embedded#info
     def info
       instance.info

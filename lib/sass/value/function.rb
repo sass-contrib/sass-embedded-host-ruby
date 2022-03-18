@@ -8,8 +8,11 @@ module Sass
     class Function
       include Value
 
-      # @param id_or_signature [Numeric, ::String]
-      # @param callback [Proc]
+      # @overload initialize(id)
+      #   @param id [Numeric]
+      # @overload initialize(signature, callback)
+      #   @param signature [::String]
+      #   @param callback [Proc]
       def initialize(id_or_signature, callback = nil)
         if id_or_signature.is_a? Numeric
           @id = id_or_signature

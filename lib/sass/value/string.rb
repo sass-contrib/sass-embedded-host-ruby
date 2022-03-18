@@ -9,7 +9,7 @@ module Sass
       include Value
 
       # @param text [::String]
-      # @param quoted: [::Boolean]
+      # @param quoted [::Boolean]
       def initialize(text = '', quoted: true)
         @text = text.freeze
         @quoted = quoted
