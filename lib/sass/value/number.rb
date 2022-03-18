@@ -13,13 +13,14 @@ module Sass
       # @option unit [Array<::String>] :numerator_units
       # @option unit [Array<::String>] :denominator_units
       def initialize(value, unit = nil)
-        if unit.nil?
+        case unit
+        when nil
           numerator_units = []
           denominator_units = []
-        elsif unit.is_a?(::String)
+        when ::String
           numerator_units = [unit]
           denominator_units = []
-        elsif unit.is_a?(::Hash)
+        when ::Hash
           numerator_units = unit.fetch(:numerator_units, [])
           raise error "invalid numerator_units #{numerator_units.inspect}" unless numerator_units.is_a? Array
 
