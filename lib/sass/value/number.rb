@@ -21,7 +21,10 @@ module Sass
           denominator_units = []
         elsif unit.is_a?(::Hash)
           numerator_units = unit.fetch(:numerator_units, [])
+          raise error "invalid numerator_units #{numerator_units.inspect}" unless numerator_units.is_a? Array
+
           denominator_units = unit.fetch(:denominator_units, [])
+          raise error "invalid denominator_units #{denominator_units.inspect}" unless denominator_units.is_a? Array
         else
           raise error "invalid unit #{unit.inspect}"
         end
