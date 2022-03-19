@@ -79,7 +79,7 @@ module FileUtils
     end
 
     scheme = source_uri.scheme
-    source_path = URI::DEFAULT_PARSER.unescape(source_uri.path)
+    source_path = URI::DEFAULT_PARSER.unescape(source_uri.path || source_uri.opaque)
 
     if Gem.win_platform? && scheme =~ /^[a-z]$/i && !source_path.include?(':')
       source_path = "#{scheme}:#{source_path}"
