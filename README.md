@@ -20,7 +20,7 @@ The Ruby API provides two entrypoints for compiling Sass to CSS.
 - `Sass.compile` takes a path to a Sass file and return the result of compiling that file to CSS.
 
 ``` ruby
-require 'sass'
+require 'sass-embedded'
 
 result = Sass.compile('style.scss')
 puts result.css
@@ -29,7 +29,7 @@ puts result.css
 - `Sass.compile_string` takes a string that represents the contents of a Sass file and return the result of compiling that file to CSS.
 
 ``` ruby
-require 'sass'
+require 'sass-embedded'
 
 result = Sass.compile_string('h1 { font-size: 40px; }')
 puts result.css

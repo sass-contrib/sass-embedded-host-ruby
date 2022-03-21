@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'sass'
+require 'sass-embedded'
 
 require 'json'
 require_relative './console'
