@@ -2,19 +2,19 @@
 
 require_relative '../../ext/sass/embedded'
 require_relative '../../ext/sass/embedded_sass_pb'
-require_relative 'compile_error'
-require_relative 'compile_result'
 require_relative 'embedded/async'
 require_relative 'embedded/channel'
+require_relative 'embedded/compile_error'
+require_relative 'embedded/compile_result'
 require_relative 'embedded/compiler'
 require_relative 'embedded/dispatcher'
 require_relative 'embedded/host'
+require_relative 'embedded/logger'
 require_relative 'embedded/protofier'
 require_relative 'embedded/structifier'
+require_relative 'embedded/value'
 require_relative 'embedded/varint'
 require_relative 'embedded/version'
-require_relative 'logger'
-require_relative 'value'
 
 # The Sass module.
 #
