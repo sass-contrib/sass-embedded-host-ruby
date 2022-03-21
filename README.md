@@ -1,6 +1,6 @@
 # Embedded Sass Host for Ruby
 
-[![build](https://github.com/ntkme/embedded-host-ruby/actions/workflows/build.yml/badge.svg)](https://github.com/ntkme/embedded-host-ruby/actions/workflows/build.yml)
+[![build](https://github.com/ntkme/sass-embedded-host-ruby/actions/workflows/build.yml/badge.svg)](https://github.com/ntkme/sass-embedded-host-ruby/actions/workflows/build.yml)
 [![gem](https://badge.fury.io/rb/sass-embedded.svg)](https://rubygems.org/gems/sass-embedded)
 
 This is a Ruby library that implements the host side of the [Embedded Sass protocol](https://github.com/sass/sass-embedded-protocol).
