@@ -17,7 +17,7 @@ module Sass
         Thread.new do
           loop do
             receive_message EmbeddedProtocol::OutboundMessage.decode @compiler.read
-          rescue IOError => e
+          rescue IOError, SystemCallError => e
             half_close
             @observers.each_value do |observer|
               observer.error e
