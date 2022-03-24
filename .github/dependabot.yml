@@ -14,8 +14,3 @@ updates:
     directory: "/ext/sass"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "daily"
