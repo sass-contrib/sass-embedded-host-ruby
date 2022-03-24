@@ -39,9 +39,11 @@ module Sass
       end
 
       def unsubscribe(id)
-        @observers.delete(id)
+        @mutex.synchronize do
+          @observers.delete(id)
 
-        close if half_closed? && @observers.empty?
+          close if half_closed? && @observers.empty?
+        end
       end
 
       def close
