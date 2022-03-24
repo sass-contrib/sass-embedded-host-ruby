@@ -18,7 +18,7 @@ module Sass
         Thread.new do
           loop do
             warn(@stderr.readline, uplevel: 1)
-          rescue IOError, SystemCallError
+          rescue IOError, Errno::EBADF
             break
           end
         end
