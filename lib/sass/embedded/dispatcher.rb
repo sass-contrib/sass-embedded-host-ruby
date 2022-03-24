@@ -6,7 +6,7 @@ module Sass
     #
     # It dispatches messages between mutliple instances of {Host} and a single {Compiler}.
     class Dispatcher
-      PROTOCOL_ERROR_ID = 4_294_967_295
+      PROTOCOL_ERROR_ID = 0xffffffff
 
       def initialize
         @compiler = Compiler.new
@@ -74,7 +74,13 @@ module Sass
         case oneof
         when :error
           half_close
-          @observers[message.id]&.public_send(oneof, message)
+          if message.id == PROTOCOL_ERROR_ID
+            @observers.each_value do |observer|
+              observer.public_send(oneof, message)
+            end
+          else
+            @observers[message.id].public_send(oneof, message)
+          end
         when :compile_response, :version_response
           @observers[message.id].public_send(oneof, message)
         when :log_event, :canonicalize_request, :import_request, :file_import_request, :function_call_request
