@@ -11,7 +11,9 @@ module Sass
       def initialize
         @compiler = Compiler.new
         @observers = {}
-        @id = 0
+        # TODO: Revert to `@id = 0` when upstream bug is fixed
+        # https://github.com/sass/dart-sass-embedded/pull/80
+        @id = 0xfffffffe
         @mutex = Mutex.new
 
         Thread.new do
