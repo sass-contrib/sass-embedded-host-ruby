@@ -21,7 +21,8 @@ module Sass
             receive_message EmbeddedProtocol::OutboundMessage.decode @compiler.read
           rescue IOError, Errno::EBADF => e
             half_close
-            @observers.each_value do |observer|
+            observers = @observers.values
+            observers.each do |observer|
               observer.error e
             end
             break
@@ -79,7 +80,8 @@ module Sass
         when :error
           half_close
           if message.id == PROTOCOL_ERROR_ID
-            @observers.each_value do |observer|
+            observers = @observers.values
+            observers.each do |observer|
               observer.public_send(oneof, message)
             end
           else
