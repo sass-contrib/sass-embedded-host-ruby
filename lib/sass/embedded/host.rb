@@ -13,7 +13,6 @@ module Sass
     class Host
       def initialize(channel)
         @channel = channel
-        @mutex = Mutex.new
       end
 
       def id
@@ -126,16 +125,14 @@ module Sass
       private
 
       def await
-        @mutex.synchronize do
-          raise EOFError if defined? @async
+        raise EOFError if defined? @async
 
-          @connection = @channel.connect(self)
-          @async = Async.new
-          yield
-          @async.await
-        ensure
-          @connection.disconnect
-        end
+        @connection = @channel.connect(self)
+        @async = Async.new
+        yield
+        @async.await
+      ensure
+        @connection.disconnect
       end
     end
 
