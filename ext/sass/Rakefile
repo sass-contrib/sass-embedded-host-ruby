@@ -23,7 +23,7 @@ end
 
 file 'embedded.rb' => %w[sass_embedded] do |t|
   path = 'sass_embedded/dart-sass-embedded'
-  path = "#{path}#{(Gem.win_platform? ? ['.exe', '.bat'] : ['', '.sh']).find { |ext| File.exist? "#{path}#{ext}" }}"
+  path = "#{path}#{['.exe', '.bat'].find { |ext| File.exist? "#{path}#{ext}" }}" if Gem.win_platform?
 
   raise "#{path} not found" unless File.exist? path
 
