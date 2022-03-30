@@ -183,7 +183,7 @@ module Configuration
           when 'x86_64'
             'x64'
           when 'aarch64'
-            Platform::OS == 'darwin' ? 'x64' : 'arm64'
+            'arm64'
           else
             raise NotImplementedError, message
           end
