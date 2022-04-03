@@ -55,12 +55,14 @@ module Sass
                           source: source,
                           url: url&.to_s,
                           syntax: Protofier.to_proto_syntax(syntax),
-                          importer: if url && importer.nil?
+                          importer: if importer
+                                      @importer_registry.register(importer)
+                                    elsif url
                                       EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
                                         path: File.absolute_path('.')
                                       )
                                     else
-                                      @importer_registry.register(importer.nil? ? NoOpImporter : importer)
+                                      @importer_registry.register(NoOpImporter)
                                     end
                         )
                       end,
