@@ -112,7 +112,7 @@ RSpec.describe Sass do
         end
       end
 
-      it 'url is used to resolve relative loads' do
+      it 'file: url is used to resolve relative loads' do
         sandbox do |dir|
           dir.write({ 'foo/bar/_other.scss' => 'a {b: c}' })
 
@@ -225,12 +225,24 @@ RSpec.describe Sass do
 
       it 'relative loads fail without a URL' do
         sandbox do |dir|
-          dir.write({ 'other.scss' => 'a {b: c}' })
-          expect { described_class.compile_string('@use "other";') }
+          dir.write({ '_other.scss' => 'a {b: c}' })
+          expect { described_class.compile_string("@use \"#{dir.relative_url('other')}\";") }
             .to raise_error do |error|
               expect(error).to be_a(Sass::CompileError)
               expect(error.span.start.line).to eq(0)
               expect(error.span.url).to be_nil
+            end
+        end
+      end
+
+      it 'relative loads fail with a non-file: URL' do
+        sandbox do |dir|
+          dir.write({ '_other.scss' => 'a {b: c}' })
+          expect { described_class.compile_string("@use \"#{dir.relative_url('other')}\";", url: 'unknown:style.scss') }
+            .to raise_error do |error|
+              expect(error).to be_a(Sass::CompileError)
+              expect(error.span.start.line).to eq(0)
+              expect(error.span.url).to eq('unknown:style.scss')
             end
         end
       end

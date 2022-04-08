@@ -23,7 +23,11 @@ module Sandbox
     end
 
     def url(*paths)
-      URI::File.build([nil, "#{@root.start_with?('/') ? '' : '/'}#{URI::DEFAULT_PARSER.escape(path(*paths))}"]).to_s
+      file_uri(path(*paths)).to_s
+    end
+
+    def relative_url(*paths)
+      file_uri("#{Dir.pwd}/").route_to(url(*paths)).to_s
     end
 
     def write(paths)
@@ -36,6 +40,12 @@ module Sandbox
 
     def chdir(&block)
       Dir.chdir @root, &block
+    end
+
+    private
+
+    def file_uri(path)
+      URI::File.build([nil, "#{path.start_with?('/') ? '' : '/'}#{URI::DEFAULT_PARSER.escape(path)}"])
     end
   end
 end
