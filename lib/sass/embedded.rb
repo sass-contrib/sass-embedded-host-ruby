@@ -14,6 +14,8 @@ require_relative 'embedded/structifier'
 require_relative 'embedded/varint'
 require_relative 'embedded/version'
 require_relative 'logger/silent'
+require_relative 'logger/source_location'
+require_relative 'logger/source_span'
 require_relative 'value'
 
 # The Sass module.

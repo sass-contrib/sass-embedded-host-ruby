@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'source_location'
-require_relative 'source_span'
-
 module Sass
   # A namespace for built-in Loggers.
   #
