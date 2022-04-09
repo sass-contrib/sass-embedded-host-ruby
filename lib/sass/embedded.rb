@@ -121,7 +121,6 @@ module Sass
                 logger: nil,
                 quiet_deps: false,
                 verbose: false)
-
       raise ArgumentError, 'path must be set' if path.nil?
 
       Protofier.from_proto_compile_response(
