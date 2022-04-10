@@ -57,7 +57,7 @@ module Sass
                           syntax: Protofier.to_proto_syntax(syntax),
                           importer: if importer
                                       @importer_registry.register(importer)
-                                    elsif url
+                                    elsif url&.to_s&.start_with?('file:')
                                       EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
                                         path: File.absolute_path('.')
                                       )
