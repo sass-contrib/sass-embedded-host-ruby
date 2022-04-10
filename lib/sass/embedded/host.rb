@@ -134,8 +134,6 @@ module Sass
       private
 
       def await
-        raise EOFError if defined? @async
-
         @connection = @channel.connect(self)
         @async = Async.new
         yield
