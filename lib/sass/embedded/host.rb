@@ -3,7 +3,6 @@
 require_relative 'host/function_registry'
 require_relative 'host/importer_registry'
 require_relative 'host/logger_registry'
-require_relative 'host/no_op_importer'
 require_relative 'host/value_protofier'
 
 module Sass
@@ -55,18 +54,10 @@ module Sass
                           source: source,
                           url: url&.to_s,
                           syntax: Protofier.to_proto_syntax(syntax),
-                          importer: if importer
-                                      @importer_registry.register(importer)
-                                    elsif url&.to_s&.start_with?('file:')
-                                      EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-                                        path: File.absolute_path('.')
-                                      )
-                                    else
-                                      @importer_registry.register(NoOpImporter)
-                                    end
+                          importer: (@importer_registry.register(importer) unless importer.nil?)
                         )
                       end,
-              path: path.nil? ? nil : File.absolute_path(path),
+              path: (File.absolute_path(path) unless path.nil?),
               style: Protofier.to_proto_output_style(style),
               source_map: source_map,
               source_map_include_sources: source_map_include_sources,
