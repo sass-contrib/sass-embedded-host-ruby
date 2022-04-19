@@ -31,7 +31,7 @@ module Sass
       end
 
       def from_proto_source_span(source_span)
-        return nil if source_span.nil?
+        return if source_span.nil?
 
         Logger::SourceSpan.new(from_proto_source_location(source_span.start),
                                from_proto_source_location(source_span.end),
@@ -41,7 +41,7 @@ module Sass
       end
 
       def from_proto_source_location(source_location)
-        return nil if source_location.nil?
+        return if source_location.nil?
 
         Logger::SourceLocation.new(source_location.offset,
                                    source_location.line,

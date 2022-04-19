@@ -71,7 +71,7 @@ module Sass
             success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
               contents: importer_result.contents,
               syntax: Protofier.to_proto_syntax(importer_result.syntax),
-              source_map_url: importer_result.respond_to?(:source_map_url) ? importer_result.source_map_url&.to_s : nil
+              source_map_url: (importer_result.source_map_url&.to_s if importer_result.respond_to?(:source_map_url))
             )
           )
         rescue StandardError => e
