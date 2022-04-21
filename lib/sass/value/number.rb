@@ -94,17 +94,7 @@ module Sass
 
       # @return [Integer]
       def hash
-        @hash ||= if unitless?
-                    FuzzyMath.hash(value)
-                  elsif single_unit?
-                    FuzzyMath.hash(
-                      value * Unit.canonical_multiplier_for_unit(numerator_units.first)
-                    )
-                  else
-                    FuzzyMath.hash(
-                      value * Unit.canonical_multiplier(numerator_units) / Unit.canonical_multiplier(denominator_units)
-                    )
-                  end
+        @hash ||= FuzzyMath.hash(canonical_units_value)
       end
 
       # @return [::Boolean]
@@ -263,6 +253,16 @@ module Sass
 
       def single_unit?
         numerator_units.length == 1 && denominator_units.empty?
+      end
+
+      def canonical_units_value
+        if unitless?
+          value
+        elsif single_unit?
+          value * Unit.canonical_multiplier_for_unit(numerator_units.first)
+        else
+          value * Unit.canonical_multiplier(numerator_units) / Unit.canonical_multiplier(denominator_units)
+        end
       end
 
       def coerce_or_convert_value(new_numerator_units, new_denominator_units,

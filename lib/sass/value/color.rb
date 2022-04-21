@@ -156,7 +156,7 @@ module Sass
 
       # @return [Integer]
       def hash
-        @hash ||= red.hash ^ green.hash ^ blue.hash ^ alpha.hash
+        @hash ||= [red, green, blue, alpha].hash
       end
 
       # @return [Color]
