@@ -27,10 +27,14 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby']
+        ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby', 'truffleruby-head', 'truffleruby+graalvm-head']
         exclude:
           - os: windows-latest
             ruby-version: jruby
+          - os: windows-latest
+            ruby-version: truffleruby-head
+          - os: windows-latest
+            ruby-version: truffleruby+graalvm-head
 
     steps:
       - name: Checkout
@@ -55,10 +59,14 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby']
+        ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby', 'truffleruby-head', 'truffleruby+graalvm-head']
         exclude:
           - os: windows-latest
             ruby-version: jruby
+          - os: windows-latest
+            ruby-version: truffleruby-head
+          - os: windows-latest
+            ruby-version: truffleruby+graalvm-head
 
     steps:
       - name: Checkout
