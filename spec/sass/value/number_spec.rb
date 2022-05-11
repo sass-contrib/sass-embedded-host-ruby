@@ -27,7 +27,7 @@ describe Sass::Value::Number do
           expect(number.denominator_units).to be_empty
           expect(number.units?).to be(false)
           expect(number.unit?('px')).to be(false)
-          expect { number.assert_unitless }.not_to raise_error
+          expect(number.assert_unitless).to be(number)
           expect { number.assert_unit('px') }.to raise_error(Sass::ScriptError)
         end
 
@@ -229,7 +229,7 @@ describe Sass::Value::Number do
         expect(number.numerator_units).to eq(['px'])
         expect(number.units?).to be(true)
         expect(number.unit?('px')).to be(true)
-        expect { number.assert_unit('px') }.not_to raise_error
+        expect(number.assert_unit('px')).to be(number)
         expect { number.assert_unitless }.to raise_error(Sass::ScriptError)
       end
 
