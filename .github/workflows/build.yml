@@ -28,6 +28,9 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby']
+        exclude:
+          - os: windows-latest
+            ruby-version: jruby
 
     steps:
       - name: Checkout
@@ -53,6 +56,9 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby']
+        exclude:
+          - os: windows-latest
+            ruby-version: jruby
 
     steps:
       - name: Checkout
