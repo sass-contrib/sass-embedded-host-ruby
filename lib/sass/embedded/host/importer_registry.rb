@@ -33,18 +33,19 @@ module Sass
 
           raise ArgumentError, 'importer must be an Importer or a FileImporter' if is_importer == is_file_importer
 
-          proto = if is_importer
-                    EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-                      importer_id: @id
-                    )
-                  else
-                    EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-                      file_importer_id: @id
-                    )
-                  end
-          @importers_by_id[@id] = importer
-          @id = @id.next
-          proto
+          id = @id
+          @id = id.next
+
+          @importers_by_id[id] = importer
+          if is_importer
+            EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
+              importer_id: id
+            )
+          else
+            EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
+              file_importer_id: id
+            )
+          end
         end
 
         def canonicalize(canonicalize_request)

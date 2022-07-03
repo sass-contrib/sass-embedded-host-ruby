@@ -34,7 +34,7 @@ module Sass
           return if @ids_by_function.key?(function)
 
           id = @id
-          @id = @id.next
+          @id = id.next
 
           @ids_by_function[function] = id
           @functions_by_id[id] = function
