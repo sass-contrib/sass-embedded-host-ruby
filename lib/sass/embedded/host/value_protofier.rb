@@ -155,8 +155,8 @@ module Sass
               obj.contents.map do |element|
                 from_proto(element)
               end,
-              obj.keywords.entries.to_h do |entry|
-                [entry.first, from_proto(entry.last)]
+              obj.keywords.entries.to_h.transform_values! do |value|
+                from_proto(value)
               end,
               ListSeparator.from_proto(obj.separator)
             ).instance_eval do
