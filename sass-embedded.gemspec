@@ -32,7 +32,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.add_runtime_dependency 'rake', '>= 10.0.0'
 
   spec.add_development_dependency 'rspec', '~> 3.11.0'
-  spec.add_development_dependency 'rubocop', '~> 1.31.0'
+  spec.add_development_dependency 'rubocop', '~> 1.32.0'
   spec.add_development_dependency 'rubocop-performance', '~> 1.14.0'
   spec.add_development_dependency 'rubocop-rake', '~> 0.6.0'
   spec.add_development_dependency 'rubocop-rspec', '~> 2.12.1'
