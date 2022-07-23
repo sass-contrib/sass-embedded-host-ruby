@@ -87,6 +87,9 @@ module Sass
     # @param path [String]
     # @param load_paths [Array<String>] Paths in which to look for stylesheets loaded by rules like
     #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    # @param charset [Boolean] By default, if the CSS document contains non-ASCII characters, Sass adds a +@charset+
+    #   declaration (in expanded output mode) or a byte-order mark (in compressed mode) to indicate its encoding to
+    #   browsers or other consumers. If +charset+ is +false+, these annotations are omitted.
     # @param source_map [Boolean] Whether or not Sass should generate a source map.
     # @param source_map_include_sources [Boolean] Whether Sass should include the sources in the generated source map.
     # @param style [String, Symbol] The OutputStyle of the compiled CSS.
@@ -111,6 +114,7 @@ module Sass
     def compile(path,
                 load_paths: [],
 
+                charset: true,
                 source_map: false,
                 source_map_include_sources: false,
                 style: :expanded,
@@ -133,6 +137,7 @@ module Sass
           load_paths: load_paths,
           syntax: nil,
           url: nil,
+          charset: charset,
           source_map: source_map,
           source_map_include_sources: source_map_include_sources,
           style: style,
@@ -155,6 +160,9 @@ module Sass
     # @param syntax [String, Symbol] The Syntax to use to parse the entrypoint stylesheet.
     # @param url [String] The canonical URL of the entrypoint stylesheet. If this is passed along with +importer+, it's
     #   used to resolve relative loads in the entrypoint stylesheet.
+    # @param charset [Boolean] By default, if the CSS document contains non-ASCII characters, Sass adds a +@charset+
+    #   declaration (in expanded output mode) or a byte-order mark (in compressed mode) to indicate its encoding to
+    #   browsers or other consumers. If +charset+ is +false+, these annotations are omitted.
     # @param source_map [Boolean] Whether or not Sass should generate a source map.
     # @param source_map_include_sources [Boolean] Whether Sass should include the sources in the generated source map.
     # @param style [String, Symbol] The OutputStyle of the compiled CSS.
@@ -182,6 +190,7 @@ module Sass
                        syntax: :scss,
                        url: nil,
 
+                       charset: true,
                        source_map: false,
                        source_map_include_sources: false,
                        style: :expanded,
@@ -204,6 +213,7 @@ module Sass
           load_paths: load_paths,
           syntax: syntax,
           url: url,
+          charset: charset,
           source_map: source_map,
           source_map_include_sources: source_map_include_sources,
           style: style,

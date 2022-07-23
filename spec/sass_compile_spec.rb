@@ -211,6 +211,18 @@ RSpec.describe Sass do
           expect(source_map['sourcesContent']).not_to be_empty
         end
       end
+
+      describe 'charset' do
+        it 'emits @charset "UTF-8" or BOM for non-ASCII CSS by default' do
+          expect(described_class.compile_string('a {b: あ;}').css)
+            .to eq("@charset \"UTF-8\";\na {\n  b: あ;\n}")
+        end
+
+        it "doesn't emit @charset or BOM if charset is false" do
+          expect(described_class.compile_string('a {b: あ;}', charset: false).css)
+            .to eq("a {\n  b: あ;\n}")
+        end
+      end
     end
 
     describe 'error' do
