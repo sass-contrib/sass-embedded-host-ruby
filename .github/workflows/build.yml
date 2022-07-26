@@ -45,8 +45,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
-          # https://github.com/rubygems/rubygems/issues/5691
-          bundler: '2.3.16'
 
       - name: Compile
         run: bundle exec rake compile
@@ -78,8 +76,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
-          # https://github.com/rubygems/rubygems/issues/5691
-          bundler: '2.3.16'
 
       - name: Install
         run: rake -f -r bundler/gem_tasks install
