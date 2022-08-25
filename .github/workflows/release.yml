@@ -25,3 +25,49 @@ jobs:
         run: rake -f -r bundler/gem_tasks release
         env:
           GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+
+  release-pre-compiled:
+
+    if: github.event.repository.fork == false
+
+    needs: [release]
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: arm64-darwin
+          - os: macos-latest
+            platform: x86_64-darwin
+          - os: ubuntu-latest
+            platform: aarch64-linux-gnu
+          - os: ubuntu-latest
+            platform: x86-linux-gnu
+          - os: ubuntu-latest
+            platform: x86_64-linux-gnu
+          - os: windows-latest
+            platform: x86-mingw32
+          - os: windows-latest
+            platform: x64-mingw32
+          - os: windows-latest
+            platform: x64-mingw-ucrt
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby
+          bundler-cache: true
+
+      - name: Compile
+        run: bundle exec rake compile ext_platform=${{ matrix.platform }}
+
+      - name: Release
+        run: rake -f -r bundler/gem_tasks release gem_platform=${{ matrix.platform }}
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}

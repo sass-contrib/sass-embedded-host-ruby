@@ -17,14 +17,19 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     'funding_uri' => 'https://github.com/sponsors/ntkme'
   }
 
-  spec.extensions    = ['ext/sass/Rakefile']
-  spec.files         = Dir['lib/**/*.rb'] + [
-    'ext/sass/package.json',
-    'ext/sass/unzip.vbs',
-    'ext/sass/Rakefile',
-    'LICENSE',
-    'README.md'
-  ]
+  spec.files = Dir['lib/**/*.rb'] + ['LICENSE', 'README.md']
+
+  if ENV.key?('gem_platform')
+    spec.platform = ENV['gem_platform']
+    spec.files += Dir['ext/sass/*.rb'] + Dir['ext/sass/sass_embedded/**/*']
+  else
+    spec.extensions = ['ext/sass/Rakefile']
+    spec.files += [
+      'ext/sass/package.json',
+      'ext/sass/unzip.vbs',
+      'ext/sass/Rakefile'
+    ]
+  end
 
   spec.required_ruby_version = '>= 2.6.0'
 
