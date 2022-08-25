@@ -122,6 +122,8 @@ module Configuration
            'darwin'
          when /linux-musl/
            'linux-musl'
+         when /linux-uclibc/
+           'linux-uclibc'
          when /linux/
            'linux'
          when *Gem::WIN_PATTERNS
