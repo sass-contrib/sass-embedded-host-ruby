@@ -23,7 +23,7 @@ end
 
 file 'embedded.rb' => %w[sass_embedded] do |t|
   path = 'sass_embedded/dart-sass-embedded'
-  path = "#{path}#{['.exe', '.bat'].find { |ext| File.exist? "#{path}#{ext}" }}" if Gem.win_platform?
+  path = "#{path}#{['.exe', '.bat'].find { |ext| File.exist? "#{path}#{ext}" }}" unless File.exist? path
 
   raise "#{path} not found" unless File.exist? path
 
@@ -190,7 +190,7 @@ module Configuration
             raise NotImplementedError, message
           end
 
-    ext = Gem.win_platform? ? 'zip' : 'tar.gz'
+    ext = Platform::OS == 'windows' ? 'zip' : 'tar.gz'
 
     "#{repo}/releases/download/#{tag_name}/sass_embedded-#{tag_name}-#{os}-#{cpu}.#{ext}"
   end
