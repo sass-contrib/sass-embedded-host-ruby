@@ -62,6 +62,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby
+          rubygems: latest
           bundler-cache: true
 
       - name: Compile
