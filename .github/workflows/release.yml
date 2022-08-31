@@ -44,15 +44,17 @@ jobs:
           - os: ubuntu-latest
             platform: aarch64-linux-gnu
           - os: ubuntu-latest
+            platform: arm-linux-gnueabihf
+          - os: ubuntu-latest
             platform: x86-linux-gnu
           - os: ubuntu-latest
             platform: x86_64-linux-gnu
           - os: windows-latest
-            platform: x86-mingw32
+            platform: x64-mingw-ucrt
           - os: windows-latest
             platform: x64-mingw32
           - os: windows-latest
-            platform: x64-mingw-ucrt
+            platform: x86-mingw32
 
     steps:
       - name: Checkout

@@ -186,6 +186,8 @@ module Configuration
             'x64'
           when 'aarch64'
             'arm64'
+          when 'arm'
+            'arm'
           else
             raise NotImplementedError, message
           end
