@@ -51,6 +51,10 @@ end
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
+  def powershell(file, *args)
+    sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive', '-File', file, *args
+  end
+
   def unarchive(archive, dest = '.')
     case archive.downcase
     when ->(name) { name.include?('.tar.') || name.end_with?('.tar') }
@@ -85,8 +89,7 @@ module FileUtils
           zip_file&.close
         end
       elsif Gem.win_platform?
-        sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive',
-           '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
+        powershell 'expand-archive.ps1', '-Force', '-LiteralPath', archive, '-DestinationPath', dest, '-PassThru'
       else
         sh 'unzip', '-od', dest, archive
       end
