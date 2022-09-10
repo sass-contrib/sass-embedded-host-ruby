@@ -57,7 +57,34 @@ module FileUtils
       mkdir_p dest
       sh 'tar', '-vxC', dest, '-f', archive
     when ->(name) { name.end_with?('.zip') }
-      if Gem.win_platform?
+      if RUBY_PLATFORM == 'java'
+        require 'java'
+
+        Rake.rake_output_message "Archive:  #{archive}" if Rake::FileUtilsExt.verbose_flag
+
+        begin
+          zip_file = java.util.zip.ZipFile.new(File.absolute_path(archive))
+          dest_path = java.nio.file.Paths.get(File.absolute_path(dest)).normalize
+          entries = zip_file.entries
+          while entries.hasMoreElements
+            entry = entries.nextElement
+            name = entry.getName
+            path = dest_path.resolve(entry.getName).normalize
+            raise unless path.startsWith(dest_path)
+
+            Rake.rake_output_message "  inflating: #{name}" if Rake::FileUtilsExt.verbose_flag
+
+            if entry.isDirectory
+              java.nio.file.Files.createDirectories(path)
+            else
+              java.nio.file.Files.createDirectories(path.getParent)
+              java.nio.file.Files.copy(zip_file.getInputStream(entry), path)
+            end
+          end
+        ensure
+          zip_file&.close
+        end
+      elsif Gem.win_platform?
         sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive',
            '-File', 'unzip.ps1', '-Archive', archive, '-DestinationPath', dest
       else

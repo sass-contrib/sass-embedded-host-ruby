@@ -30,8 +30,6 @@ jobs:
         ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby', 'truffleruby', 'truffleruby+graalvm']
         exclude:
           - os: windows-latest
-            ruby-version: jruby
-          - os: windows-latest
             ruby-version: truffleruby
           - os: windows-latest
             ruby-version: truffleruby+graalvm
@@ -61,8 +59,6 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby', 'truffleruby', 'truffleruby+graalvm']
         exclude:
-          - os: windows-latest
-            ruby-version: jruby
           - os: windows-latest
             ruby-version: truffleruby
           - os: windows-latest
