@@ -63,7 +63,7 @@ module FileUtils
   # - `powershell -File <filePath> <args>`:
   #     This is the only way to pass arguments safely without escaping.
   def powershell(file, *args)
-    sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive', '-File', file, *args
+    sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', file, *args
   end
 
   def junzip(archive, dest = '.')
