@@ -51,6 +51,17 @@ end
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
+  # PowerShell quirks:
+  # - `powershell -Command -`:
+  #     Arguments must be part of command, thus cannot pass arguments safely without escaping.
+  # - `powershell -Command <script-block> [-args <arg-array>]`:
+  #     This only works when invoking powershell subshell in powershell.
+  # - `powershell -Command <string> [<CommandParameters>]`:
+  #     CommandParameters are joined with command and then parsed, thus cannot pass arguments safely without escaping.
+  # - `powershell -File -`:
+  #     Arguments must be part of file, thus cannot pass arguments safely without escaping.
+  # - `powershell -File <filePath> <args>`:
+  #     This is the only way to pass arguments safely without escaping.
   def powershell(file, *args)
     sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive', '-File', file, *args
   end
