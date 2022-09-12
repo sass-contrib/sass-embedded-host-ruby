@@ -338,42 +338,59 @@ RSpec.describe Sass do
   end
 
   describe 'from_import is' do
-    def expect_from_import(expected)
+    def expect_from_import(canonicalize, expected)
+      allow(canonicalize).to receive(:call) { |url, from_import:|
+        expect(from_import).to be(expected)
+        "u:#{url}"
+      }
       {
-        canonicalize: lambda { |url, from_import:|
-          expect(from_import).to be(expected)
-          "u:#{url}"
-        },
+        canonicalize: canonicalize,
         load: ->(*) { return { contents: '', syntax: 'scss' } }
       }
     end
 
     it 'true from an @import' do
+      canonicalize = double
+
       described_class.compile_string(
         '@import "foo"',
-        importers: [expect_from_import(true)]
+        importers: [expect_from_import(canonicalize, true)]
       )
+
+      expect(canonicalize).to have_received(:call)
     end
 
     it 'false from an @use' do
+      canonicalize = double
+
       described_class.compile_string(
         '@use "foo"',
-        importers: [expect_from_import(false)]
+        importers: [expect_from_import(canonicalize, false)]
       )
+
+      expect(canonicalize).to have_received(:call)
     end
 
     it 'false from an @forward' do
+      canonicalize = double
+
       described_class.compile_string(
         '@forward "foo"',
-        importers: [expect_from_import(false)]
+        importers: [expect_from_import(canonicalize, false)]
       )
+
+      expect(canonicalize).to have_received(:call)
     end
 
     it 'false from meta.load-css' do
+      canonicalize = double
+
       described_class.compile_string(
         '@use "sass:meta"; @include meta.load-css("")',
-        importers: [expect_from_import(false)]
+        importers: [expect_from_import(canonicalize, false)]
       )
+
+      expect(canonicalize).to have_received(:call)
     end
   end
 
