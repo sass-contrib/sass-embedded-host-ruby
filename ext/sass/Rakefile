@@ -71,34 +71,27 @@ module FileUtils
 
     Rake.rake_output_message "Archive:  #{archive}" if Rake::FileUtilsExt.verbose_flag
 
-    # In JRuby, `Dir.chdir` changes the virtual cwd of JRuby instance, but does not change the real cwd of JVM process.
-    # Therefore, a relative path shall be resolved to an absolute path in JRuby before being passed to a Java method.
-    # - https://github.com/jruby/jruby/issues/971
-    archive = File.absolute_path(archive)
-    dest = File.absolute_path(dest)
+    current_directory = java.nio.file.Paths.get(org.jruby.Ruby.getGlobalRuntime.getCurrentDirectory)
+    zip_file = java.util.zip.ZipFile.new(current_directory.resolve(archive).toFile)
+    dest_path = current_directory.resolve(dest).normalize
+    entries = zip_file.entries
+    while entries.hasMoreElements
+      entry = entries.nextElement
+      name = entry.getName
+      path = dest_path.resolve(entry.getName).normalize
+      raise unless path.startsWith(dest_path)
 
-    begin
-      zip_file = java.util.zip.ZipFile.new(archive)
-      dest_path = java.nio.file.Paths.get(dest).normalize
-      entries = zip_file.entries
-      while entries.hasMoreElements
-        entry = entries.nextElement
-        name = entry.getName
-        path = dest_path.resolve(entry.getName).normalize
-        raise unless path.startsWith(dest_path)
+      Rake.rake_output_message "  inflating: #{name}" if Rake::FileUtilsExt.verbose_flag
 
-        Rake.rake_output_message "  inflating: #{name}" if Rake::FileUtilsExt.verbose_flag
-
-        if entry.isDirectory
-          java.nio.file.Files.createDirectories(path)
-        else
-          java.nio.file.Files.createDirectories(path.getParent)
-          java.nio.file.Files.copy(zip_file.getInputStream(entry), path)
-        end
+      if entry.isDirectory
+        java.nio.file.Files.createDirectories(path)
+      else
+        java.nio.file.Files.createDirectories(path.getParent)
+        java.nio.file.Files.copy(zip_file.getInputStream(entry), path)
       end
-    ensure
-      zip_file&.close
     end
+  ensure
+    zip_file&.close
   end
 
   def unarchive(archive, dest = '.')
