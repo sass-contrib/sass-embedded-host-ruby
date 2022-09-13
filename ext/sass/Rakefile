@@ -78,7 +78,7 @@ module FileUtils
     while entries.hasMoreElements
       entry = entries.nextElement
       name = entry.getName
-      path = dest_path.resolve(entry.getName).normalize
+      path = dest_path.resolve(name).normalize
       raise unless path.startsWith(dest_path)
 
       Rake.rake_output_message "  inflating: #{name}" if Rake::FileUtilsExt.verbose_flag
