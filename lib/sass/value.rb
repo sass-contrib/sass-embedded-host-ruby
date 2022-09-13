@@ -57,52 +57,52 @@ module Sass
     # @return [Boolean]
     # @raise [ScriptError]
     def assert_boolean(name = nil)
-      raise error("#{self} is not a boolean", name)
+      raise Sass::ScriptError.new("#{self} is not a boolean", name)
     end
 
     # @raise [ScriptError]
     def assert_calculation(name = nil)
-      raise error("#{self} is not a calculation", name)
+      raise Sass::ScriptError.new("#{self} is not a calculation", name)
     end
 
     # @return [Color]
     # @raise [ScriptError]
     def assert_color(name = nil)
-      raise error("#{self} is not a color", name)
+      raise Sass::ScriptError.new("#{self} is not a color", name)
     end
 
     # @return [Function]
     # @raise [ScriptError]
     def assert_function(name = nil)
-      raise error("#{self} is not a function", name)
+      raise Sass::ScriptError.new("#{self} is not a function", name)
     end
 
     # @return [Map]
     # @raise [ScriptError]
     def assert_map(name = nil)
-      raise error("#{self} is not a map", name)
+      raise Sass::ScriptError.new("#{self} is not a map", name)
     end
 
     # @return [Number]
     # @raise [ScriptError]
     def assert_number(name = nil)
-      raise error("#{self} is not a number", name)
+      raise Sass::ScriptError.new("#{self} is not a number", name)
     end
 
     # @return [String]
     # @raise [ScriptError]
     def assert_string(name = nil)
-      raise error("#{self} is not a string", name)
+      raise Sass::ScriptError.new("#{self} is not a string", name)
     end
 
     # @param sass_index [Number]
     # @return [Integer]
     def sass_index_to_array_index(sass_index, name = nil)
       index = sass_index.assert_number(name).assert_integer(name)
-      raise error('List index may not be 0', name) if index.zero?
+      raise Sass::ScriptError.new('List index may not be 0', name) if index.zero?
 
       if index.abs > to_a_length
-        raise error("Invalid index #{sass_index} for a list with #{to_a_length} elements", name)
+        raise Sass::ScriptError.new("Invalid index #{sass_index} for a list with #{to_a_length} elements", name)
       end
 
       index.negative? ? to_a_length + index : index - 1
@@ -112,10 +112,6 @@ module Sass
 
     def to_a_length
       1
-    end
-
-    def error(message, name = nil)
-      Sass::ScriptError.new name.nil? ? message : "$#{name}: #{message}"
     end
   end
 end

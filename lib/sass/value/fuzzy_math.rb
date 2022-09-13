@@ -63,8 +63,7 @@ module Sass
         result = between(number, min, max)
         return result unless result.nil?
 
-        message = "#{number} must be between #{min} and #{max}."
-        raise Sass::ScriptError, name.nil? ? message : "$#{name}: #{message}"
+        raise Sass::ScriptError.new("#{number} must be between #{min} and #{max}.", name)
       end
 
       def hash(number)

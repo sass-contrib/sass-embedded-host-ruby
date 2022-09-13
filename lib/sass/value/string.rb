@@ -42,10 +42,10 @@ module Sass
       # @return [Integer]
       def sass_index_to_string_index(sass_index, name = nil)
         index = sass_index.assert_number(name).assert_integer(name)
-        raise error('String index may not be 0', name) if index.zero?
+        raise Sass::ScriptError.new('String index may not be 0', name) if index.zero?
 
         if index.abs > text.length
-          raise error("Invalid index #{sass_index} for a string with #{text.length} characters", name)
+          raise Sass::ScriptError.new("Invalid index #{sass_index} for a string with #{text.length} characters", name)
         end
 
         index.negative? ? text.length + index : index - 1

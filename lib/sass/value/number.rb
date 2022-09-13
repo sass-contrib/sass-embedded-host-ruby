@@ -24,12 +24,16 @@ module Sass
           denominator_units = []
         when ::Hash
           numerator_units = unit.fetch(:numerator_units, [])
-          raise error "invalid numerator_units #{numerator_units.inspect}" unless numerator_units.is_a? Array
+          unless numerator_units.is_a? Array
+            raise Sass::ScriptError, "invalid numerator_units #{numerator_units.inspect}"
+          end
 
           denominator_units = unit.fetch(:denominator_units, [])
-          raise error "invalid denominator_units #{denominator_units.inspect}" unless denominator_units.is_a? Array
+          unless denominator_units.is_a? Array
+            raise Sass::ScriptError, "invalid denominator_units #{denominator_units.inspect}"
+          end
         else
-          raise error "invalid unit #{unit.inspect}"
+          raise Sass::ScriptError, "invalid unit #{unit.inspect}"
         end
 
         unless denominator_units.empty? && numerator_units.empty?
@@ -105,7 +109,7 @@ module Sass
       # @return [Number]
       # @raise [ScriptError]
       def assert_unitless(name = nil)
-        raise error "Expected #{self} to have no units", name unless unitless?
+        raise Sass::ScriptError.new("Expected #{self} to have no units", name) unless unitless?
 
         self
       end
@@ -125,7 +129,7 @@ module Sass
       # @return [Number]
       # @raise [ScriptError]
       def assert_unit(unit, name = nil)
-        raise error "Expected #{self} to have unit #{unit.inspect}", name unless unit?(unit)
+        raise Sass::ScriptError.new("Expected #{self} to have unit #{unit.inspect}", name) unless unit?(unit)
 
         self
       end
@@ -138,7 +142,7 @@ module Sass
       # @return [Integer]
       # @raise [ScriptError]
       def assert_integer(name = nil)
-        raise error "#{self} is not an integer", name unless integer?
+        raise Sass::ScriptError.new("#{self} is not an integer", name) unless integer?
 
         to_i
       end
@@ -271,7 +275,8 @@ module Sass
                                   other: nil,
                                   other_name: nil)
         if other && (other.numerator_units != new_denominator_units && other.denominator_units != new_denominator_units)
-          raise error "Expect #{other} to have units #{unit_string(new_numerator_units, new_denominator_units).inspect}"
+          raise Sass::ScriptError, "Expect #{other} to have units #{unit_string(new_numerator_units,
+                                                                                new_denominator_units).inspect}"
         end
 
         return value if numerator_units == new_numerator_units && denominator_units == new_denominator_units
@@ -288,19 +293,21 @@ module Sass
             message << " $#{other_name}:" unless other_name.nil?
             message << " #{other} have incompatible units"
             message << " (one has units and the other doesn't)" if unitless? || other_unitless
-            return error message, name
+            return Sass::ScriptError.new(message, name)
           end
 
-          return error "Expected #{self} to have no units", name unless other_unitless
+          return Sass::ScriptError.new("Expected #{self} to have no units", name) unless other_unitless
 
           if new_numerator_units.length == 1 && new_denominator_units.empty?
             type = Unit::TYPES_BY_UNIT[new_numerator_units.first]
-            return error "Expected #{self} to have a #{type} unit (#{Unit::UNITS_BY_TYPE[type].join(', ')})", name
+            return Sass::ScriptError.new(
+              "Expected #{self} to have a #{type} unit (#{Unit::UNITS_BY_TYPE[type].join(', ')})", name
+            )
           end
 
           unit_length = new_numerator_units.length + new_denominator_units.length
           units = unit_string(new_numerator_units, new_denominator_units)
-          error "Expected #{self} to have unit#{unit_length > 1 ? 's' : ''} #{units}", name
+          Sass::ScriptError.new("Expected #{self} to have unit#{unit_length > 1 ? 's' : ''} #{units}", name)
         }
 
         result = value

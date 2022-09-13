@@ -13,7 +13,7 @@ module Sass
       # @param bracketed [::Boolean]
       def initialize(contents = [], separator: ',', bracketed: false)
         if separator.nil? && contents.length > 1
-          raise error 'A list with more than one element must have an explicit separator'
+          raise Sass::ScriptError, 'A list with more than one element must have an explicit separator'
         end
 
         @contents = contents.freeze
