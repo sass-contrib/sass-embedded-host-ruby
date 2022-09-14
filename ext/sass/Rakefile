@@ -2,9 +2,7 @@
 
 require 'rake/clean'
 
-task default: %i[install clean]
-
-task install: %w[sass_embedded embedded.rb embedded_sass_pb.rb]
+task default: %w[embedded.rb]
 
 CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 

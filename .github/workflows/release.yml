@@ -20,6 +20,11 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby
+          rubygems: latest
+          bundler-cache: true
+
+      - name: Compile
+        run: bundle exec rake compile
 
       - name: Release
         run: rake -f -r bundler/gem_tasks release

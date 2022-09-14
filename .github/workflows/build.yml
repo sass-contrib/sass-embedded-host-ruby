@@ -72,6 +72,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Compile
+        run: bundle exec rake compile
 
       - name: Install
         run: rake -f -r bundler/gem_tasks install
