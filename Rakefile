@@ -8,7 +8,7 @@ task default: %i[rubocop compile spec]
 
 desc 'Compile all the extensions'
 task :compile do
-  sh 'rake', '-C', 'ext/sass', 'clobber', 'install'
+  sh 'rake', '-C', 'ext/sass', 'clobber', 'embedded.rb', 'embedded_sass_pb.rb'
 
   if ENV.key?('ext_platform')
     host_cpu, host_os = ENV['ext_platform'].split('-', 2)

@@ -26,6 +26,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   else
     spec.extensions = ['ext/sass/Rakefile']
     spec.files += [
+      'ext/sass/embedded_sass_pb.rb',
       'ext/sass/expand-archive.ps1',
       'ext/sass/package.json',
       'ext/sass/Rakefile'
