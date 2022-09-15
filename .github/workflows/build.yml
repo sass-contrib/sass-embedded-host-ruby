@@ -99,10 +99,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby
-          bundler-cache: true
-
-      - name: Compile
-        run: bundle exec rake compile
 
       - name: Release
         run: |

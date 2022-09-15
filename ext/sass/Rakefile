@@ -2,7 +2,11 @@
 
 require 'rake/clean'
 
-task default: %w[embedded.rb]
+task default: %i[install clean]
+
+task install: %w[embedded.rb] do
+  Rake::Task['embedded_sass_pb.rb'].invoke unless File.exist?('embedded_sass_pb.rb')
+end
 
 CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 
