@@ -11,6 +11,24 @@ RSpec.describe Sass do
     expect(stdio.err).not_to be_empty
   end
 
+  describe 'deprecation warning' do
+    # Regression test for sass/dart-sass#1790
+    it 'passes the message and span to the logger' do
+      described_class.compile_string(
+        '* > { --foo: bar }',
+        logger: {
+          warn: lambda { |message, span:, **|
+            expect(message).to include('only valid for nesting')
+            expect(span.start.line).to be(0)
+            expect(span.start.column).to be(0)
+            expect(span.end.line).to be(0)
+            expect(span.end.column).to be(4)
+          }
+        }
+      )
+    end
+  end
+
   describe 'with @warn' do
     it 'passes the message and stack trace to the logger' do
       described_class.compile_string(

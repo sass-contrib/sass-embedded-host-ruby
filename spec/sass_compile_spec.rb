@@ -283,6 +283,18 @@ RSpec.describe Sass do
               end
           end
         end
+
+        it 'with multi-span errors' do
+          sandbox do |dir|
+            url = dir.url('foo.scss')
+            expect { described_class.compile_string('@use "sass:math"; @use "sass:math"', url: url) }
+              .to raise_error do |error|
+                expect(error).to be_a(Sass::CompileError)
+                expect(error.span.start.line).to eq(0)
+                expect(error.span.url).to eq(url)
+              end
+          end
+        end
       end
 
       it 'throws an error for an unrecognized style' do
