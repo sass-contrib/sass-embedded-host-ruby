@@ -3,7 +3,7 @@
 [![build](https://github.com/ntkme/sass-embedded-host-ruby/actions/workflows/build.yml/badge.svg)](https://github.com/ntkme/sass-embedded-host-ruby/actions/workflows/build.yml)
 [![gem](https://badge.fury.io/rb/sass-embedded.svg)](https://rubygems.org/gems/sass-embedded)
 
-This is a Ruby library that implements the host side of the [Embedded Sass protocol](https://github.com/sass/sass-embedded-protocol).
+This is a Ruby library that implements the host side of the [Embedded Sass protocol](https://github.com/sass/embedded-protocol).
 
 It exposes a Ruby API for Sass that's backed by a native [Dart Sass](https://sass-lang.com/dart-sass) executable.
 
