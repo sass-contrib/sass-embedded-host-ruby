@@ -132,7 +132,7 @@ module Sass
         yield
         @async.await
       ensure
-        @connection.disconnect
+        @connection&.disconnect
       end
     end
 
