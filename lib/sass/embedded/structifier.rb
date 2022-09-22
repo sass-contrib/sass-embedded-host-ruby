@@ -8,13 +8,16 @@ module Sass
     module Structifier
       module_function
 
-      def to_struct(obj)
+      def to_struct(obj, *symbols)
         return obj unless obj.is_a? Hash
 
         struct = Object.new
-        obj.each do |key, value|
+        symbols.each do |key|
+          next unless obj.key?(key)
+
+          value = obj[key]
           if value.respond_to? :call
-            struct.define_singleton_method key.to_sym do |*args, **kwargs|
+            struct.define_singleton_method key do |*args, **kwargs|
               if kwargs.empty?
                 value.call(*args)
               else
@@ -22,7 +25,7 @@ module Sass
               end
             end
           else
-            struct.define_singleton_method key.to_sym do
+            struct.define_singleton_method key do
               value
             end
           end
