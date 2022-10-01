@@ -16,7 +16,7 @@ module Sass
 
         Thread.new do
           loop do
-            receive_message EmbeddedProtocol::OutboundMessage.decode @compiler.read
+            receive_message(EmbeddedProtocol::OutboundMessage.decode(@compiler.read))
           rescue IOError, Errno::EBADF => e
             @mutex.synchronize do
               @id = PROTOCOL_ERROR_ID
@@ -56,8 +56,8 @@ module Sass
         @compiler.closed?
       end
 
-      def send_message(inbound_message)
-        @compiler.write(inbound_message.to_proto)
+      def send_message(**kwargs)
+        @compiler.write(EmbeddedProtocol::InboundMessage.new(**kwargs).to_proto)
       end
 
       private
