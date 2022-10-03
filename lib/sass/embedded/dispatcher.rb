@@ -16,7 +16,7 @@ module Sass
 
         Thread.new do
           loop do
-            receive_message(EmbeddedProtocol::OutboundMessage.decode(@compiler.read))
+            receive_message
           rescue IOError, Errno::EBADF => e
             @mutex.synchronize do
               @id = PROTOCOL_ERROR_ID
@@ -62,7 +62,8 @@ module Sass
 
       private
 
-      def receive_message(outbound_message)
+      def receive_message
+        outbound_message = EmbeddedProtocol::OutboundMessage.decode(@compiler.read)
         oneof = outbound_message.message
         message = outbound_message.public_send(oneof)
         case oneof
