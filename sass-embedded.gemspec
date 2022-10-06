@@ -22,7 +22,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   if ENV.key?('gem_platform')
     spec.files += Dir['ext/sass/*.rb'] + Dir['ext/sass/sass_embedded/**/*']
     spec.platform = ENV['gem_platform']
-    spec.required_rubygems_version = '>= 3.3.21' if ENV['gem_platform'].include?('-linux-')
+    spec.required_rubygems_version = '>= 3.3.22' if ENV['gem_platform'].include?('-linux-')
   else
     spec.extensions = ['ext/sass/Rakefile']
     spec.files += Dir['ext/sass/*_pb.rb'] + [
