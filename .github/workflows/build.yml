@@ -25,6 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby', 'truffleruby', 'truffleruby+graalvm']
@@ -55,6 +56,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         ruby-version: ['2.6', '2.7', '3.0', 'ruby', 'jruby', 'truffleruby', 'truffleruby+graalvm']
