@@ -652,4 +652,49 @@ RSpec.describe Sass do
       end
     end
   end
+
+  describe 'when importer does not return string contents' do
+    it 'throws an error in sync mode' do
+      expect do
+        described_class.compile_string(
+          '@import "other";',
+          importers: [{
+            canonicalize: ->(url, **) { "u:#{url}" },
+            load: lambda { |*|
+              return {
+                contents: StringIO.new('not a string'),
+                syntax: 'scss'
+              }
+            }
+          }]
+        )
+      end.to raise_error do |error|
+        expect(error).to be_a(Sass::CompileError)
+        expect(error.span.start.line).to eq(0)
+        expect(error.message).to include("Invalid argument for string field 'contents' (given StringIO)")
+      end
+    end
+  end
+
+  it 'throws an ArgumentError when the result source_map_url is missing a scheme' do
+    expect do
+      described_class.compile_string(
+        '@import "other";',
+        importers: [{
+          canonicalize: ->(url, **) { "u:#{url}" },
+          load: lambda { |*|
+            return {
+              contents: '',
+              syntax: 'scss',
+              source_map_url: {}
+            }
+          }
+        }]
+      )
+    end.to raise_error do |error|
+      expect(error).to be_a(Sass::CompileError)
+      expect(error.span.start.line).to eq(0)
+      expect(error.message).to include('ImportResponse.success.source_map_url must be absolute')
+    end
+  end
 end
