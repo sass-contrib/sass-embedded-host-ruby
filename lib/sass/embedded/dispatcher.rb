@@ -70,7 +70,13 @@ module Sass
         when :error
           @mutex.synchronize do
             @id = PROTOCOL_ERROR_ID
-            message.id == PROTOCOL_ERROR_ID ? @observers.values : [@observers[message.id]]
+            if message.type == :PARAMS
+              []
+            elsif message.id == PROTOCOL_ERROR_ID
+              @observers.values
+            else
+              [@observers[message.id]]
+            end
           end.each do |observer|
             observer.public_send(oneof, message)
           end
