@@ -15,14 +15,6 @@ module Sass
         @channel = channel
       end
 
-      def id
-        @connection.id
-      end
-
-      def send_message(**kwargs)
-        @connection.send_message(**kwargs)
-      end
-
       def compile_request(path:,
                           source:,
                           importer:,
@@ -85,11 +77,11 @@ module Sass
       end
 
       def compile_response(message)
-        @async.resolve(message)
+        resolve(message)
       end
 
       def version_response(message)
-        @async.resolve(message)
+        resolve(message)
       end
 
       def canonicalize_request(message)
@@ -109,7 +101,7 @@ module Sass
       end
 
       def error(message)
-        @async.reject(CompileError.new(message.message, nil, nil, nil))
+        reject(CompileError.new(message.message, nil, nil, nil))
       end
 
       private
@@ -121,6 +113,22 @@ module Sass
         @async.await
       ensure
         @connection&.disconnect
+      end
+
+      def resolve(value)
+        @async.resolve(value)
+      end
+
+      def reject(reason)
+        @async.reject(reason)
+      end
+
+      def id
+        @connection.id
+      end
+
+      def send_message(**kwargs)
+        @connection.send_message(**kwargs)
       end
     end
 
