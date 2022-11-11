@@ -21,12 +21,6 @@ module Sass
 
         @condition_variable = ConditionVariable.new
         @mutex = Mutex.new
-
-        begin
-          yield if block_given?
-        rescue StandardError => e
-          reject e
-        end
       end
 
       def resolve(value)
