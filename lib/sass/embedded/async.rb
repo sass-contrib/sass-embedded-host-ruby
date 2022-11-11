@@ -26,8 +26,8 @@ module Sass
         @mutex.synchronize do
           return unless @state == State::PENDING
 
-          @state = State::FULFILLED
           @result = value
+          @state = State::FULFILLED
           @condition_variable.broadcast
         end
       end
@@ -36,8 +36,8 @@ module Sass
         @mutex.synchronize do
           return unless @state == State::PENDING
 
-          @state = State::REJECTED
           @result = reason
+          @state = State::REJECTED
           @condition_variable.broadcast
         end
       end
