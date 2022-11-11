@@ -15,7 +15,6 @@ module Sass
       private_constant :State
 
       def initialize
-        @error = nil
         @result = nil
         @state = State::PENDING
 
@@ -38,7 +37,7 @@ module Sass
           return unless @state == State::PENDING
 
           @state = State::REJECTED
-          @error = reason
+          @result = reason
           @condition_variable.broadcast
         end
       end
@@ -47,7 +46,7 @@ module Sass
         @mutex.synchronize do
           @condition_variable.wait(@mutex) if @state == State::PENDING
 
-          raise @error if @state == State::REJECTED
+          raise @result if @state == State::REJECTED
 
           @result
         end
