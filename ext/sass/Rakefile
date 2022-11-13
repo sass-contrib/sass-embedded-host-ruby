@@ -105,7 +105,7 @@ module FileUtils
       if RUBY_PLATFORM == 'java'
         junzip archive, dest
       elsif Gem.win_platform?
-        powershell 'expand-archive.ps1', '-Force', '-LiteralPath', archive, '-DestinationPath', dest, '-PassThru'
+        powershell 'expand-archive.ps1', '-Force', '-LiteralPath', archive, '-DestinationPath', dest
       else
         sh 'unzip', '-od', dest, archive
       end
