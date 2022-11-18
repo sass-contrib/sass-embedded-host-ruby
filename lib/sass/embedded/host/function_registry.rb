@@ -14,12 +14,11 @@ module Sass
 
           @global_functions = functions.keys
           @functions_by_name = functions.transform_keys do |signature|
-            signature = signature.chomp
             index = signature.index('(')
             if index
-              signature.slice(0, index)
+              signature.slice(0, index).chomp
             else
-              signature
+              signature.chomp
             end
           end
 
