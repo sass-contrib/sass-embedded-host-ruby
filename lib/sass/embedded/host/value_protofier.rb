@@ -180,7 +180,7 @@ module Sass
           when :compiler_function
             Sass::Value::Function.new(obj.id)
           when :host_function
-            raise ProtocolError, 'The compiler may not send Value.host_function to host'
+            raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :singleton
             case obj
             when :TRUE
