@@ -694,7 +694,7 @@ RSpec.describe Sass do
     end.to raise_error do |error|
       expect(error).to be_a(Sass::CompileError)
       expect(error.span.start.line).to eq(0)
-      expect(error.message).to include('ImportResponse.success.source_map_url must be absolute')
+      expect(error.message).to include('The importer must return an absolute URL')
     end
   end
 end
