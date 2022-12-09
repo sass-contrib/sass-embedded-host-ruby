@@ -100,7 +100,7 @@ module FileUtils
     case archive.downcase
     when ->(name) { name.include?('.tar.') || name.end_with?('.tar') }
       mkdir_p dest
-      sh 'tar', '-vxC', dest, '-f', archive
+      sh 'tar', '-vxC', dest, '-f', archive, '--no-same-permissions'
     when ->(name) { name.end_with?('.zip') }
       if RUBY_PLATFORM == 'java'
         junzip archive, dest
