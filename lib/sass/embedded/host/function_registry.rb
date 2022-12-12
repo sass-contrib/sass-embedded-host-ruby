@@ -18,7 +18,7 @@ module Sass
             if index
               signature.slice(0, index).chomp
             else
-              signature.chomp
+              signature
             end
           end
 
