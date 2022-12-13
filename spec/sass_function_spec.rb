@@ -198,5 +198,23 @@ RSpec.describe Sass do
         described_class.compile_string('', functions: { '$foo()': -> { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
+
+    it 'has whitespace before the signature' do
+      expect do
+        described_class.compile_string('', functions: { ' foo()': -> { Sass::Value::Null::NULL } })
+      end.to raise_error(Sass::CompileError)
+    end
+
+    it 'has whitespace after the signature' do
+      expect do
+        described_class.compile_string('', functions: { 'foo() ': -> { Sass::Value::Null::NULL } })
+      end.to raise_error(Sass::CompileError)
+    end
+
+    it 'has whitespace between the identifier and the arguments' do
+      expect do
+        described_class.compile_string('', functions: { 'foo ()': -> { Sass::Value::Null::NULL } })
+      end.to raise_error(Sass::CompileError)
+    end
   end
 end
