@@ -16,7 +16,7 @@ module Sass
           @functions_by_name = functions.transform_keys do |signature|
             index = signature.index('(')
             if index
-              signature.slice(0, index).rstrip
+              signature.slice(0, index)
             else
               signature
             end
