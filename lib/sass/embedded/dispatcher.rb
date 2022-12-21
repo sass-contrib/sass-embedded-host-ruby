@@ -44,7 +44,13 @@ module Sass
         @mutex.synchronize do
           @observers.delete(id)
 
-          close if @id == PROTOCOL_ERROR_ID && @observers.empty?
+          return unless @observers.empty?
+
+          if @id == PROTOCOL_ERROR_ID
+            close
+          else
+            @id = 0
+          end
         end
       end
 
