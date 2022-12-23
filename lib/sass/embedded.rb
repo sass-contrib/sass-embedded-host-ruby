@@ -28,6 +28,11 @@ require_relative 'value'
 # @example
 #   Sass.compile_string('h1 { font-size: 40px; }')
 module Sass
+  instance_eval do
+    @instance = nil
+    @mutex = Mutex.new
+  end
+
   class << self
     # Compiles the Sass file at +path+ to CSS.
     # @param (see Embedded#compile)
@@ -58,14 +63,17 @@ module Sass
     private
 
     def instance
-      if defined? @instance
-        @instance = Embedded.new if @instance.closed?
-      else
+      return @instance if @instance
+
+      @mutex.synchronize do
+        return @instance if @instance
+
         @instance = Embedded.new
         at_exit do
           @instance.close
         end
       end
+
       @instance
     end
   end
