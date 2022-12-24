@@ -28,10 +28,8 @@ require_relative 'value'
 # @example
 #   Sass.compile_string('h1 { font-size: 40px; }')
 module Sass
-  instance_eval do
-    @instance = nil
-    @mutex = Mutex.new
-  end
+  @instance = nil
+  @mutex = Mutex.new
 
   class << self
     # Compiles the Sass file at +path+ to CSS.
