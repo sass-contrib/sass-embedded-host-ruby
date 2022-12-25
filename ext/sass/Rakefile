@@ -232,7 +232,8 @@ module Configuration
           when 'x86_64'
             'x64'
           when 'aarch64'
-            'arm64'
+            # No arm64 binaries available for Windows but we can try emulation
+            Platform::OS == 'windows' ? 'x64' : 'arm64'
           when 'arm'
             'arm'
           else
@@ -268,7 +269,8 @@ module Configuration
           when 'x86_64'
             'x86_64'
           when 'aarch64'
-            'aarch_64'
+            # No arm64 binaries available for Windows but we can try emulation
+            Platform::OS == 'windows' ? 'x86_64' : 'aarch_64'
           when 'powerpc64le'
             'ppcle_64'
           when 's390x'
