@@ -63,7 +63,8 @@ module Sass
       end
 
       def send_message(**kwargs)
-        @compiler.write(EmbeddedProtocol::InboundMessage.new(**kwargs).to_proto)
+        inbound_message = EmbeddedProtocol::InboundMessage.new(**kwargs)
+        @compiler.write(inbound_message.to_proto)
       end
 
       private
