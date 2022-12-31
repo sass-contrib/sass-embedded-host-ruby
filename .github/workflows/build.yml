@@ -42,8 +42,6 @@ jobs:
           - truffleruby+graalvm
         exclude:
           - os: windows-latest
-            ruby-version: '3.2'
-          - os: windows-latest
             ruby-version: truffleruby
           - os: windows-latest
             ruby-version: truffleruby+graalvm
@@ -85,8 +83,6 @@ jobs:
           - truffleruby
           - truffleruby+graalvm
         exclude:
-          - os: windows-latest
-            ruby-version: '3.2'
           - os: windows-latest
             ruby-version: truffleruby
           - os: windows-latest
