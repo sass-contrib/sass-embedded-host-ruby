@@ -6,10 +6,7 @@ RSpec.describe Sass do
   def remote_eq(lhs, rhs)
     to_host_value = lambda { |value|
       if value.is_a? Sass::Value::ArgumentList
-        value.dup.instance_eval do
-          @id = 0
-          self
-        end
+        value.dup
       else
         value
       end

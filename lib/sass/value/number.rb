@@ -253,7 +253,7 @@ module Sass
         self
       end
 
-      protected
+      private
 
       def single_unit?
         numerator_units.length == 1 && denominator_units.empty?

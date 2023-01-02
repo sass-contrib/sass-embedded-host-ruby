@@ -25,6 +25,13 @@ module Sass
         @keywords_accessed = true
         @keywords
       end
+
+      private
+
+      def initialize_copy(orig)
+        super
+        @id = 0
+      end
     end
   end
 end
