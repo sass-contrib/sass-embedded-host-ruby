@@ -22,7 +22,7 @@ module Sass
       def write(writeable, value)
         bytes = []
         until value < 0x80
-          bytes << (0x80 | (value & 0x7f))
+          bytes << ((value & 0x7f) | 0x80)
           value >>= 7
         end
         bytes << value

@@ -88,12 +88,12 @@ module Sass
             'deg' => Rational(Math::PI, 180),
             'grad' => Rational(Math::PI, 200),
             'rad' => Rational(1),
-            'turn' => Rational(2 * Math::PI)
+            'turn' => Rational(Math::PI * 2)
           },
           'turn' => {
             'deg' => Rational(1, 360),
             'grad' => Rational(1, 400),
-            'rad' => Rational(1, 2 * Math::PI),
+            'rad' => Rational(1, Math::PI * 2),
             'turn' => Rational(1)
           },
 

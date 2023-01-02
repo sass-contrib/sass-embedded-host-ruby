@@ -178,21 +178,21 @@ module Sass
         if max == min
           @hue = 0
         elsif max == scaled_red
-          @hue = (60 * (scaled_green - scaled_blue) / delta) % 360
+          @hue = ((scaled_green - scaled_blue) * 60 / delta) % 360
         elsif max == scaled_green
-          @hue = (120 + (60 * (scaled_blue - scaled_red) / delta)) % 360
+          @hue = (((scaled_blue - scaled_red) * 60 / delta) + 120) % 360
         elsif max == scaled_blue
-          @hue = (240 + (60 * (scaled_red - scaled_green) / delta)) % 360
+          @hue = (((scaled_red - scaled_green) * 60 / delta) + 240) % 360
         end
 
-        lightness = @lightness = 50 * (max + min)
+        lightness = @lightness = (max + min) * 50
 
         @saturation = if max == min
                         0
                       elsif lightness < 50
-                        100 * delta / (max + min)
+                        delta * 100 / (max + min)
                       else
-                        100 * delta / (2 - max - min)
+                        delta * 100 / (2 - max - min)
                       end
       end
 
