@@ -24,7 +24,7 @@ file 'sass_embedded' do |t|
 end
 
 file 'embedded.rb' => %w[sass_embedded] do |t|
-  path = 'sass_embedded/dart-sass-embedded'
+  path = ENV.fetch('SASSC_BIN') { 'sass_embedded/dart-sass-embedded' }
   path = "#{path}#{['.exe', '.bat'].find { |ext| File.exist? "#{path}#{ext}" }}" unless File.exist? path
 
   raise "#{path} not found" unless File.exist? path
