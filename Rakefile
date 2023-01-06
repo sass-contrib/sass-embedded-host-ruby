@@ -4,7 +4,7 @@ require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 
-task default: %i[rubocop compile spec]
+task default: %i[compile rubocop spec]
 
 desc 'Compile all the extensions'
 task :compile do

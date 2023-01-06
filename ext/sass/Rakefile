@@ -24,10 +24,25 @@ file 'sass_embedded' do |t|
 end
 
 file 'embedded.rb' => %w[sass_embedded] do |t|
-  path = 'sass_embedded/dart-sass-embedded'
-  path = "#{path}#{['.exe', '.bat'].find { |ext| File.exist? "#{path}#{ext}" }}" unless File.exist? path
+  exe = 'sass_embedded/dart-sass-embedded'
+  exe = "#{exe}#{['.exe', '.bat'].find { |ext| File.exist?("#{exe}#{ext}") }}" unless File.exist?(exe)
 
-  raise "#{path} not found" unless File.exist? path
+  raise "#{exe} not found" unless File.exist?(exe)
+
+  runtime = 'sass_embedded/src/dart'
+  runtime = "#{runtime}#{['.exe', '.bat'].find { |ext| File.exist?("#{runtime}#{ext}") }}" unless File.exist?(runtime)
+  snapshot = 'sass_embedded/src/dart-sass-embedded.snapshot'
+
+  command = if File.exist?(runtime) && File.exist?(snapshot)
+              "
+        File.absolute_path('#{runtime}', __dir__).freeze,
+        File.absolute_path('#{snapshot}', __dir__).freeze
+      "
+            else
+              "
+        File.absolute_path('#{exe}', __dir__).freeze
+      "
+            end
 
   File.write(t.name, <<~EMBEDDED_RB)
     # frozen_string_literal: true
@@ -35,7 +50,7 @@ file 'embedded.rb' => %w[sass_embedded] do |t|
     module Sass
       class Embedded
         class Compiler
-          PATH = File.absolute_path('#{path}', __dir__)
+          COMMAND = [#{command}].freeze
         end
       end
     end
@@ -285,7 +300,7 @@ module Configuration
     require 'open3'
     require_relative 'embedded'
 
-    stdout, stderr, status = Open3.capture3(Sass::Embedded::Compiler::PATH, '--version')
+    stdout, stderr, status = Open3.capture3(*Sass::Embedded::Compiler::COMMAND, '--version')
 
     raise stderr unless status.success?
 
