@@ -25,12 +25,12 @@ end
 
 file 'embedded.rb' => %w[sass_embedded] do |t|
   exe = 'sass_embedded/dart-sass-embedded'
-  exe = "#{exe}#{['.exe', '.bat'].find { |ext| File.exist?("#{exe}#{ext}") }}" unless File.exist?(exe)
+  exe = "#{exe}#{['', '.bat', '.exe'].find { |ext| File.exist?("#{exe}#{ext}") }}"
 
   raise "#{exe} not found" unless File.exist?(exe)
 
   runtime = 'sass_embedded/src/dart'
-  runtime = "#{runtime}#{['.exe'].find { |ext| File.exist?("#{runtime}#{ext}") }}" unless File.exist?(runtime)
+  runtime = "#{runtime}#{['', '.exe'].find { |ext| File.exist?("#{runtime}#{ext}") }}"
   snapshot = 'sass_embedded/src/dart-sass-embedded.snapshot'
 
   command = if File.exist?(runtime) && File.exist?(snapshot)
