@@ -32,7 +32,7 @@ module Sass
                           logger:,
                           quiet_deps:,
                           verbose:)
-        await do
+        compile_response = await do
           alert_color = $stderr.tty? if alert_color.nil?
 
           @function_registry = FunctionRegistry.new(functions, alert_color: alert_color)
@@ -62,14 +62,18 @@ module Sass
             verbose: verbose
           ))
         end
+
+        Protofier.from_proto_compile_response(compile_response)
       end
 
       def version_request
-        await do
+        version_response = await do
           send_message(version_request: EmbeddedProtocol::InboundMessage::VersionRequest.new(
             id: id
           ))
         end
+
+        "sass-embedded\t#{version_response.implementation_version}"
       end
 
       def log_event(message)

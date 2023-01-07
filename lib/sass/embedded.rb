@@ -135,26 +135,24 @@ module Sass
                 verbose: false)
       raise ArgumentError, 'path must be set' if path.nil?
 
-      Protofier.from_proto_compile_response(
-        Host.new(@channel).compile_request(
-          path: path,
-          source: nil,
-          importer: nil,
-          load_paths: load_paths,
-          syntax: nil,
-          url: nil,
-          charset: charset,
-          source_map: source_map,
-          source_map_include_sources: source_map_include_sources,
-          style: style,
-          functions: functions,
-          importers: importers,
-          alert_color: alert_color,
-          alert_ascii: alert_ascii,
-          logger: logger,
-          quiet_deps: quiet_deps,
-          verbose: verbose
-        )
+      Host.new(@channel).compile_request(
+        path: path,
+        source: nil,
+        importer: nil,
+        load_paths: load_paths,
+        syntax: nil,
+        url: nil,
+        charset: charset,
+        source_map: source_map,
+        source_map_include_sources: source_map_include_sources,
+        style: style,
+        functions: functions,
+        importers: importers,
+        alert_color: alert_color,
+        alert_ascii: alert_ascii,
+        logger: logger,
+        quiet_deps: quiet_deps,
+        verbose: verbose
       )
     end
 
@@ -211,33 +209,31 @@ module Sass
                        verbose: false)
       raise ArgumentError, 'source must be set' if source.nil?
 
-      Protofier.from_proto_compile_response(
-        Host.new(@channel).compile_request(
-          path: nil,
-          source: source,
-          importer: importer,
-          load_paths: load_paths,
-          syntax: syntax,
-          url: url,
-          charset: charset,
-          source_map: source_map,
-          source_map_include_sources: source_map_include_sources,
-          style: style,
-          functions: functions,
-          importers: importers,
-          alert_color: alert_color,
-          alert_ascii: alert_ascii,
-          logger: logger,
-          quiet_deps: quiet_deps,
-          verbose: verbose
-        )
+      Host.new(@channel).compile_request(
+        path: nil,
+        source: source,
+        importer: importer,
+        load_paths: load_paths,
+        syntax: syntax,
+        url: url,
+        charset: charset,
+        source_map: source_map,
+        source_map_include_sources: source_map_include_sources,
+        style: style,
+        functions: functions,
+        importers: importers,
+        alert_color: alert_color,
+        alert_ascii: alert_ascii,
+        logger: logger,
+        quiet_deps: quiet_deps,
+        verbose: verbose
       )
     end
 
     # @return [String] Information about the Sass implementation.
     # @see https://sass-lang.com/documentation/js-api/modules#info
     def info
-      @info ||= "sass-embedded\t#{Host.new(@channel).version_request.implementation_version}"
+      @info ||= Host.new(@channel).version_request
     end
 
     def close
