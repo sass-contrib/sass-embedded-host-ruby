@@ -30,7 +30,7 @@ file 'embedded.rb' => %w[sass_embedded] do |t|
   raise "#{exe} not found" unless File.exist?(exe)
 
   runtime = 'sass_embedded/src/dart'
-  runtime = "#{runtime}#{['.exe', '.bat'].find { |ext| File.exist?("#{runtime}#{ext}") }}" unless File.exist?(runtime)
+  runtime = "#{runtime}#{['.exe'].find { |ext| File.exist?("#{runtime}#{ext}") }}" unless File.exist?(runtime)
   snapshot = 'sass_embedded/src/dart-sass-embedded.snapshot'
 
   command = if File.exist?(runtime) && File.exist?(snapshot)
