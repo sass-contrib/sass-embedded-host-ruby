@@ -70,14 +70,14 @@ describe Sass::Value::Number do
         end
 
         it 'equals the same number within precision tolerance' do
-          expect(number).to eq(described_class.new(123 + 10.pow(-precision - 2))) # rubocop:disable Style/YodaExpression
+          expect(number).to eq(described_class.new(123 + 10.pow(-precision - 2)))
           expect(number).to eq(described_class.new(123 - 10.pow(-precision - 2)))
         end
 
         it "doesn't equal a different number" do
           expect(number).not_to eq(described_class.new(122))
           expect(number).not_to eq(described_class.new(124))
-          expect(number).not_to eq(described_class.new(123 + 10.pow(-precision - 1))) # rubocop:disable Style/YodaExpression
+          expect(number).not_to eq(described_class.new(123 + 10.pow(-precision - 1)))
           expect(number).not_to eq(described_class.new(123 - 10.pow(-precision - 1)))
         end
 
@@ -191,7 +191,7 @@ describe Sass::Value::Number do
       end
 
       it 'equals the same number' do
-        expect(number).to eq(described_class.new(123 + 10.pow(-precision - 2))) # rubocop:disable Style/YodaExpression
+        expect(number).to eq(described_class.new(123 + 10.pow(-precision - 2)))
       end
 
       it 'equals the same number within precision tolerance' do
