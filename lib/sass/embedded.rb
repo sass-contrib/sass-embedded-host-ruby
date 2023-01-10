@@ -31,8 +31,10 @@ module Sass
   @instance = nil
   @mutex = Mutex.new
 
+  # rubocop:disable Layout/LineLength
   class << self
     # Compiles the Sass file at +path+ to CSS.
+    # @overload compile(path, load_paths: [], charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, logger: nil, quiet_deps: false, verbose: false)
     # @param (see Embedded#compile)
     # @return (see Embedded#compile)
     # @raise (see Embedded#compile)
@@ -42,6 +44,7 @@ module Sass
     end
 
     # Compiles a stylesheet whose contents is +source+ to CSS.
+    # @overload compile_string(source, importer: nil, load_paths: [], syntax: :scss, url: nil, charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, logger: nil, quiet_deps: false, verbose: false)
     # @param (see Embedded#compile_string)
     # @return (see Embedded#compile_string)
     # @raise (see Embedded#compile_string)
@@ -75,6 +78,7 @@ module Sass
       @instance
     end
   end
+  # rubocop:enable Layout/LineLength
 
   # The {Embedded} host for using dart-sass-embedded. Each instance creates
   # its own communication {Channel} with a dedicated compiler process.
