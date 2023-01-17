@@ -235,6 +235,9 @@ module Configuration
            'macos'
          when 'linux'
            'linux'
+         when 'linux-musl'
+           repo = 'https://github.com/dart-musl/dart-sass-embedded'
+           'linux'
          when 'windows'
            'windows'
          else
