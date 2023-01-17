@@ -62,6 +62,47 @@ jobs:
       - name: Spec
         run: bundle exec rake spec
 
+  spec-musl:
+
+    name: spec (alpine-latest, ${{ matrix.ruby-version }})
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: docker.io/library/ruby:${{ matrix.ruby-version }}-alpine
+
+    env:
+      PROTOC_BIN: /usr/bin/protoc
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - '2.6'
+          - '2.7'
+          - '3.0'
+          - '3.1'
+          - '3.2'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apk add alpine-sdk protoc
+
+      - name: Update RubyGems
+        run: gem update --system
+
+      - name: Bundle
+        run: bundle install
+
+      - name: Compile
+        run: bundle exec rake compile
+
+      - name: Spec
+        run: bundle exec rake spec
+
   install:
 
     runs-on: ${{ matrix.os }}
@@ -107,11 +148,55 @@ jobs:
       - name: Install
         run: rake -f -r bundler/gem_tasks install
 
+  install-musl:
+
+    name: install (alpine-latest, ${{ matrix.ruby-version }})
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: docker.io/library/ruby:${{ matrix.ruby-version }}-alpine
+
+    env:
+      PROTOC_BIN: /usr/bin/protoc
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - '2.6'
+          - '2.7'
+          - '3.0'
+          - '3.1'
+          - '3.2'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apk add alpine-sdk protoc
+
+      - name: Update RubyGems
+        run: gem update --system
+
+      - name: Bundle
+        run: bundle install
+
+      - name: Install
+        run: rake -f -r bundler/gem_tasks install
+
+      - name: Compile
+        run: bundle exec rake compile
+
+      - name: Install
+        run: rake -f -r bundler/gem_tasks install
+
   release:
 
     if: github.event.repository.fork == false && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
-    needs: [lint, spec, install]
+    needs: [lint, spec, spec-musl, install, install-musl]
 
     runs-on: ubuntu-latest
 
