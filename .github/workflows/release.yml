@@ -55,6 +55,14 @@ jobs:
             platform: x86-linux-gnu
           - os: ubuntu-latest
             platform: x86_64-linux-gnu
+          - os: ubuntu-latest
+            platform: aarch64-linux-musl
+          - os: ubuntu-latest
+            platform: arm-linux-musleabihf
+          - os: ubuntu-latest
+            platform: x86-linux-musl
+          - os: ubuntu-latest
+            platform: x86_64-linux-musl
           - os: windows-latest
             platform: x64-mingw-ucrt
           - os: windows-latest
