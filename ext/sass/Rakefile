@@ -188,6 +188,8 @@ module Configuration
     OS = case RbConfig::CONFIG['host_os'].downcase
          when /darwin/
            'darwin'
+         when /linux-android/
+           'linux-android'
          when /linux-musl/
            'linux-musl'
          when /linux-uclibc/
