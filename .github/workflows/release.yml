@@ -48,6 +48,14 @@ jobs:
           - os: macos-latest
             platform: x86_64-darwin
           - os: ubuntu-latest
+            platform: aarch64-linux-android
+          - os: ubuntu-latest
+            platform: arm-linux-androideabi
+          - os: ubuntu-latest
+            platform: x86-linux-android
+          - os: ubuntu-latest
+            platform: x86_64-linux-android
+          - os: ubuntu-latest
             platform: aarch64-linux-gnu
           - os: ubuntu-latest
             platform: arm-linux-gnueabihf
