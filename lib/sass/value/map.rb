@@ -35,7 +35,7 @@ module Sass
           index = to_a_length + index if index.negative?
           return nil if index.negative? || index >= to_a_length
 
-          to_a[index]
+          Sass::Value::List.new(contents.to_a[index], separator: ' ')
         else
           contents[index]
         end
