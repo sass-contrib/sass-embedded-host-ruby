@@ -32,8 +32,8 @@ module Sass
       def at(index)
         if index.is_a? Numeric
           index = index.floor
-          index = to_a.length + index if index.negative?
-          return nil if index.negative? || index >= to_a.length
+          index = to_a_length + index if index.negative?
+          return nil if index.negative? || index >= to_a_length
 
           to_a[index]
         else
@@ -48,7 +48,7 @@ module Sass
 
       # @return [Array<List<(Value, Value)>>]
       def to_a
-        contents.to_a.map { |entry| Sass::Value::List.new(entry, separator: ' ') }
+        contents.map { |key, value| Sass::Value::List.new([key, value], separator: ' ') }
       end
 
       # @return [Map]
