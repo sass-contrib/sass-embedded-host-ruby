@@ -18,11 +18,7 @@ module Sass
           value = obj[key]
           if value.respond_to? :call
             struct.define_singleton_method key do |*args, **kwargs|
-              if kwargs.empty?
-                value.call(*args)
-              else
-                value.call(*args, **kwargs)
-              end
+              value.call(*args, **kwargs)
             end
           else
             struct.define_singleton_method key do

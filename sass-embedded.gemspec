@@ -32,7 +32,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     ]
   end
 
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 2.7.0'
 
   spec.add_runtime_dependency 'google-protobuf', '~> 3.21'
 
