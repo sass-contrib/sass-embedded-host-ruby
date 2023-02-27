@@ -8,7 +8,7 @@ AllCops:
     - '**/*_pb.rb'
     - 'vendor/**/*'
 
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
 
   NewCops: enable
 
