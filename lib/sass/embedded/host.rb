@@ -131,8 +131,8 @@ module Sass
         @connection.id
       end
 
-      def send_message(**kwargs)
-        @connection.send_message(**kwargs)
+      def send_message(...)
+        @connection.send_message(...)
       end
     end
 

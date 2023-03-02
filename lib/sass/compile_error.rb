@@ -17,9 +17,9 @@ module Sass
     end
 
     # @return [String]
-    def full_message(*args, **kwargs)
+    def full_message(...)
       if @full_message.nil?
-        super(*args, **kwargs)
+        super(...)
       else
         @full_message
       end

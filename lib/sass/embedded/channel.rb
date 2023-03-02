@@ -48,8 +48,8 @@ module Sass
           @dispatcher.unsubscribe(id)
         end
 
-        def send_message(**kwargs)
-          @dispatcher.send_message(**kwargs)
+        def send_message(...)
+          @dispatcher.send_message(...)
         end
       end
 

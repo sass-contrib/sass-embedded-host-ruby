@@ -39,8 +39,8 @@ module Sass
     # @return (see Embedded#compile)
     # @raise (see Embedded#compile)
     # @see Embedded#compile
-    def compile(path, **kwargs)
-      instance.compile(path, **kwargs)
+    def compile(...)
+      instance.compile(...)
     end
 
     # Compiles a stylesheet whose contents is +source+ to CSS.
@@ -49,8 +49,8 @@ module Sass
     # @return (see Embedded#compile_string)
     # @raise (see Embedded#compile_string)
     # @see Embedded#compile_string
-    def compile_string(source, **kwargs)
-      instance.compile_string(source, **kwargs)
+    def compile_string(...)
+      instance.compile_string(...)
     end
 
     # @param (see Embedded#info)
