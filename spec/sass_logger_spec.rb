@@ -22,7 +22,7 @@ RSpec.describe Sass do
             expect(span.start.line).to be(0)
             expect(span.start.column).to be(0)
             expect(span.end.line).to be(0)
-            expect(span.end.column).to be(4)
+            expect(span.end.column).to be(3)
           }
         }
       )
