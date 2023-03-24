@@ -248,4 +248,6 @@ module Sass
       @channel.closed?
     end
   end
+
+  private_constant :EmbeddedProtocol
 end
