@@ -9,7 +9,16 @@ module Sass
     # It runs the `dart-sass-embedded` process.
     class Compiler
       def initialize
-        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(*COMMAND, chdir: __dir__)
+        @stdin, @stdout, @stderr, @wait_thread = begin
+          Open3.popen3(*COMMAND, chdir: __dir__)
+        rescue Errno::ENOENT
+          require_relative 'elf'
+
+          raise if ELF::INTERPRETER.nil?
+
+          Open3.popen3(ELF::INTERPRETER, *COMMAND, chdir: __dir__)
+        end
+
         @stdin.binmode
         @stdout.binmode
         @stdin_mutex = Mutex.new

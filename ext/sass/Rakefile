@@ -21,12 +21,6 @@ file 'sass_embedded' do |t|
   archive = fetch(ENV.fetch(t.name.upcase) { Configuration.default_sass_embedded })
   unarchive archive
   rm archive
-
-  if ENV.key?('NIX_BINTOOLS')
-    sh 'patchelf',
-       '--set-interpreter', File.read("#{ENV.fetch('NIX_BINTOOLS')}/nix-support/dynamic-linker").chomp,
-       (['sass_embedded/src/dart', 'sass_embedded/dart-sass-embedded'].find { |exe| File.exist?(exe) })
-  end
 end
 
 file 'embedded.rb' => %w[sass_embedded] do |t|
