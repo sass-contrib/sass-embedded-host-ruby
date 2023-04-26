@@ -89,9 +89,6 @@ jobs:
       - name: Install dependencies
         run: apk add alpine-sdk protoc
 
-      - name: Update RubyGems
-        run: gem update --system
-
       - name: Bundle
         run: bundle install
 
@@ -172,9 +169,6 @@ jobs:
 
       - name: Install dependencies
         run: apk add alpine-sdk protoc
-
-      - name: Update RubyGems
-        run: gem update --system
 
       - name: Bundle
         run: bundle install
