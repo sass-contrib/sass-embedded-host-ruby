@@ -260,8 +260,8 @@ module Sass
       INTERPRETER = proc do
         proc_self_exe = '/proc/self/exe'
         if File.exist?(proc_self_exe)
-          File.open(proc_self_exe, 'rb') do |exe|
-            elf = ELF.new(exe)
+          File.open(proc_self_exe, 'rb') do |file|
+            elf = ELF.new(file)
             interpreter = elf.interpreter
             if interpreter.nil? && elf.shared_object?
               File.readlink(proc_self_exe)
