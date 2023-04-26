@@ -223,32 +223,35 @@ module Sass
         end
       end
 
-      def read1(type)
+      def explicit_endian
         case data_encoding
         when ELFDATA2LSB
-          case type
-          when :__u16
-            @buffer.read(2).unpack1('v*')
-          when :__u32
-            @buffer.read(4).unpack1('V*')
-          when :__u64
-            buffer = @buffer.read(8).unpack('V*')
-            (buffer[1] << 32) | buffer[0]
-          else
-            raise ArgumentError
-          end
+          '<'
         when ELFDATA2MSB
-          case type
-          when :__u16
-            @buffer.read(2).unpack1('n*')
-          when :__u32
-            @buffer.read(4).unpack1('N*')
-          when :__u64
-            buffer = @buffer.read(8).unpack('N*')
-            (buffer[0] << 32) | buffer[1]
-          else
-            raise ArgumentError
-          end
+          '>'
+        else
+          raise ArgumentError
+        end
+      end
+
+      def read1(type)
+        case type
+        when :__u8
+          @buffer.read(1).unpack1('C')
+        when :__u16
+          @buffer.read(2).unpack1("S#{explicit_endian}")
+        when :__u32
+          @buffer.read(4).unpack1("L#{explicit_endian}")
+        when :__u64
+          @buffer.read(8).unpack1("Q#{explicit_endian}")
+        when :__s8
+          @buffer.read(1).unpack1('c')
+        when :__s16
+          @buffer.read(2).unpack1("s#{explicit_endian}")
+        when :__s32
+          @buffer.read(4).unpack1("l#{explicit_endian}")
+        when :__s64
+          @buffer.read(8).unpack1("q#{explicit_endian}")
         else
           raise ArgumentError
         end
