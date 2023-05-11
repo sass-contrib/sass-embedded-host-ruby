@@ -228,9 +228,9 @@ module Configuration
 
     spec = JSON.parse(File.read(File.absolute_path('package.json', __dir__)))
 
-    tag_name = spec['dependencies']['sass-embedded']
+    tag_name = spec['dependencies']['sass']
 
-    message = "sass_embedded for #{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
+    message = "sass for #{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
 
     os = case Platform::OS
          when 'darwin'
