@@ -17,7 +17,8 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     'funding_uri' => 'https://github.com/sponsors/ntkme'
   }
 
-  spec.files = Dir['lib/**/*.rb'] + ['LICENSE', 'README.md']
+  spec.executables = ['sass']
+  spec.files = Dir['bin/**/*'] + Dir['lib/**/*.rb'] + ['LICENSE', 'README.md']
 
   if ENV.key?('gem_platform')
     spec.files += Dir['ext/sass/*.rb'] + Dir['ext/sass/sass_embedded/**/*']

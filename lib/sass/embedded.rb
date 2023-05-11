@@ -80,8 +80,8 @@ module Sass
   end
   # rubocop:enable Layout/LineLength
 
-  # The {Embedded} host for using dart-sass-embedded. Each instance creates
-  # its own communication {Channel} with a dedicated compiler process.
+  # The {Embedded} host for using dart-sass. Each instance creates its own
+  # communication {Channel} with a dedicated compiler process.
   #
   # @example
   #   embedded = Sass::Embedded.new

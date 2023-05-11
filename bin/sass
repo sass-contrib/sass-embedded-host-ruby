@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../ext/sass/embedded'
+
+module Sass
+  class Embedded # rubocop:disable Style/Documentation
+    begin
+      exec(*Compiler::COMMAND, *ARGV)
+    rescue Errno::ENOENT
+      require_relative '../lib/sass/embedded/elf'
+
+      raise if ELF::INTERPRETER.nil?
+
+      exec(ELF::INTERPRETER, *Compiler::COMMAND, *ARGV)
+    end
+  end
+end
