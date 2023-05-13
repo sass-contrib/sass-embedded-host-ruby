@@ -181,7 +181,7 @@ module Sass
         interpreter = @buffer.read(phdr[:p_filesz])
         raise ArgumentError unless interpreter.end_with?("\0")
 
-        interpreter.chomp("\0")
+        interpreter.chomp!("\0")
       end
 
       private
