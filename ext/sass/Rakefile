@@ -306,9 +306,8 @@ module Configuration
   def default_sass_embedded_protocol
     require 'json'
     require 'open3'
-    require_relative 'embedded'
 
-    stdout, stderr, status = Open3.capture3(*Sass::Embedded::Compiler::COMMAND, '--version')
+    stdout, stderr, status = Open3.capture3(RbConfig.ruby, File.absolute_path('../../exe/sass', __dir__), '--version')
 
     raise stderr unless status.success?
 
