@@ -11,18 +11,18 @@ module Sass
       def initialize
         @compiler = Compiler.new
         @observers = {}
-        @id = 0
+        @id = 1
         @mutex = Mutex.new
 
         Thread.new do
           loop do
-            receive_message
+            receive_proto
           rescue IOError, Errno::EBADF => e
             @mutex.synchronize do
               @id = UINT_MAX
               @observers.values
             end.each do |observer|
-              observer.error e
+              observer.error(e)
             end
             break
           end
@@ -49,7 +49,7 @@ module Sass
           if @id == UINT_MAX
             close
           else
-            @id = 0
+            @id = 1
           end
         end
       end
@@ -62,35 +62,34 @@ module Sass
         @compiler.closed?
       end
 
-      def send_message(...)
-        inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @compiler.write(inbound_message.to_proto)
+      def send_proto(...)
+        @compiler.write(...)
       end
 
       private
 
-      def receive_message
-        outbound_message = EmbeddedProtocol::OutboundMessage.decode(@compiler.read)
-        oneof = outbound_message.message
-        message = outbound_message.public_send(oneof)
-        case oneof
-        when :error
+      def receive_proto
+        id, proto = @compiler.read
+        case id
+        when 1...UINT_MAX
+          @mutex.synchronize { @observers[id] }.receive_proto(proto)
+        when 0
+          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+          oneof = outbound_message.message
+          message = outbound_message.public_send(oneof)
+          @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
+        when UINT_MAX
+          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+          oneof = outbound_message.message
+          message = outbound_message.public_send(oneof)
           @mutex.synchronize do
             @id = UINT_MAX
             message.id == UINT_MAX ? @observers.values : [@observers[message.id]]
           end.each do |observer|
-            observer.public_send(oneof, message)
-          end
-        when :compile_response, :version_response
-          @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
-        when :log_event
-          @mutex.synchronize { @observers[message.compilation_id] }.public_send(oneof, message)
-        when :canonicalize_request, :import_request, :file_import_request, :function_call_request
-          Thread.new(@mutex.synchronize { @observers[message.compilation_id] }) do |observer|
-            observer.public_send(oneof, message)
+            observer.public_send(oneof, Errno::EPROTO.new(message.message))
           end
         else
-          raise ArgumentError, "Unknown OutboundMessage.message #{message}"
+          raise ArgumentError
         end
       end
     end

@@ -9,11 +9,15 @@ module Sass
     # @return [Logger::SourceSpan, nil]
     attr_reader :span
 
-    def initialize(message, full_message, sass_stack, span)
+    # @return [Array<String>]
+    attr_reader :loaded_urls
+
+    def initialize(message, full_message, sass_stack, span, loaded_urls)
       super(message)
       @full_message = full_message
       @sass_stack = sass_stack
       @span = span
+      @loaded_urls = loaded_urls
     end
 
     # @return [String]

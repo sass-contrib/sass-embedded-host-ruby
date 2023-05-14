@@ -40,7 +40,6 @@ module Sass
           @logger_registry = LoggerRegistry.new(logger)
 
           send_message(compile_request: EmbeddedProtocol::InboundMessage::CompileRequest.new(
-            id: id,
             string: unless source.nil?
                       EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
                         source: source,
@@ -67,8 +66,8 @@ module Sass
       end
 
       def version_request
-        version_response = await do
-          send_message(version_request: EmbeddedProtocol::InboundMessage::VersionRequest.new(
+        version_response = await0 do
+          send_message0(version_request: EmbeddedProtocol::InboundMessage::VersionRequest.new(
             id: id
           ))
         end
@@ -77,15 +76,18 @@ module Sass
       end
 
       def compile_response(message)
-        resolve(message)
+        @result = message
+        @queue.close
       end
 
       def version_response(message)
-        resolve(message)
+        @result = message
+        @queue.close
       end
 
       def error(message)
-        reject(CompileError.new(message.message, nil, nil, nil))
+        @error = message
+        @queue.close
       end
 
       def log_event(message)
@@ -108,31 +110,59 @@ module Sass
         send_message(function_call_response: @function_registry.function_call(message))
       end
 
+      def receive_proto(proto)
+        @queue.push(proto)
+      end
+
       private
 
-      def await
+      def await0
         @connection = @channel.connect(self)
-        @async = Async.new
+        @queue = Queue.new
+
         yield
-        @async.await
+
+        @queue.pop
+
+        raise @error if @error
+
+        @result
       ensure
         @connection&.disconnect
       end
 
-      def resolve(value)
-        @async.resolve(value)
-      end
+      def await
+        @connection = @channel.connect(self)
+        @queue = Queue.new
 
-      def reject(reason)
-        @async.reject(reason)
+        yield
+
+        while (proto = @queue.pop)
+          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+          oneof = outbound_message.message
+          message = outbound_message.public_send(oneof)
+          public_send(oneof, message)
+        end
+
+        raise @error if @error
+
+        @result
+      ensure
+        @connection&.disconnect
       end
 
       def id
         @connection.id
       end
 
+      def send_message0(...)
+        inbound_message = EmbeddedProtocol::InboundMessage.new(...)
+        @connection.send_proto(0, inbound_message.to_proto)
+      end
+
       def send_message(...)
-        @connection.send_message(...)
+        inbound_message = EmbeddedProtocol::InboundMessage.new(...)
+        @connection.send_proto(id, inbound_message.to_proto)
       end
     end
 

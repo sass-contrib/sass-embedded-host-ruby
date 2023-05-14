@@ -17,13 +17,14 @@ module Sass
             result.message,
             result.formatted == '' ? nil : result.formatted,
             result.stack_trace == '' ? nil : result.stack_trace,
-            from_proto_source_span(result.span)
+            from_proto_source_span(result.span),
+            compile_response.loaded_urls
           )
         when :success
           CompileResult.new(
             result.css,
             result.source_map == '' ? nil : result.source_map,
-            result.loaded_urls
+            compile_response.loaded_urls
           )
         else
           raise ArgumentError, "Unknown CompileResponse.result #{result}"

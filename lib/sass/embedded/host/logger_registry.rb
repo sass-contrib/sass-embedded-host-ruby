@@ -12,21 +12,17 @@ module Sass
 
           if logger.respond_to?(:debug)
             define_singleton_method(:debug) do |event|
-              Thread.new do
-                logger.debug(event.message,
-                             span: Protofier.from_proto_source_span(event.span))
-              end
+              logger.debug(event.message,
+                           span: Protofier.from_proto_source_span(event.span))
             end
           end
 
           if logger.respond_to?(:warn) # rubocop:disable Style/GuardClause
             define_singleton_method(:warn) do |event|
-              Thread.new do
-                logger.warn(event.message,
-                            deprecation: event.type == :DEPRECATION_WARNING,
-                            span: Protofier.from_proto_source_span(event.span),
-                            stack: event.stack_trace)
-              end
+              logger.warn(event.message,
+                          deprecation: event.type == :DEPRECATION_WARNING,
+                          span: Protofier.from_proto_source_span(event.span),
+                          stack: event.stack_trace)
             end
           end
         end

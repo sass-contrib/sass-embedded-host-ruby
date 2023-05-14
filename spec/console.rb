@@ -9,13 +9,7 @@ module Console
     stderr = $stderr
     $stderr = StringIO.new
 
-    thread_list = Thread.list
-
     yield
-
-    Thread.list.each do |thread|
-      thread.join unless thread_list.include? thread
-    end
 
     ConsoleOutput.new $stdout.string, $stderr.string
   ensure

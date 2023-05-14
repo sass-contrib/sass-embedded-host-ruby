@@ -48,8 +48,8 @@ module Sass
           @dispatcher.unsubscribe(id)
         end
 
-        def send_message(...)
-          @dispatcher.send_message(...)
+        def send_proto(...)
+          @dispatcher.send_proto(...)
         end
       end
 

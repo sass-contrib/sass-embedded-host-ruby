@@ -6,17 +6,17 @@ module Sass
   class Embedded
     # The {Compiler} class.
     #
-    # It runs the `dart-sass-embedded` process.
+    # It runs the `sass --embedded` process.
     class Compiler
       def initialize
         @stdin, @stdout, @stderr, @wait_thread = begin
-          Open3.popen3(*CLI::COMMAND, chdir: __dir__)
+          Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
         rescue Errno::ENOENT
           require_relative '../elf'
 
           raise if ELF::INTERPRETER.nil?
 
-          Open3.popen3(ELF::INTERPRETER, *CLI::COMMAND, chdir: __dir__)
+          Open3.popen3(ELF::INTERPRETER, *CLI::COMMAND, '--embedded', chdir: __dir__)
         end
 
         @stdin.binmode
@@ -49,17 +49,20 @@ module Sass
         end
       end
 
-      def write(payload)
+      def write(id, proto)
         @stdin_mutex.synchronize do
-          Varint.write(@stdin, payload.length)
-          @stdin.write(payload)
+          Varint.write(@stdin, Varint.length(id) + proto.length)
+          Varint.write(@stdin, id)
+          @stdin.write(proto)
         end
       end
 
       def read
         @stdout_mutex.synchronize do
           length = Varint.read(@stdout)
-          @stdout.read(length)
+          id = Varint.read(@stdout)
+          proto = @stdout.read(length - Varint.length(id))
+          return id, proto
         end
       end
     end

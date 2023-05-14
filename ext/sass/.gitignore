@@ -1,7 +1,7 @@
 /*.tar.gz
 /*.zip
 /cli.rb
+/dart-sass
 /embedded_sass.proto
 /embedded_sass_pb.rb
 /protoc.exe
-/sass_embedded
