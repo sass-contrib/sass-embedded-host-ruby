@@ -313,6 +313,6 @@ module Configuration
 
     tag_name = JSON.parse(stdout)['protocolVersion']
 
-    "https://github.com/sass/embedded-protocol/raw/#{tag_name}/embedded_sass.proto"
+    "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
   end
 end
