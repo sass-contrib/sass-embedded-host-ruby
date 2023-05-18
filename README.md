@@ -24,6 +24,9 @@ require 'sass-embedded'
 
 result = Sass.compile('style.scss')
 puts result.css
+
+compressed = Sass.compile('style.scss', style: :compressed)
+puts compressed.css
 ```
 
 - `Sass.compile_string` takes a string that represents the contents of a Sass file and return the result of compiling that file to CSS.
@@ -33,6 +36,9 @@ require 'sass-embedded'
 
 result = Sass.compile_string('h1 { font-size: 40px; }')
 puts result.css
+
+compressed = Sass.compile_string('h1 { font-size: 40px; }', style: :compressed)
+puts compressed.css
 ```
 
 See [rubydoc.info/gems/sass-embedded](https://rubydoc.info/gems/sass-embedded) for full API documentation.
