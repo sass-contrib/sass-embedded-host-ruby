@@ -41,7 +41,7 @@ compressed = Sass.compile_string('h1 { font-size: 40px; }', style: :compressed)
 puts compressed.css
 ```
 
-See [rubydoc.info/gems/sass-embedded](https://rubydoc.info/gems/sass-embedded) for full API documentation.
+See [rubydoc.info/gems/sass-embedded/Sass](https://rubydoc.info/gems/sass-embedded/Sass) for full API documentation.
 
 ---
 
