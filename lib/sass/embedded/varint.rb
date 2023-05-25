@@ -8,6 +8,12 @@ module Sass
     module Varint
       module_function
 
+      def length(value)
+        return 1 if value < 128
+
+        (value.bit_length + 6) / 7
+      end
+
       def read(readable)
         value = bits = 0
         loop do
