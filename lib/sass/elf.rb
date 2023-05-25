@@ -256,7 +256,7 @@ module Sass
       end
     end
 
-    INTERPRETER = proc do
+    INTERPRETER = begin
       proc_self_exe = '/proc/self/exe'
       if File.exist?(proc_self_exe)
         File.open(proc_self_exe, 'rb') do |file|
@@ -269,7 +269,7 @@ module Sass
           end
         end
       end
-    end.call
+    end
   end
 
   private_constant :ELF
