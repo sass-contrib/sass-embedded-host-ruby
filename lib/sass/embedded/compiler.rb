@@ -12,7 +12,7 @@ module Sass
         @stdin, @stdout, @stderr, @wait_thread = begin
           Open3.popen3(*COMMAND, chdir: __dir__)
         rescue Errno::ENOENT
-          require_relative 'elf'
+          require_relative '../elf'
 
           raise if ELF::INTERPRETER.nil?
 

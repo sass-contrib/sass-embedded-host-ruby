@@ -8,7 +8,7 @@ module Sass
     begin
       exec(*Compiler::COMMAND, *ARGV)
     rescue Errno::ENOENT
-      require_relative '../lib/sass/embedded/elf'
+      require_relative '../lib/sass/elf'
 
       raise if ELF::INTERPRETER.nil?
 
