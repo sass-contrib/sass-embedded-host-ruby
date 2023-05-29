@@ -17,13 +17,9 @@ module Sass
                              span: Protofier.from_proto_source_span(event.span))
               end
             end
-          else
-            define_singleton_method(:debug) do |event|
-              Kernel.warn(event.formatted)
-            end
           end
 
-          if logger.respond_to?(:warn)
+          if logger.respond_to?(:warn) # rubocop:disable Style/GuardClause
             define_singleton_method(:warn) do |event|
               Thread.new do
                 logger.warn(event.message,
@@ -31,10 +27,6 @@ module Sass
                             span: Protofier.from_proto_source_span(event.span),
                             stack: event.stack_trace)
               end
-            end
-          else
-            define_singleton_method(:warn) do |event|
-              Kernel.warn(event.formatted)
             end
           end
         end
@@ -46,6 +38,16 @@ module Sass
           when :DEPRECATION_WARNING, :WARNING
             warn(event)
           end
+        end
+
+        private
+
+        def debug(event)
+          Kernel.warn(event.formatted)
+        end
+
+        def warn(event)
+          Kernel.warn(event.formatted)
         end
       end
 
