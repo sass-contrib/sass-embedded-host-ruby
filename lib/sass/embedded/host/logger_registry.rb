@@ -7,45 +7,44 @@ module Sass
       #
       # It stores logger and handles log events.
       class LoggerRegistry
-        attr_reader :logger
-
         def initialize(logger)
-          @logger = Structifier.to_struct(logger, :debug, :warn)
+          logger = Structifier.to_struct(logger, :debug, :warn)
+
+          if logger.respond_to?(:debug)
+            define_singleton_method(:debug) do |event|
+              Thread.new do
+                logger.debug(event.message,
+                             span: Protofier.from_proto_source_span(event.span))
+              end
+            end
+          else
+            define_singleton_method(:debug) do |event|
+              Kernel.warn(event.formatted)
+            end
+          end
+
+          if logger.respond_to?(:warn)
+            define_singleton_method(:warn) do |event|
+              Thread.new do
+                logger.warn(event.message,
+                            deprecation: event.type == :DEPRECATION_WARNING,
+                            span: Protofier.from_proto_source_span(event.span),
+                            stack: event.stack_trace)
+              end
+            end
+          else
+            define_singleton_method(:warn) do |event|
+              Kernel.warn(event.formatted)
+            end
+          end
         end
 
         def log(event)
           case event.type
           when :DEBUG
-            if logger.respond_to? :debug
-              Thread.new do
-                logger.debug(event.message,
-                             span: Protofier.from_proto_source_span(event.span))
-              end
-            else
-              warn(event.formatted)
-            end
-          when :DEPRECATION_WARNING
-            if logger.respond_to? :warn
-              Thread.new do
-                logger.warn(event.message,
-                            deprecation: true,
-                            span: Protofier.from_proto_source_span(event.span),
-                            stack: event.stack_trace)
-              end
-            else
-              warn(event.formatted)
-            end
-          when :WARNING
-            if logger.respond_to? :warn
-              Thread.new do
-                logger.warn(event.message,
-                            deprecation: false,
-                            span: Protofier.from_proto_source_span(event.span),
-                            stack: event.stack_trace)
-              end
-            else
-              warn(event.formatted)
-            end
+            debug(event)
+          when :DEPRECATION_WARNING, :WARNING
+            warn(event)
           end
         end
       end
