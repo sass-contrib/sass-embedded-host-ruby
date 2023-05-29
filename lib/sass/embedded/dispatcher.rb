@@ -83,7 +83,9 @@ module Sass
           end
         when :compile_response, :version_response
           @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
-        when :log_event, :canonicalize_request, :import_request, :file_import_request, :function_call_request
+        when :log_event
+          @mutex.synchronize { @observers[message.compilation_id] }.public_send(oneof, message)
+        when :canonicalize_request, :import_request, :file_import_request, :function_call_request
           Thread.new(@mutex.synchronize { @observers[message.compilation_id] }) do |observer|
             observer.public_send(oneof, message)
           end

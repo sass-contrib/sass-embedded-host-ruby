@@ -17,26 +17,32 @@ module Sass
           case event.type
           when :DEBUG
             if logger.respond_to? :debug
-              logger.debug(event.message,
-                           span: Protofier.from_proto_source_span(event.span))
+              Thread.new do
+                logger.debug(event.message,
+                             span: Protofier.from_proto_source_span(event.span))
+              end
             else
               warn(event.formatted)
             end
           when :DEPRECATION_WARNING
             if logger.respond_to? :warn
-              logger.warn(event.message,
-                          deprecation: true,
-                          span: Protofier.from_proto_source_span(event.span),
-                          stack: event.stack_trace)
+              Thread.new do
+                logger.warn(event.message,
+                            deprecation: true,
+                            span: Protofier.from_proto_source_span(event.span),
+                            stack: event.stack_trace)
+              end
             else
               warn(event.formatted)
             end
           when :WARNING
             if logger.respond_to? :warn
-              logger.warn(event.message,
-                          deprecation: false,
-                          span: Protofier.from_proto_source_span(event.span),
-                          stack: event.stack_trace)
+              Thread.new do
+                logger.warn(event.message,
+                            deprecation: false,
+                            span: Protofier.from_proto_source_span(event.span),
+                            stack: event.stack_trace)
+              end
             else
               warn(event.formatted)
             end

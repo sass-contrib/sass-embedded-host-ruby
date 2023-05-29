@@ -76,16 +76,20 @@ module Sass
         "sass-embedded\t#{version_response.implementation_version}"
       end
 
-      def log_event(message)
-        @logger_registry.log(message)
-      end
-
       def compile_response(message)
         resolve(message)
       end
 
       def version_response(message)
         resolve(message)
+      end
+
+      def error(message)
+        reject(CompileError.new(message.message, nil, nil, nil))
+      end
+
+      def log_event(message)
+        @logger_registry.log(message)
       end
 
       def canonicalize_request(message)
@@ -102,10 +106,6 @@ module Sass
 
       def function_call_request(message)
         send_message(function_call_response: @function_registry.function_call(message))
-      end
-
-      def error(message)
-        reject(CompileError.new(message.message, nil, nil, nil))
       end
 
       private
