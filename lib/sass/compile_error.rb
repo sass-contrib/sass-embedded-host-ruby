@@ -4,25 +4,23 @@ module Sass
   # An exception thrown because a Sass compilation failed.
   class CompileError < StandardError
     # @return [String, nil]
-    attr_accessor :sass_stack
+    attr_reader :sass_stack
 
     # @return [Logger::SourceSpan, nil]
-    attr_accessor :span
+    attr_reader :span
 
     def initialize(message, full_message, sass_stack, span)
       super(message)
-      @full_message = full_message == '' ? nil : full_message.dup
-      @sass_stack = sass_stack == '' ? nil : sass_stack
+      @full_message = full_message
+      @sass_stack = sass_stack
       @span = span
     end
 
     # @return [String]
     def full_message(...)
-      if @full_message.nil?
-        super(...)
-      else
-        @full_message
-      end
+      return @full_message unless @full_message.nil?
+
+      super(...)
     end
   end
 end

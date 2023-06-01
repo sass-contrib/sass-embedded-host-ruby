@@ -15,14 +15,14 @@ module Sass
         when :failure
           raise CompileError.new(
             result.message,
-            result.formatted,
-            result.stack_trace,
+            result.formatted == '' ? nil : +result.formatted,
+            result.stack_trace == '' ? nil : result.stack_trace,
             from_proto_source_span(result.span)
           )
         when :success
           CompileResult.new(
             result.css,
-            result.source_map,
+            result.source_map == '' ? nil : result.source_map,
             result.loaded_urls
           )
         else
@@ -36,8 +36,8 @@ module Sass
         Logger::SourceSpan.new(from_proto_source_location(source_span.start),
                                from_proto_source_location(source_span.end),
                                source_span.text,
-                               source_span.url,
-                               source_span.context)
+                               source_span.url == '' ? nil : source_span.url,
+                               source_span.context == '' ? nil : source_span.context)
       end
 
       def from_proto_source_location(source_location)

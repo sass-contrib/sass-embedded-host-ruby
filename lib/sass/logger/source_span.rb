@@ -19,8 +19,8 @@ module Sass
         @start = start
         @end = end_
         @text = text
-        @url = url == '' ? nil : url
-        @context = context == '' ? nil : context
+        @url = url
+        @context = context
       end
     end
   end

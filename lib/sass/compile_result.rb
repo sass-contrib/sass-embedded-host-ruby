@@ -16,7 +16,7 @@ module Sass
 
     def initialize(css, source_map, loaded_urls)
       @css = css
-      @source_map = source_map == '' ? nil : source_map
+      @source_map = source_map
       @loaded_urls = loaded_urls
     end
   end
