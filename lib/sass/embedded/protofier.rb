@@ -15,7 +15,7 @@ module Sass
         when :failure
           raise CompileError.new(
             result.message,
-            result.formatted == '' ? nil : +result.formatted,
+            result.formatted == '' ? nil : result.formatted,
             result.stack_trace == '' ? nil : result.stack_trace,
             from_proto_source_span(result.span)
           )

@@ -18,9 +18,9 @@ module Sass
 
     # @return [String]
     def full_message(...)
-      return @full_message unless @full_message.nil?
+      return super(...) if @full_message.nil?
 
-      super(...)
+      @full_message = +@full_message
     end
   end
 end
