@@ -4,13 +4,13 @@ require 'rake/clean'
 
 task default: %i[install clean]
 
-task install: %w[embedded.rb] do
+task install: %w[cli.rb] do
   Rake::Task['embedded_sass_pb.rb'].invoke unless File.exist?('embedded_sass_pb.rb')
 end
 
 CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 
-CLOBBER.include %w[sass_embedded embedded.rb embedded_sass_pb.rb]
+CLOBBER.include %w[sass_embedded cli.rb embedded_sass_pb.rb]
 
 file 'protoc.exe' do |t|
   fetch(ENV.fetch('PROTOC_BIN') { Configuration.default_protoc }, t.name)
@@ -23,7 +23,7 @@ file 'sass_embedded' do |t|
   rm archive
 end
 
-file 'embedded.rb' => %w[sass_embedded] do |t|
+file 'cli.rb' => %w[sass_embedded] do |t|
   exe = 'sass_embedded/dart-sass-embedded'
   exe = "#{exe}#{['', '.bat', '.exe'].find { |ext| File.exist?("#{exe}#{ext}") }}"
 
@@ -35,29 +35,29 @@ file 'embedded.rb' => %w[sass_embedded] do |t|
 
   command = if File.exist?(runtime) && File.exist?(snapshot)
               "
-        File.absolute_path('#{runtime}', __dir__),
-        File.absolute_path('#{snapshot}', __dir__)
-      "
+      File.absolute_path('#{runtime}', __dir__),
+      File.absolute_path('#{snapshot}', __dir__)
+    "
             else
               "
-        File.absolute_path('#{exe}', __dir__)
-      "
+      File.absolute_path('#{exe}', __dir__)
+    "
             end
 
-  File.write(t.name, <<~EMBEDDED_RB)
+  File.write(t.name, <<~CLI_RB)
     # frozen_string_literal: true
 
     module Sass
-      class Embedded
-        class Compiler
-          COMMAND = [#{command}].freeze
-        end
+      class CLI
+        COMMAND = [#{command}].freeze
       end
+
+      private_constant :CLI
     end
-  EMBEDDED_RB
+  CLI_RB
 end
 
-file 'embedded_sass.proto' => %w[embedded.rb] do |t|
+file 'embedded_sass.proto' => %w[cli.rb] do |t|
   fetch(ENV.fetch('SASS_EMBEDDED_PROTOCOL') { Configuration.default_sass_embedded_protocol }, t.name)
 end
 

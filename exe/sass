@@ -1,18 +1,21 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../ext/sass/embedded'
+require_relative '../ext/sass/cli'
 
 module Sass
-  class Embedded # rubocop:disable Style/Documentation
+  # The `sass` command line interface
+  class CLI
     begin
-      exec(*Compiler::COMMAND, *ARGV)
+      exec(*COMMAND, *ARGV)
     rescue Errno::ENOENT
       require_relative '../lib/sass/elf'
 
       raise if ELF::INTERPRETER.nil?
 
-      exec(ELF::INTERPRETER, *Compiler::COMMAND, *ARGV)
+      exec(ELF::INTERPRETER, *COMMAND, *ARGV)
     end
   end
+
+  private_constant :CLI
 end

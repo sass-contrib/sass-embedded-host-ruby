@@ -1,6 +1,6 @@
 /*.tar.gz
 /*.zip
-/embedded.rb
+/cli.rb
 /embedded_sass.proto
 /embedded_sass_pb.rb
 /protoc.exe
