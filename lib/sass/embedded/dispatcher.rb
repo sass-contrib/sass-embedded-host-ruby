@@ -6,7 +6,7 @@ module Sass
     #
     # It dispatches messages between mutliple instances of {Host} and a single {Compiler}.
     class Dispatcher
-      PROTOCOL_ERROR_ID = 0xffffffff
+      UINT_MAX = 0xffffffff
 
       def initialize
         @compiler = Compiler.new
@@ -19,7 +19,7 @@ module Sass
             receive_message
           rescue IOError, Errno::EBADF => e
             @mutex.synchronize do
-              @id = PROTOCOL_ERROR_ID
+              @id = UINT_MAX
               @observers.values
             end.each do |observer|
               observer.error e
@@ -31,7 +31,7 @@ module Sass
 
       def subscribe(observer)
         @mutex.synchronize do
-          raise Errno::EBUSY if @id == PROTOCOL_ERROR_ID
+          raise Errno::EBUSY if @id == UINT_MAX
 
           id = @id
           @id = id.next
@@ -46,7 +46,7 @@ module Sass
 
           return unless @observers.empty?
 
-          if @id == PROTOCOL_ERROR_ID
+          if @id == UINT_MAX
             close
           else
             @id = 0
@@ -76,8 +76,8 @@ module Sass
         case oneof
         when :error
           @mutex.synchronize do
-            @id = PROTOCOL_ERROR_ID
-            message.id == PROTOCOL_ERROR_ID ? @observers.values : [@observers[message.id]]
+            @id = UINT_MAX
+            message.id == UINT_MAX ? @observers.values : [@observers[message.id]]
           end.each do |observer|
             observer.public_send(oneof, message)
           end
