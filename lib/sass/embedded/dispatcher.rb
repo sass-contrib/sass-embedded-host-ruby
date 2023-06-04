@@ -31,7 +31,7 @@ module Sass
 
       def subscribe(observer)
         @mutex.synchronize do
-          raise EOFError if @id == PROTOCOL_ERROR_ID
+          raise Errno::EBUSY if @id == PROTOCOL_ERROR_ID
 
           id = @id
           @id = id.next

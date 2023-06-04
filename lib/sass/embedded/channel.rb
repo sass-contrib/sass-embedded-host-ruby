@@ -27,7 +27,7 @@ module Sass
         @mutex.synchronize do
           begin
             id = @dispatcher.subscribe(observer)
-          rescue EOFError
+          rescue Errno::EBUSY
             @dispatcher = Dispatcher.new
             id = @dispatcher.subscribe(observer)
           end
