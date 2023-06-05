@@ -58,7 +58,7 @@ file 'cli.rb' => %w[sass_embedded] do |t|
 end
 
 file 'embedded_sass.proto' => %w[cli.rb] do |t|
-  fetch(ENV.fetch('SASS_EMBEDDED_PROTOCOL') { Configuration.default_sass_embedded_protocol }, t.name)
+  fetch(ENV.fetch('EMBEDDED_SASS_PROTOCOL') { Configuration.default_embedded_sass_protocol }, t.name)
 end
 
 rule '_pb.rb' => %w[.proto protoc.exe] do |t|
@@ -303,7 +303,7 @@ module Configuration
     "#{repo}/#{version}/protoc-#{version}-#{os}-#{cpu}.exe"
   end
 
-  def default_sass_embedded_protocol
+  def default_embedded_sass_protocol
     require 'json'
     require 'open3'
 
