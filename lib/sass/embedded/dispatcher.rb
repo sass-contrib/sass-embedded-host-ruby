@@ -17,7 +17,7 @@ module Sass
         Thread.new do
           loop do
             receive_proto
-          rescue IOError, Errno::EBADF => e
+          rescue IOError, Errno::EBADF, Errno::EPROTO => e
             @mutex.synchronize do
               @id = UINT_MAX
               @observers.values
@@ -82,14 +82,9 @@ module Sass
           outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
           oneof = outbound_message.message
           message = outbound_message.public_send(oneof)
-          @mutex.synchronize do
-            @id = UINT_MAX
-            message.id == UINT_MAX ? @observers.values : [@observers[message.id]]
-          end.each do |observer|
-            observer.public_send(oneof, Errno::EPROTO.new(message.message))
-          end
+          raise Errno::EPROTO, message.message
         else
-          raise ArgumentError
+          raise Errno::EPROTO
         end
       end
     end
