@@ -96,6 +96,7 @@ describe Sass::Value::ArgumentList do
 
     it "isn't any other type" do
       expect { list.assert_boolean }.to raise_error(Sass::ScriptError)
+      expect { list.assert_calculation }.to raise_error(Sass::ScriptError)
       expect { list.assert_color }.to raise_error(Sass::ScriptError)
       expect { list.assert_function }.to raise_error(Sass::ScriptError)
       expect { list.assert_map }.to raise_error(Sass::ScriptError)

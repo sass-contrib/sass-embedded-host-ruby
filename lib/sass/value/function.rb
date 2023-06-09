@@ -4,7 +4,7 @@ module Sass
   module Value
     # Sass's function type.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassFunction
+    # @see https://sass-lang.com/documentation/js-api/classes/sassfunction/
     class Function
       include Value
 

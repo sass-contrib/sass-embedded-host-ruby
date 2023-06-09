@@ -90,7 +90,7 @@ RSpec.describe Sass do
         described_class.compile_string(
           'a {b: foo()}',
           functions: {
-            'foo()': -> { raise 'heck' }
+            'foo()': ->(_args) { raise 'heck' }
           }
         )
       end.to raise_error do |error|
@@ -104,7 +104,7 @@ RSpec.describe Sass do
         described_class.compile_string(
           'a {b: foo()}',
           functions: {
-            'foo()': -> {}
+            'foo()': ->(_args) {}
           }
         )
       end.to raise_error do |error|
@@ -113,17 +113,33 @@ RSpec.describe Sass do
       end
     end
 
-    it 'returning a non-Value' do
-      expect do
-        described_class.compile_string(
-          'a {b: foo()}',
-          functions: {
-            'foo()': -> { 'wrong' }
-          }
-        )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
+    describe 'returning a non-Value' do
+      it 'directly' do
+        expect do
+          described_class.compile_string(
+            'a {b: foo()}',
+            functions: {
+              'foo()': ->(_args) { 'wrong' }
+            }
+          )
+        end.to raise_error do |error|
+          expect(error).to be_a(Sass::CompileError)
+          expect(error.span.start.line).to eq(0)
+        end
+      end
+
+      it 'in a calculation' do
+        expect do
+          described_class.compile_string(
+            'a {b: foo()}',
+            functions: {
+              'foo()': ->(_args) { Sass::Value::Calculation.calc('wrong') }
+            }
+          )
+        end.to raise_error do |error|
+          expect(error).to be_a(Sass::CompileError)
+          expect(error.span.start.line).to eq(0)
+        end
       end
     end
   end
@@ -165,55 +181,55 @@ RSpec.describe Sass do
   describe 'rejects a function signature that' do
     it 'is empty' do
       expect do
-        described_class.compile_string('', functions: { '': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { '': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has no name' do
       expect do
-        described_class.compile_string('', functions: { '()': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { '()': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has no arguments' do
       expect do
-        described_class.compile_string('', functions: { foo: -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { foo: ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has invalid arguments' do
       expect do
-        described_class.compile_string('', functions: { 'foo(arg)': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { 'foo(arg)': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has no closing parentheses' do
       expect do
-        described_class.compile_string('', functions: { 'foo(': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { 'foo(': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has a non-identifier name' do
       expect do
-        described_class.compile_string('', functions: { '$foo()': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { '$foo()': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has whitespace before the signature' do
       expect do
-        described_class.compile_string('', functions: { ' foo()': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { ' foo()': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has whitespace after the signature' do
       expect do
-        described_class.compile_string('', functions: { 'foo() ': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { 'foo() ': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
 
     it 'has whitespace between the identifier and the arguments' do
       expect do
-        described_class.compile_string('', functions: { 'foo ()': -> { Sass::Value::Null::NULL } })
+        described_class.compile_string('', functions: { 'foo ()': ->(_args) { Sass::Value::Null::NULL } })
       end.to raise_error(Sass::CompileError)
     end
   end

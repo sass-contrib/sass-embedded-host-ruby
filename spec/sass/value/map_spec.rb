@@ -24,6 +24,7 @@ describe Sass::Value::Map do
 
     it "isn't any other type" do
       expect { map.assert_boolean }.to raise_error(Sass::ScriptError)
+      expect { map.assert_calculation }.to raise_error(Sass::ScriptError)
       expect { map.assert_color }.to raise_error(Sass::ScriptError)
       expect { map.assert_function }.to raise_error(Sass::ScriptError)
       expect { map.assert_number }.to raise_error(Sass::ScriptError)

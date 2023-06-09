@@ -6,9 +6,10 @@ module Sass
   module Value
     # Sass's number type.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassNumber
+    # @see https://sass-lang.com/documentation/js-api/classes/sassnumber/
     class Number
       include Value
+      include CalculationValue
 
       # @param value [Numeric]
       # @param unit [::String, Hash]

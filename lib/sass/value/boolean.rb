@@ -4,7 +4,7 @@ module Sass
   module Value
     # Sass's boolean type.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassBoolean
+    # @see https://sass-lang.com/documentation/js-api/classes/sassboolean/
     class Boolean
       include Value
 

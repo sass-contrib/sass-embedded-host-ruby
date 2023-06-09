@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+require_relative 'calculation_value'
 require_relative 'script_error'
 
 module Sass
   # The abstract base class of Sass's value types.
   #
-  # @see https://sass-lang.com/documentation/js-api/classes/Value
+  # @see https://sass-lang.com/documentation/js-api/classes/value/
   module Value
     # @return [::String, nil]
     def separator
@@ -60,9 +61,16 @@ module Sass
       raise Sass::ScriptError.new("#{self} is not a boolean", name)
     end
 
+    # @return [Calculation]
     # @raise [ScriptError]
     def assert_calculation(name = nil)
       raise Sass::ScriptError.new("#{self} is not a calculation", name)
+    end
+
+    # @return [CalculationValue]
+    # @raise [ScriptError]
+    def assert_calculation_value(name = nil)
+      raise Sass::ScriptError.new("#{self} is not a calculation value", name)
     end
 
     # @return [Color]
@@ -119,6 +127,7 @@ end
 require_relative 'value/list'
 require_relative 'value/argument_list'
 require_relative 'value/boolean'
+require_relative 'value/calculation'
 require_relative 'value/color'
 require_relative 'value/function'
 require_relative 'value/fuzzy_math'

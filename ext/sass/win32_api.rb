@@ -2,6 +2,7 @@
 
 require 'fiddle'
 
+# @!visibility private
 module SassConfig
   # @see https://learn.microsoft.com/en-us/windows/win32/api/
   module Win32API

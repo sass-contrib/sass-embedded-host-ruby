@@ -33,6 +33,7 @@ describe Sass::Value::Color do
 
       it "isn't any other type" do
         expect { color.assert_boolean }.to raise_error(Sass::ScriptError)
+        expect { color.assert_calculation }.to raise_error(Sass::ScriptError)
         expect { color.assert_function }.to raise_error(Sass::ScriptError)
         expect { color.assert_map }.to raise_error(Sass::ScriptError)
         expect(color.to_map).to be_nil

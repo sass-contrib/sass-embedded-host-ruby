@@ -6,7 +6,7 @@ module Sass
     #
     # No matter what representation was originally used to create this color, all of its channels are accessible.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassColor
+    # @see https://sass-lang.com/documentation/js-api/classes/sasscolor/
     class Color
       include Value
 

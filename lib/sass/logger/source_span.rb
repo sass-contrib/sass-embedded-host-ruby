@@ -4,7 +4,7 @@ module Sass
   module Logger
     # A span of text within a source file.
     #
-    # @see https://sass-lang.com/documentation/js-api/interfaces/SourceSpan
+    # @see https://sass-lang.com/documentation/js-api/interfaces/sourcespan/
     class SourceSpan
       # @return [SourceLocation]
       attr_reader :start, :end

@@ -22,11 +22,7 @@ module Sass
             )
           when Sass::Value::Number
             EmbeddedProtocol::Value.new(
-              number: EmbeddedProtocol::Value::Number.new(
-                value: obj.value.to_f,
-                numerators: obj.numerator_units,
-                denominators: obj.denominator_units
-              )
+              number: Number.to_proto(obj)
             )
           when Sass::Value::Color
             if obj.instance_eval { !defined?(@hue) }
@@ -100,6 +96,10 @@ module Sass
                 )
               )
             end
+          when Sass::Value::Calculation
+            EmbeddedProtocol::Value.new(
+              calculation: Calculation.to_proto(obj)
+            )
           when Sass::Value::Boolean
             EmbeddedProtocol::Value.new(
               singleton: obj.value ? :TRUE : :FALSE
@@ -123,12 +123,7 @@ module Sass
               quoted: obj.quoted
             )
           when :number
-            Sass::Value::Number.new(
-              obj.value, {
-                numerator_units: obj.numerators.to_a,
-                denominator_units: obj.denominators.to_a
-              }
-            )
+            Number.from_proto(obj)
           when :rgb_color
             Sass::Value::Color.new(
               red: obj.red,
@@ -181,6 +176,8 @@ module Sass
             Sass::Value::Function.new(obj.id)
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
+          when :calculation
+            Calculation.from_proto(obj)
           when :singleton
             case obj
             when :TRUE
@@ -196,6 +193,178 @@ module Sass
             raise Sass::ScriptError, "Unknown Value.value #{obj}"
           end
         end
+
+        # The {Number} Protofier.
+        module Number
+          module_function
+
+          def to_proto(obj)
+            EmbeddedProtocol::Value::Number.new(
+              value: obj.value.to_f,
+              numerators: obj.numerator_units,
+              denominators: obj.denominator_units
+            )
+          end
+
+          def from_proto(obj)
+            Sass::Value::Number.new(
+              obj.value, {
+                numerator_units: obj.numerators.to_a,
+                denominator_units: obj.denominators.to_a
+              }
+            )
+          end
+        end
+
+        private_constant :Number
+
+        # The {Calculation} Protofier.
+        module Calculation
+          module_function
+
+          def to_proto(obj)
+            EmbeddedProtocol::Value::Calculation.new(
+              name: obj.name,
+              arguments: obj.arguments.map { |argument| CalculationValue.to_proto(argument) }
+            )
+          end
+
+          def from_proto(obj)
+            case obj.name
+            when 'calc'
+              if obj.arguments.length != 1
+                raise Sass::ScriptError,
+                      'Value.Calculation.arguments must have exactly one argument for calc().'
+              end
+
+              Sass::Value::Calculation.calc(*obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
+            when 'clamp'
+              if obj.arguments.length != 3
+                raise Sass::ScriptError,
+                      'Value.Calculation.arguments must have exactly 3 arguments for clamp().'
+              end
+
+              Sass::Value::Calculation.clamp(*obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
+            when 'min'
+              if obj.arguments.empty?
+                raise Sass::ScriptError,
+                      'Value.Calculation.arguments must have at least 1 argument for min().'
+              end
+
+              Sass::Value::Calculation.min(obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
+            when 'max'
+              if obj.arguments.empty?
+                raise Sass::ScriptError,
+                      'Value.Calculation.arguments must have at least 1 argument for max().'
+              end
+
+              Sass::Value::Calculation.max(obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
+            else
+              raise Sass::ScriptError,
+                    "Value.Calculation.name #{calculation.name.inspect} is not a recognized calculation type."
+            end
+          end
+        end
+
+        private_constant :Calculation
+
+        # The {CalculationValue} Protofier.
+        module CalculationValue
+          module_function
+
+          def to_proto(value)
+            case value
+            when Sass::Value::Number
+              EmbeddedProtocol::Value::Calculation::CalculationValue.new(
+                number: Number.to_proto(value)
+              )
+            when Sass::Value::Calculation
+              EmbeddedProtocol::Value::Calculation::CalculationValue.new(
+                calculation: Calculation.to_proto(value)
+              )
+            when Sass::Value::String
+              EmbeddedProtocol::Value::Calculation::CalculationValue.new(
+                string: value.text
+              )
+            when Sass::CalculationValue::CalculationOperation
+              EmbeddedProtocol::Value::Calculation::CalculationValue.new(
+                operation: EmbeddedProtocol::Value::Calculation::CalculationOperation.new(
+                  operator: CalculationOperator.to_proto(value.operator),
+                  left: to_proto(value.left),
+                  right: to_proto(value.right)
+                )
+              )
+            when Sass::CalculationValue::CalculationInterpolation
+              EmbeddedProtocol::Value::Calculation::CalculationValue.new(
+                interpolation: value.value
+              )
+            else
+              raise Sass::ScriptError, "Unknown CalculationValue #{value}"
+            end
+          end
+
+          def from_proto(value)
+            oneof = value.value
+            obj = value.public_send(oneof)
+            case oneof
+            when :number
+              Number.from_proto(obj)
+            when :calculation
+              Calculation.from_proto(obj)
+            when :string
+              Sass::Value::String.new(obj, quoted: false)
+            when :operation
+              Sass::CalculationValue::CalculationOperation.new(
+                CalculationOperator.from_proto(obj.operator),
+                from_proto(obj.left),
+                from_proto(obj.right)
+              )
+            when :interpolation
+              Sass::CalculationValue::CalculationInterpolation.new(obj)
+            else
+              raise Sass::ScriptError, "Unknown CalculationValue #{value}"
+            end
+          end
+        end
+
+        private_constant :CalculationValue
+
+        # The {CalculationOperator} Protofier.
+        module CalculationOperator
+          module_function
+
+          def to_proto(operator)
+            case operator
+            when '+'
+              :PLUS
+            when '-'
+              :MINUS
+            when '*'
+              :TIMES
+            when '/'
+              :DIVIDE
+            else
+              raise Sass::ScriptError, "Unknown CalculationOperator #{separator}"
+            end
+          end
+
+          def from_proto(operator)
+            case operator
+            when :PLUS
+              '+'
+            when :MINUS
+              '-'
+            when :TIMES
+              '*'
+            when :DIVIDE
+              '/'
+            else
+              raise Sass::ScriptError, "Unknown CalculationOperator #{separator}"
+            end
+          end
+        end
+
+        private_constant :CalculationOperator
 
         # The {ListSeparator} Protofier.
         module ListSeparator
