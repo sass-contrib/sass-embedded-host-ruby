@@ -4,9 +4,10 @@ module Sass
   module Value
     # Sass's string type.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassString
+    # @see https://sass-lang.com/documentation/js-api/classes/sassstring/
     class String
       include Value
+      include CalculationValue
 
       # @param text [::String]
       # @param quoted [::Boolean]
@@ -35,6 +36,14 @@ module Sass
 
       # @return [String]
       def assert_string(_name = nil)
+        self
+      end
+
+      # @return [CalculationValue]
+      # @raise [ScriptError]
+      def assert_calculation_value(_name = nil)
+        raise Sass::ScriptError, "Expected #{self} to be an unquoted string." if quoted?
+
         self
       end
 

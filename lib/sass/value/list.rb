@@ -4,7 +4,7 @@ module Sass
   module Value
     # Sass's list type.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassList
+    # @see https://sass-lang.com/documentation/js-api/classes/sasslist/
     class List
       include Value
 

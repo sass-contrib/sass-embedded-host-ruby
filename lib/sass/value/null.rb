@@ -4,7 +4,7 @@ module Sass
   module Value
     # Sass's null type.
     #
-    # @see https://sass-lang.com/documentation/js-api/modules#sassNull
+    # @see https://sass-lang.com/documentation/js-api/variables/sassnull/
     class Null
       include Value
 

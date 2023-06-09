@@ -52,6 +52,7 @@ describe Sass::Value::String do
     it "isn't any other type" do
       value = described_class.new('nb')
       expect { value.assert_boolean }.to raise_error(Sass::ScriptError)
+      expect { value.assert_calculation }.to raise_error(Sass::ScriptError)
       expect { value.assert_color }.to raise_error(Sass::ScriptError)
       expect { value.assert_function }.to raise_error(Sass::ScriptError)
       expect { value.assert_map }.to raise_error(Sass::ScriptError)

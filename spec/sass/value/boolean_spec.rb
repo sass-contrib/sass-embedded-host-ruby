@@ -23,6 +23,7 @@ describe Sass::Value::Boolean do
     end
 
     it "isn't any other type" do
+      expect { value.assert_calculation }.to raise_error(Sass::ScriptError)
       expect { value.assert_color }.to raise_error(Sass::ScriptError)
       expect { value.assert_function }.to raise_error(Sass::ScriptError)
       expect { value.assert_map }.to raise_error(Sass::ScriptError)
@@ -52,6 +53,7 @@ describe Sass::Value::Boolean do
     end
 
     it "isn't any other type" do
+      expect { value.assert_calculation }.to raise_error(Sass::ScriptError)
       expect { value.assert_color }.to raise_error(Sass::ScriptError)
       expect { value.assert_function }.to raise_error(Sass::ScriptError)
       expect { value.assert_map }.to raise_error(Sass::ScriptError)

@@ -3,11 +3,13 @@
 module Sass
   # A namespace for built-in Loggers.
   #
-  # @see https://sass-lang.com/documentation/js-api/modules/Logger
+  # @see https://sass-lang.com/documentation/js-api/modules/logger/
   module Logger
     module_function
 
     # A Logger that silently ignores all warnings and debug messages.
+    #
+    # @see https://sass-lang.com/documentation/js-api/variables/logger.silent/
     def silent
       Silent
     end

@@ -4,7 +4,7 @@ module Sass
   module Value
     # Sass's map type.
     #
-    # @see https://sass-lang.com/documentation/js-api/classes/SassMap
+    # @see https://sass-lang.com/documentation/js-api/classes/sassmap/
     class Map
       include Value
 

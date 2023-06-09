@@ -95,7 +95,7 @@ module Sass
     # Compiles the Sass file at +path+ to CSS.
     # @param path [String]
     # @param load_paths [Array<String>] Paths in which to look for stylesheets loaded by rules like
-    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
     # @param charset [Boolean] By default, if the CSS document contains non-ASCII characters, Sass adds a +@charset+
     #   declaration (in expanded output mode) or a byte-order mark (in compressed mode) to indicate its encoding to
     #   browsers or other consumers. If +charset+ is +false+, these annotations are omitted.
@@ -104,7 +104,7 @@ module Sass
     # @param style [String, Symbol] The OutputStyle of the compiled CSS.
     # @param functions [Hash<String, Proc>] Additional built-in Sass functions that are available in all stylesheets.
     # @param importers [Array<Object>] Custom importers that control how Sass resolves loads from rules like
-    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
     # @param alert_ascii [Boolean] If this is +true+, the compiler will exclusively use ASCII characters in its error
     #   and warning messages. Otherwise, it may use non-ASCII Unicode characters as well.
     # @param alert_color [Boolean] If this is +true+, the compiler will use ANSI color escape codes in its error and
@@ -119,7 +119,7 @@ module Sass
     #   deprecation warning it encounters.
     # @return [CompileResult]
     # @raise [CompileError]
-    # @see https://sass-lang.com/documentation/js-api/modules#compile
+    # @see https://sass-lang.com/documentation/js-api/functions/compile/
     def compile(path,
                 load_paths: [],
 
@@ -163,7 +163,7 @@ module Sass
     # @param source [String]
     # @param importer [Object] The importer to use to handle loads that are relative to the entrypoint stylesheet.
     # @param load_paths [Array<String>] Paths in which to look for stylesheets loaded by rules like
-    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
     # @param syntax [String, Symbol] The Syntax to use to parse the entrypoint stylesheet.
     # @param url [String] The canonical URL of the entrypoint stylesheet. If this is passed along with +importer+, it's
     #   used to resolve relative loads in the entrypoint stylesheet.
@@ -175,7 +175,7 @@ module Sass
     # @param style [String, Symbol] The OutputStyle of the compiled CSS.
     # @param functions [Hash<String, Proc>] Additional built-in Sass functions that are available in all stylesheets.
     # @param importers [Array<Object>] Custom importers that control how Sass resolves loads from rules like
-    #   {@use}[https://sass-lang.com/documentation/at-rules/use] and {@import}[https://sass-lang.com/documentation/at-rules/import].
+    #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
     # @param alert_ascii [Boolean] If this is +true+, the compiler will exclusively use ASCII characters in its error
     #   and warning messages. Otherwise, it may use non-ASCII Unicode characters as well.
     # @param alert_color [Boolean] If this is +true+, the compiler will use ANSI color escape codes in its error and
@@ -190,7 +190,7 @@ module Sass
     #   deprecation warning it encounters.
     # @return [CompileResult]
     # @raise [CompileError]
-    # @see https://sass-lang.com/documentation/js-api/modules#compileString
+    # @see https://sass-lang.com/documentation/js-api/functions/compilestring/
     def compile_string(source,
                        importer: nil,
                        load_paths: [],
@@ -234,7 +234,7 @@ module Sass
     end
 
     # @return [String] Information about the Sass implementation.
-    # @see https://sass-lang.com/documentation/js-api/modules#info
+    # @see https://sass-lang.com/documentation/js-api/variables/info/
     def info
       @info ||= Host.new(@dispatcher).version_request
     end

@@ -23,6 +23,7 @@ describe Sass::Value::Null do
 
   it "isn't any type" do
     expect { value.assert_boolean }.to raise_error(Sass::ScriptError)
+    expect { value.assert_calculation }.to raise_error(Sass::ScriptError)
     expect { value.assert_color }.to raise_error(Sass::ScriptError)
     expect { value.assert_function }.to raise_error(Sass::ScriptError)
     expect { value.assert_map }.to raise_error(Sass::ScriptError)

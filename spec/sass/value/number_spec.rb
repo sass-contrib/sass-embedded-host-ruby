@@ -33,6 +33,7 @@ describe Sass::Value::Number do
 
         it "isn't any other type" do
           expect { number.assert_boolean }.to raise_error(Sass::ScriptError)
+          expect { number.assert_calculation }.to raise_error(Sass::ScriptError)
           expect { number.assert_color }.to raise_error(Sass::ScriptError)
           expect { number.assert_function }.to raise_error(Sass::ScriptError)
           expect { number.assert_map }.to raise_error(Sass::ScriptError)
