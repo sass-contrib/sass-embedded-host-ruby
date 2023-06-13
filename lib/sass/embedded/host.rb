@@ -11,8 +11,8 @@ module Sass
     #
     # It communicates with {Dispatcher} and handles the host logic.
     class Host
-      def initialize(channel)
-        @channel = channel
+      def initialize(dispatcher)
+        @dispatcher = dispatcher
       end
 
       def compile_request(path:,
@@ -117,7 +117,7 @@ module Sass
       private
 
       def await0
-        @connection = @channel.connect(self)
+        @connection = @dispatcher.connect(self)
         @queue = Queue.new
 
         yield
@@ -132,7 +132,7 @@ module Sass
       end
 
       def await
-        @connection = @channel.connect(self)
+        @connection = @dispatcher.connect(self)
         @queue = Queue.new
 
         yield

@@ -2,10 +2,10 @@
 
 module Sass
   class Embedded
-    # The {Channel} class.
+    # The {ResilientDispatcher} class.
     #
-    # It establishes connection between {Host} and {Dispatcher}.
-    class Channel
+    # It recovers from failures and continues to function.
+    class ResilientDispatcher
       def initialize
         @dispatcher = Dispatcher.new
         @mutex = Mutex.new
@@ -23,16 +23,16 @@ module Sass
         end
       end
 
-      def connect(observer)
+      def connect(host)
         @mutex.synchronize do
-          @dispatcher.connect(observer)
+          @dispatcher.connect(host)
         rescue Errno::EBUSY
           @dispatcher = Dispatcher.new
-          @dispatcher.connect(observer)
+          @dispatcher.connect(host)
         end
       end
     end
 
-    private_constant :Channel
+    private_constant :ResilientDispatcher
   end
 end

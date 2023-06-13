@@ -4,11 +4,11 @@ require_relative '../../ext/sass/cli'
 require_relative '../../ext/sass/embedded_sass_pb'
 require_relative 'compile_error'
 require_relative 'compile_result'
-require_relative 'embedded/channel'
 require_relative 'embedded/compiler'
 require_relative 'embedded/dispatcher'
 require_relative 'embedded/host'
 require_relative 'embedded/protofier'
+require_relative 'embedded/resilient_dispatcher'
 require_relative 'embedded/structifier'
 require_relative 'embedded/varint'
 require_relative 'embedded/version'
@@ -80,7 +80,7 @@ module Sass
   # rubocop:enable Layout/LineLength
 
   # The {Embedded} host for using dart-sass. Each instance creates its own
-  # communication {Channel} with a dedicated compiler process.
+  # communication {Dispatcher} with a dedicated compiler process.
   #
   # @example
   #   embedded = Sass::Embedded.new
@@ -89,7 +89,7 @@ module Sass
   #   embedded.close
   class Embedded
     def initialize
-      @channel = Channel.new
+      @dispatcher = ResilientDispatcher.new
     end
 
     # Compiles the Sass file at +path+ to CSS.
@@ -138,7 +138,7 @@ module Sass
                 verbose: false)
       raise ArgumentError, 'path must be set' if path.nil?
 
-      Host.new(@channel).compile_request(
+      Host.new(@dispatcher).compile_request(
         path: path,
         source: nil,
         importer: nil,
@@ -212,7 +212,7 @@ module Sass
                        verbose: false)
       raise ArgumentError, 'source must be set' if source.nil?
 
-      Host.new(@channel).compile_request(
+      Host.new(@dispatcher).compile_request(
         path: nil,
         source: source,
         importer: importer,
@@ -236,15 +236,15 @@ module Sass
     # @return [String] Information about the Sass implementation.
     # @see https://sass-lang.com/documentation/js-api/modules#info
     def info
-      @info ||= Host.new(@channel).version_request
+      @info ||= Host.new(@dispatcher).version_request
     end
 
     def close
-      @channel.close
+      @dispatcher.close
     end
 
     def closed?
-      @channel.closed?
+      @dispatcher.closed?
     end
   end
 

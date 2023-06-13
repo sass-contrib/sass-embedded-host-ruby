@@ -59,7 +59,7 @@ module Sass
       end
 
       def connect(host)
-        Connection.new(self, subscribe(host))
+        Connection.new(self, host)
       end
 
       def close
@@ -96,13 +96,13 @@ module Sass
         end
       end
 
-      # The {Connection} between {Host} to {Dispatcher}.
+      # The {Connection} between {Dispatcher} and {Host}.
       class Connection
         attr_reader :id
 
-        def initialize(dispatcher, id)
+        def initialize(dispatcher, host)
           @dispatcher = dispatcher
-          @id = id
+          @id = @dispatcher.subscribe(host)
         end
 
         def disconnect
