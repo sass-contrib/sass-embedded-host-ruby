@@ -4,12 +4,12 @@ module Sass
   class Embedded
     # The {Dispatcher} class.
     #
-    # It dispatches messages between mutliple instances of {Host} and a single {Compiler}.
+    # It dispatches messages between mutliple instances of {Host} and a single {Connection} to the compiler.
     class Dispatcher
       UINT_MAX = 0xffffffff
 
       def initialize
-        @compiler = Compiler.new
+        @connection = Connection.new
         @observers = {}
         @id = 1
         @mutex = Mutex.new
@@ -63,21 +63,21 @@ module Sass
       end
 
       def close
-        @compiler.close
+        @connection.close
       end
 
       def closed?
-        @compiler.closed?
+        @connection.closed?
       end
 
       def send_proto(...)
-        @compiler.write(...)
+        @connection.write(...)
       end
 
       private
 
       def receive_proto
-        id, proto = @compiler.read
+        id, proto = @connection.read
         case id
         when 1...UINT_MAX
           @mutex.synchronize { @observers[id] }.receive_proto(proto)

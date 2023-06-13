@@ -4,10 +4,10 @@ require 'open3'
 
 module Sass
   class Embedded
-    # The {Compiler} class.
+    # The stdio based {Connection} between the {Dispatcher} and the compiler.
     #
-    # It runs the `sass --embedded` process.
-    class Compiler
+    # It runs the `sass --embedded` command.
+    class Connection
       def initialize
         @stdin, @stdout, @stderr, @wait_thread = begin
           Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
@@ -67,6 +67,6 @@ module Sass
       end
     end
 
-    private_constant :Compiler
+    private_constant :Connection
   end
 end
