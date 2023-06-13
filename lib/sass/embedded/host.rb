@@ -117,7 +117,7 @@ module Sass
       private
 
       def await0
-        @connection = @dispatcher.connect(self)
+        @channel = @dispatcher.connect(self)
         @queue = Queue.new
 
         yield
@@ -128,11 +128,11 @@ module Sass
 
         @result
       ensure
-        @connection&.disconnect
+        @channel&.disconnect
       end
 
       def await
-        @connection = @dispatcher.connect(self)
+        @channel = @dispatcher.connect(self)
         @queue = Queue.new
 
         yield
@@ -148,21 +148,21 @@ module Sass
 
         @result
       ensure
-        @connection&.disconnect
+        @channel&.disconnect
       end
 
       def id
-        @connection.id
+        @channel.id
       end
 
       def send_message0(...)
         inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @connection.send_proto(0, inbound_message.to_proto)
+        @channel.send_proto(0, inbound_message.to_proto)
       end
 
       def send_message(...)
         inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @connection.send_proto(id, inbound_message.to_proto)
+        @channel.send_proto(id, inbound_message.to_proto)
       end
     end
 
