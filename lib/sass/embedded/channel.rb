@@ -25,35 +25,12 @@ module Sass
 
       def connect(observer)
         @mutex.synchronize do
-          begin
-            id = @dispatcher.subscribe(observer)
-          rescue Errno::EBUSY
-            @dispatcher = Dispatcher.new
-            id = @dispatcher.subscribe(observer)
-          end
-          Connection.new(@dispatcher, id)
+          @dispatcher.connect(observer)
+        rescue Errno::EBUSY
+          @dispatcher = Dispatcher.new
+          @dispatcher.connect(observer)
         end
       end
-
-      # The {Connection} between {Host} to {Dispatcher}.
-      class Connection
-        attr_reader :id
-
-        def initialize(dispatcher, id)
-          @dispatcher = dispatcher
-          @id = id
-        end
-
-        def disconnect
-          @dispatcher.unsubscribe(id)
-        end
-
-        def send_proto(...)
-          @dispatcher.send_proto(...)
-        end
-      end
-
-      private_constant :Connection
     end
 
     private_constant :Channel

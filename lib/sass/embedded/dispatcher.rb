@@ -58,6 +58,10 @@ module Sass
         end
       end
 
+      def connect(host)
+        Connection.new(self, subscribe(host))
+      end
+
       def close
         @compiler.close
       end
@@ -91,6 +95,26 @@ module Sass
           raise Errno::EPROTO
         end
       end
+
+      # The {Connection} between {Host} to {Dispatcher}.
+      class Connection
+        attr_reader :id
+
+        def initialize(dispatcher, id)
+          @dispatcher = dispatcher
+          @id = id
+        end
+
+        def disconnect
+          @dispatcher.unsubscribe(id)
+        end
+
+        def send_proto(...)
+          @dispatcher.send_proto(...)
+        end
+      end
+
+      private_constant :Connection
     end
 
     private_constant :Dispatcher
