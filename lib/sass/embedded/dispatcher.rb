@@ -59,7 +59,7 @@ module Sass
       end
 
       def connect(host)
-        Connection.new(self, host)
+        Channel.new(self, host)
       end
 
       def close
@@ -96,8 +96,8 @@ module Sass
         end
       end
 
-      # The {Connection} between {Dispatcher} and {Host}.
-      class Connection
+      # The {Channel} between {Dispatcher} and {Host}.
+      class Channel
         attr_reader :id
 
         def initialize(dispatcher, host)
@@ -114,7 +114,7 @@ module Sass
         end
       end
 
-      private_constant :Connection
+      private_constant :Channel
     end
 
     private_constant :Dispatcher
