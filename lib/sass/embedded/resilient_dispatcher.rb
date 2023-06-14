@@ -24,6 +24,8 @@ module Sass
       end
 
       def connect(host)
+        @dispatcher.connect(host)
+      rescue Errno::EBUSY
         @mutex.synchronize do
           @dispatcher.connect(host)
         rescue Errno::EBUSY
