@@ -268,9 +268,13 @@ module Configuration
   end
 
   def default_protoc
+    require 'rubygems/remote_fetcher'
+
     repo = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protoc'
 
-    version = Gem::Dependency.new('google-protobuf').to_spec.version
+    spec = Gem::Dependency.new('google-protobuf').to_spec
+
+    version = spec.version
 
     message = "protoc for #{Platform::ARCH} not available at #{repo}/#{version}"
 
@@ -300,7 +304,25 @@ module Configuration
             raise NotImplementedError, message
           end
 
-    "#{repo}/#{version}/protoc-#{version}-#{os}-#{cpu}.exe"
+    path = URI.parse("#{repo}/#{version}/")
+
+    Gem::RemoteFetcher.fetcher.fetch_https(path)
+
+    path + "protoc-#{version}-#{os}-#{cpu}.exe"
+  rescue Gem::RemoteFetcher::FetchError => e
+    Gem::SpecFetcher.fetcher.detect do |name_tuple|
+      name_tuple.name == spec.name && name_tuple.platform == 'ruby'
+    end.reverse_each do |name_tuple, _|
+      path = URI.parse("#{repo}/#{name_tuple.version}/")
+
+      Gem::RemoteFetcher.fetcher.fetch_https(path)
+
+      return path + "protoc-#{name_tuple.version}-#{os}-#{cpu}.exe"
+    rescue Gem::RemoteFetcher::FetchError
+      next
+    end
+
+    raise e
   end
 
   def default_embedded_sass_protocol
