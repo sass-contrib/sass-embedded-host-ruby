@@ -304,25 +304,25 @@ module Configuration
             raise NotImplementedError, message
           end
 
-    path = URI.parse("#{repo}/#{version}/")
+    uri = "#{repo}/#{version}/protoc-#{version}-#{os}-#{cpu}.exe"
 
-    Gem::RemoteFetcher.fetcher.fetch_https(path)
+    Gem::RemoteFetcher.fetcher.fetch_https(URI.parse("#{uri}.sha1"))
 
-    path + "protoc-#{version}-#{os}-#{cpu}.exe"
-  rescue Gem::RemoteFetcher::FetchError => e
+    uri
+  rescue Gem::RemoteFetcher::FetchError
     Gem::SpecFetcher.fetcher.detect do |name_tuple|
       name_tuple.name == spec.name && name_tuple.platform == 'ruby'
     end.reverse_each do |name_tuple, _|
-      path = URI.parse("#{repo}/#{name_tuple.version}/")
+      uri = "#{repo}/#{name_tuple.version}/protoc-#{name_tuple.version}-#{os}-#{cpu}.exe"
 
-      Gem::RemoteFetcher.fetcher.fetch_https(path)
+      Gem::RemoteFetcher.fetcher.fetch_https(URI.parse("#{uri}.sha1"))
 
-      return path + "protoc-#{name_tuple.version}-#{os}-#{cpu}.exe"
+      return uri
     rescue Gem::RemoteFetcher::FetchError
       next
     end
 
-    raise e
+    raise NotImplementedError, message
   end
 
   def default_embedded_sass_protocol
