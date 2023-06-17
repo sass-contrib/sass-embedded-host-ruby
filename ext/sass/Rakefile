@@ -255,7 +255,24 @@ module Configuration
           when 'x86_64'
             'x64'
           when 'aarch64'
-            'arm64'
+            if Platform::OS == 'windows'
+              begin
+                require_relative 'win32_api'
+
+                if Win32API.x64?
+                  'x64'
+                elsif Win32API.x86?
+                  'ia32'
+                else
+                  raise NotImplementedError, message
+                end
+              rescue LoadError
+                # TODO: remove begin/rescue once jruby/jffi support windows aarch64
+                'ia32'
+              end
+            else
+              'arm64'
+            end
           when 'arm'
             'arm'
           else
@@ -295,7 +312,24 @@ module Configuration
           when 'x86_64'
             'x86_64'
           when 'aarch64'
-            'aarch_64'
+            if Platform::OS == 'windows'
+              begin
+                require_relative 'win32_api'
+
+                if Win32API.x64?
+                  'x86_64'
+                elsif Win32API.x86?
+                  'x86_32'
+                else
+                  raise NotImplementedError, message
+                end
+              rescue LoadError
+                # TODO: remove begin/rescue once jruby/jffi support windows aarch64
+                'x86_32'
+              end
+            else
+              'aarch_64'
+            end
           when 'powerpc64le'
             'ppcle_64'
           when 's390x'
