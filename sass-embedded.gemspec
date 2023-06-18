@@ -19,7 +19,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
 
   spec.bindir      = 'exe'
   spec.executables = ['sass']
-  spec.files       = Dir['exe/**/*', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
+  spec.files       = Dir['.yardopts*', 'exe/**/*', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
 
   if ENV.key?('gem_platform')
     spec.files += Dir['ext/sass/*.rb', 'ext/sass/dart-sass/**/*']
@@ -28,10 +28,10 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   else
     spec.extensions = ['ext/sass/Rakefile']
     spec.files += Dir['ext/sass/*_pb.rb'] + [
+      'ext/sass/Rakefile',
       'ext/sass/expand-archive.ps1',
       'ext/sass/package.json',
-      'ext/sass/win32_api.rb',
-      'ext/sass/Rakefile'
+      'ext/sass/win32_api.rb'
     ]
   end
 
