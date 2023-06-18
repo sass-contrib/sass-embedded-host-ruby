@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../../ext/sass/cli'
-require_relative '../../ext/sass/embedded_sass_pb'
 require_relative 'compile_error'
 require_relative 'compile_result'
 require_relative 'embedded/connection'
@@ -12,6 +11,7 @@ require_relative 'embedded/resilient_dispatcher'
 require_relative 'embedded/structifier'
 require_relative 'embedded/varint'
 require_relative 'embedded/version'
+require_relative 'embedded_protocol'
 require_relative 'logger/silent'
 require_relative 'logger/source_location'
 require_relative 'logger/source_span'
@@ -247,6 +247,4 @@ module Sass
       @dispatcher.closed?
     end
   end
-
-  private_constant :EmbeddedProtocol
 end
