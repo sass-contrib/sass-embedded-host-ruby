@@ -11,7 +11,7 @@ module Win32API
     IMAGE_FILE_MACHINE_I386 = 0x014c
     IMAGE_FILE_MACHINE_ARMNT = 0x01c4
     IMAGE_FILE_MACHINE_AMD64 = 0x8664
-    IMAGE_FILE_MACHINE_ARM64 = 0xAA64
+    IMAGE_FILE_MACHINE_ARM64 = 0xaa64
   end
 
   private_constant :ImageFileMachineConstants
@@ -111,11 +111,7 @@ module Win32API
         raise Fiddle.win32_last_error if IsWow64Process2.call(h_process, p_process_machine, p_native_machine).zero?
 
         if p_native_machine.to_str.unpack1('S!') == machine
-          return MachineTypeAttributes.new(
-            MachineAttributes::USER_ENABLED |
-            MachineAttributes::KERNEL_ENABLED |
-            MachineAttributes::WOW64_CONTAINER
-          )
+          return MachineTypeAttributes.new(MachineAttributes::USER_ENABLED | MachineAttributes::KERNEL_ENABLED)
         end
 
         p_machine_is_supported = Fiddle::Pointer.malloc(Fiddle::SIZEOF_CHAR, Fiddle::RUBY_FREE)
@@ -124,10 +120,7 @@ module Win32API
         if p_machine_is_supported.to_str.unpack1('c').zero?
           MachineTypeAttributes.new(0)
         else
-          MachineTypeAttributes.new(
-            MachineAttributes::USER_ENABLED |
-            MachineAttributes::WOW64_CONTAINER
-          )
+          MachineTypeAttributes.new(MachineAttributes::USER_ENABLED | MachineAttributes::WOW64_CONTAINER)
         end
       end
     end
