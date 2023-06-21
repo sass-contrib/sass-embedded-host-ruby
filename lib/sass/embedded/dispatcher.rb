@@ -46,15 +46,11 @@ module Sass
 
           return unless @observers.empty?
 
-          # if @id == UINT_MAX
-          #   close
-          # else
-          #   @id = 1
-          # end
-
-          # Resetting @id can cause a race condition in compiler
-          # See: https://github.com/sass/dart-sass/issues/2004
-          close if @id == UINT_MAX
+          if @id == UINT_MAX
+            close
+          else
+            @id = 1
+          end
         end
       end
 
