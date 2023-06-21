@@ -2,6 +2,7 @@
 
 require 'fiddle'
 
+# @!visibility private
 # @see https://learn.microsoft.com/en-us/windows/win32/api/
 module Win32API
   Kernel32 = Fiddle.dlopen('Kernel32.dll')

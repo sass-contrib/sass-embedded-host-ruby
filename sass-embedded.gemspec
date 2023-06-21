@@ -19,7 +19,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
 
   spec.bindir      = 'exe'
   spec.executables = ['sass']
-  spec.files       = Dir['.yardopts*', 'exe/**/*', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
+  spec.files       = Dir['exe/**/*', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
 
   if ENV.key?('gem_platform')
     spec.files += Dir['ext/sass/*.rb', 'ext/sass/dart-sass/**/*']
