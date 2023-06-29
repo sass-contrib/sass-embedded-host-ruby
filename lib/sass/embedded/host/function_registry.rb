@@ -47,13 +47,11 @@ module Sass
           end
 
           success = value_protofier.to_proto(get(function_call_request).call(arguments))
-          accessed_argument_lists = arguments
-                                    .select do |argument|
-                                      argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval do
-                                        @keywords_accessed
-                                      end
-                                    end
-                                    .map { |argument| argument.instance_eval { @id } }
+          accessed_argument_lists = arguments.filter_map do |argument|
+            if argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval { @keywords_accessed }
+              argument.instance_eval { @id }
+            end
+          end
 
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
             id: function_call_request.id,
