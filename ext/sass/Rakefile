@@ -13,12 +13,12 @@ CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
 CLOBBER.include %w[dart-sass cli.rb embedded_sass_pb.rb]
 
 file 'protoc.exe' do |t|
-  fetch(ENV.fetch('PROTOC_BIN') { Configuration.default_protoc }, t.name)
+  fetch(ENV.fetch('PROTOC_BIN') { SassConfig.default_protoc }, t.name)
   chmod 'a+x', t.name
 end
 
 file 'dart-sass' do |t|
-  archive = fetch(ENV.fetch(t.name.tr('-', '_').upcase) { Configuration.default_dart_sass })
+  archive = fetch(ENV.fetch(t.name.tr('-', '_').upcase) { SassConfig.default_dart_sass })
   unarchive archive
   rm archive
 end
@@ -58,7 +58,7 @@ file 'cli.rb' => %w[dart-sass] do |t|
 end
 
 file 'embedded_sass.proto' => %w[cli.rb] do |t|
-  fetch(ENV.fetch('EMBEDDED_SASS_PROTOCOL') { Configuration.default_embedded_sass_protocol }, t.name)
+  fetch(ENV.fetch('EMBEDDED_SASS_PROTOCOL') { SassConfig.default_embedded_sass_protocol }, t.name)
 end
 
 rule '_pb.rb' => %w[.proto protoc.exe] do |t|
@@ -176,8 +176,8 @@ module FileUtils
   end
 end
 
-# The {Configuration} module.
-module Configuration
+# The {SassConfig} module.
+module SassConfig
   module Platform
     OS = case RbConfig::CONFIG['host_os'].downcase
          when /darwin/
