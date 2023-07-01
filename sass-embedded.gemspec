@@ -19,15 +19,15 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
 
   spec.bindir      = 'exe'
   spec.executables = ['sass']
-  spec.files       = Dir['exe/**/*', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
+  spec.files       = Dir['exe/**/*', 'ext/**/*_pb.rb', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
 
   if ENV.key?('gem_platform')
-    spec.files += Dir['ext/sass/*.rb', 'ext/sass/dart-sass/**/*']
+    spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
     spec.platform = ENV['gem_platform']
     spec.required_rubygems_version = '>= 3.3.22' if ENV['gem_platform'].include?('-linux-')
   else
     spec.extensions = ['ext/sass/Rakefile']
-    spec.files += Dir['ext/sass/*_pb.rb'] + [
+    spec.files += [
       'ext/sass/Rakefile',
       'ext/sass/expand-archive.ps1',
       'ext/sass/package.json',
