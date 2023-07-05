@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rake/clean'
+require 'rubygems/remote_fetcher'
 
 task default: %i[install clean]
 
@@ -8,7 +9,7 @@ task install: %w[cli.rb] do
   Rake::Task['embedded_sass_pb.rb'].invoke unless File.exist?('embedded_sass_pb.rb')
 end
 
-CLEAN.include %w[protoc.exe *.proto *.tar.gz *.zip]
+CLEAN.include %w[protoc.exe ruby *.proto *.tar.gz *.zip]
 
 CLOBBER.include %w[dart-sass cli.rb embedded_sass_pb.rb]
 
@@ -18,9 +19,21 @@ file 'protoc.exe' do |t|
 end
 
 file 'dart-sass' do |t|
-  archive = fetch(ENV.fetch(t.name.tr('-', '_').upcase) { SassConfig.default_dart_sass })
-  unarchive archive
-  rm archive
+  if ENV.key?('DART_SASS')
+    archive = fetch(ENV.fetch('DART_SASS'))
+    unarchive archive
+    rm archive
+  else
+    begin
+      gem_install 'sass-embedded', SassConfig.dart_sass_version, SassConfig.normalized_gem_platform do |dir|
+        cp_r File.absolute_path("ext/sass/#{t.name}", dir), t.name
+      end
+    rescue StandardError
+      archive = fetch(SassConfig.default_dart_sass)
+      unarchive archive
+      rm archive
+    end
+  end
 end
 
 file 'cli.rb' => %w[dart-sass] do |t|
@@ -130,8 +143,6 @@ module FileUtils
   end
 
   def fetch(source_uri, dest_path = nil)
-    require 'rubygems/remote_fetcher'
-
     unless source_uri.is_a?(URI::Generic)
       begin
         source_uri = URI.parse(source_uri)
@@ -173,6 +184,44 @@ module FileUtils
     end
 
     dest_path
+  end
+
+  def gem_install(name, version, platform)
+    install_dir = File.absolute_path('ruby', __dir__)
+
+    if Rake::FileUtilsExt.verbose_flag
+      Rake.rake_output_message [
+        'gem', 'install',
+        '--force',
+        '--install-dir', install_dir,
+        '--no-document', '--ignore-dependencies',
+        '--platform', platform,
+        '--version', version,
+        'sass-embedded'
+      ].join(' ')
+    end
+
+    dependency = Gem::Dependency.new(name, version)
+
+    specs_and_sources, _errors = Gem::SpecFetcher.fetcher.spec_for_dependency(dependency, false)
+
+    spec, source = specs_and_sources.find do |s, _|
+      s.platform == platform
+    end
+
+    raise if spec.nil? || source.nil?
+
+    if Rake::FileUtilsExt.nowrite_flag
+      installer = Gem::Installer.for_spec(spec, { force: true, install_dir: install_dir })
+    else
+      path = source.download(spec, install_dir)
+      installer = Gem::Installer.at(path, { force: true, install_dir: install_dir })
+      installer.install
+    end
+
+    yield installer.dir
+  ensure
+    rm_rf install_dir
   end
 end
 
@@ -221,14 +270,18 @@ module SassConfig
 
   module_function
 
-  def default_dart_sass
+  def dart_sass_version
     require 'json'
-
-    repo = 'https://github.com/sass/dart-sass'
 
     spec = JSON.parse(File.read(File.absolute_path('package.json', __dir__)))
 
-    tag_name = spec['dependencies']['sass']
+    spec['dependencies']['sass']
+  end
+
+  def default_dart_sass
+    repo = 'https://github.com/sass/dart-sass'
+
+    tag_name = dart_sass_version
 
     message = "dart-sass for #{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
 
@@ -285,8 +338,6 @@ module SassConfig
   end
 
   def default_protoc
-    require 'rubygems/remote_fetcher'
-
     repo = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protoc'
 
     spec = Gem::Dependency.new('google-protobuf').to_spec
@@ -373,5 +424,30 @@ module SassConfig
     tag_name = JSON.parse(stdout)['protocolVersion']
 
     "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
+  end
+
+  def normalized_gem_platform
+    platform = Gem::Platform.new("#{RbConfig::CONFIG['host_cpu']}-#{RbConfig::CONFIG['host_os']}")
+    case Platform::OS
+    when 'darwin'
+      Gem::Platform.new([platform.cpu, platform.os])
+    when 'linux'
+      if platform.version&.start_with?('gnu')
+        platform
+      else
+        Gem::Platform.new([platform.cpu, platform.os, "gnu#{platform.version}"])
+      end
+    when 'windows'
+      case Platform::CPU
+      when 'x86_64'
+        Gem::Platform.new('x64-mingw32')
+      when 'i386'
+        Gem::Platform.new('x86-mingw32')
+      else
+        Gem::Platform.new([platform.cpu, 'mingw32'])
+      end
+    else
+      platform
+    end
   end
 end
