@@ -25,7 +25,7 @@ file 'dart-sass' do |t|
     rm archive
   else
     begin
-      gem_install 'sass-embedded', SassConfig.dart_sass_version, SassConfig.normalized_gem_platform do |dir|
+      gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
         cp_r File.absolute_path("ext/sass/#{t.name}", dir), t.name
       end
     rescue StandardError
@@ -425,7 +425,17 @@ module SassConfig
     "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
   end
 
-  def normalized_gem_platform
+  def development?
+    File.exist?('../../Gemfile')
+  end
+
+  def gem_version
+    require_relative '../../lib/sass/embedded/version'
+
+    development? ? dart_sass_version : Sass::Embedded::VERSION
+  end
+
+  def gem_platform
     platform = Gem::Platform.new("#{RbConfig::CONFIG['host_cpu']}-#{RbConfig::CONFIG['host_os']}")
     case Platform::OS
     when 'darwin'
