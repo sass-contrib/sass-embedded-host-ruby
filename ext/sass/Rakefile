@@ -257,6 +257,20 @@ module SassConfig
           end
 
     ARCH = "#{CPU}-#{OS}".freeze
+
+    EMULATION = if ARCH == 'aarch64-windows'
+                  begin
+                    require_relative 'win32_api'
+
+                    if Win32API.x64?
+                      'x86_64'
+                    elsif Win32API.x86?
+                      'i386'
+                    end
+                  rescue LoadError
+                    'i386'
+                  end
+                end
   end
 
   private_constant :Platform
@@ -295,30 +309,13 @@ module SassConfig
            raise NotImplementedError, message
          end
 
-    cpu = case Platform::CPU
+    cpu = case Platform::EMULATION || Platform::CPU
           when 'i386'
             'ia32'
           when 'x86_64'
             'x64'
           when 'aarch64'
-            if Platform::OS == 'windows'
-              begin
-                require_relative 'win32_api'
-
-                if Win32API.x64?
-                  'x64'
-                elsif Win32API.x86?
-                  'ia32'
-                else
-                  raise NotImplementedError, message
-                end
-              rescue LoadError
-                # TODO: remove begin/rescue once jruby/jffi support windows aarch64
-                'ia32'
-              end
-            else
-              'arm64'
-            end
+            'arm64'
           when 'arm'
             'arm'
           else
@@ -350,30 +347,13 @@ module SassConfig
            raise NotImplementedError, message
          end
 
-    cpu = case Platform::CPU
+    cpu = case Platform::EMULATION || Platform::CPU
           when 'i386'
             'x86_32'
           when 'x86_64'
             'x86_64'
           when 'aarch64'
-            if Platform::OS == 'windows'
-              begin
-                require_relative 'win32_api'
-
-                if Win32API.x64?
-                  'x86_64'
-                elsif Win32API.x86?
-                  'x86_32'
-                else
-                  raise NotImplementedError, message
-                end
-              rescue LoadError
-                # TODO: remove begin/rescue once jruby/jffi support windows aarch64
-                'x86_32'
-              end
-            else
-              'aarch_64'
-            end
+            'aarch_64'
           when 'powerpc64le'
             'ppcle_64'
           when 's390x'
@@ -441,7 +421,7 @@ module SassConfig
         Gem::Platform.new([platform.cpu, platform.os, "gnu#{platform.version}"])
       end
     when 'windows'
-      case Platform::CPU
+      case Platform::EMULATION || Platform::CPU
       when 'x86_64'
         Gem::Platform.new('x64-mingw32')
       when 'i386'
