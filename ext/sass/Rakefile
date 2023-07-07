@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rake/clean'
-require 'rubygems/remote_fetcher'
 
 task default: %i[install clean]
 
@@ -137,6 +136,8 @@ module FileUtils
   end
 
   def fetch(source_uri, dest_path = nil)
+    require 'rubygems/remote_fetcher'
+
     unless source_uri.is_a?(URI::Generic)
       begin
         source_uri = URI.parse(source_uri)
@@ -328,6 +329,8 @@ module SassConfig
   end
 
   def default_protoc
+    require 'rubygems/remote_fetcher'
+
     repo = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protoc'
 
     spec = Gem::Dependency.new('google-protobuf').to_spec
