@@ -19,21 +19,15 @@ file 'protoc.exe' do |t|
 end
 
 file 'dart-sass' do |t|
-  if ENV.key?('DART_SASS')
-    archive = fetch(ENV.fetch('DART_SASS'))
-    unarchive archive
-    rm archive
-  else
-    begin
-      gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
-        cp_r File.absolute_path("ext/sass/#{t.name}", dir), t.name
-      end
-    rescue StandardError
-      archive = fetch(SassConfig.default_dart_sass)
-      unarchive archive
-      rm archive
-    end
+  raise if ENV.key?('DART_SASS')
+
+  gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
+    cp_r File.absolute_path("ext/sass/#{t.name}", dir), t.name
   end
+rescue StandardError
+  archive = fetch(ENV.fetch('DART_SASS') { SassConfig.default_dart_sass })
+  unarchive archive
+  rm archive
 end
 
 file 'cli.rb' => %w[dart-sass] do |t|
