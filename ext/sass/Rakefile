@@ -253,8 +253,7 @@ module SassConfig
           when /arm64|aarch64/
             'aarch64'
           when /arm/
-            # Ruby before 3.0 reports "arm" instead of "arm64" as host_cpu on darwin
-            OS == 'darwin' ? 'aarch64' : 'arm'
+            'arm'
           when /ppc64le|powerpc64le/
             'powerpc64le'
           when /s390x/
@@ -263,7 +262,7 @@ module SassConfig
             RbConfig::CONFIG['host_cpu']
           end
 
-    ARCH = "#{CPU}-#{OS}"
+    ARCH = "#{CPU}-#{OS}".freeze
   end
 
   private_constant :Platform
