@@ -230,9 +230,11 @@ module Sass
           end
 
           def from_proto(obj)
-            Sass::Value::Calculation.send(:new, obj.name, obj.arguments.map do |argument|
-                                                            CalculationValue.from_proto(argument)
-                                                          end)
+            Sass::Value::Calculation.send(
+              :new,
+              obj.name,
+              obj.arguments.map { |argument| CalculationValue.from_proto(argument) }
+            )
           end
         end
 
