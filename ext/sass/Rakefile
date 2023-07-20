@@ -413,10 +413,10 @@ module SassConfig
   end
 
   def gem_platform
-    platform = Gem::Platform.new("#{RbConfig::CONFIG['host_cpu']}-#{RbConfig::CONFIG['host_os']}")
+    platform = Gem::Platform.new("#{Platform::EMULATION || Platform::CPU}-#{RbConfig::CONFIG['host_os']}")
     case Platform::OS
     when 'darwin'
-      Gem::Platform.new([platform.cpu, platform.os])
+      Gem::Platform.new([RbConfig::CONFIG['host_cpu'], platform.os])
     when 'linux'
       if platform.version&.start_with?('gnu')
         platform
@@ -424,11 +424,9 @@ module SassConfig
         Gem::Platform.new([platform.cpu, platform.os, "gnu#{platform.version}"])
       end
     when 'windows'
-      case Platform::EMULATION || Platform::CPU
+      case platform.cpu
       when 'x86_64'
         Gem::Platform.new('x64-mingw32')
-      when 'i386'
-        Gem::Platform.new('x86-mingw32')
       else
         Gem::Platform.new([platform.cpu, 'mingw32'])
       end
