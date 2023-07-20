@@ -230,39 +230,9 @@ module Sass
           end
 
           def from_proto(obj)
-            case obj.name
-            when 'calc'
-              if obj.arguments.length != 1
-                raise Sass::ScriptError,
-                      'Value.Calculation.arguments must have exactly one argument for calc().'
-              end
-
-              Sass::Value::Calculation.calc(*obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
-            when 'clamp'
-              if obj.arguments.length != 3
-                raise Sass::ScriptError,
-                      'Value.Calculation.arguments must have exactly 3 arguments for clamp().'
-              end
-
-              Sass::Value::Calculation.clamp(*obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
-            when 'min'
-              if obj.arguments.empty?
-                raise Sass::ScriptError,
-                      'Value.Calculation.arguments must have at least 1 argument for min().'
-              end
-
-              Sass::Value::Calculation.min(obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
-            when 'max'
-              if obj.arguments.empty?
-                raise Sass::ScriptError,
-                      'Value.Calculation.arguments must have at least 1 argument for max().'
-              end
-
-              Sass::Value::Calculation.max(obj.arguments.map { |argument| CalculationValue.from_proto(argument) })
-            else
-              raise Sass::ScriptError,
-                    "Value.Calculation.name #{calculation.name.inspect} is not a recognized calculation type."
-            end
+            Sass::Value::Calculation.send(:new, obj.name, obj.arguments.map do |argument|
+                                                            CalculationValue.from_proto(argument)
+                                                          end)
           end
         end
 
