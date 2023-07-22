@@ -289,9 +289,9 @@ describe Sass::Value::Calculation do
       end.to raise_error(Sass::CompileError)
     end
 
-    it 'clamp() with the wrong number of arguments' do
+    it 'clamp() with the wrong argument' do
       fn = lambda do |_args|
-        described_class.clamp(Sass::CalculationValue::CalculationInterpolation.new('1'))
+        described_class.clamp(Sass::Value::Number.new('1'))
       end
 
       expect do
@@ -299,7 +299,7 @@ describe Sass::Value::Calculation do
                             functions: { 'foo()': fn }).css
       end.to raise_error do |error|
         expect(error).to be_a(Sass::CompileError)
-        expect(error.full_message).to match(/exactly 3 arguments/)
+        expect(error.full_message).to match(/SassString or CalculationInterpolation/)
       end
     end
 
