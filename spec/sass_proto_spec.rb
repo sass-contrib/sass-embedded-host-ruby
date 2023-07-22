@@ -59,6 +59,8 @@ RSpec.describe Sass do
                                                Sass::Value::Number.new(42, 'px'),
                                                Sass::CalculationValue::CalculationInterpolation.new('1em')
                                              ]),
+    __LINE__ => Sass::Value::Calculation.clamp(Sass::CalculationValue::CalculationInterpolation.new('var(--clamp)')),
+    __LINE__ => Sass::Value::Calculation.clamp(Sass::Value::String.new('var(--clamp)', quoted: false)),
     __LINE__ => Sass::Value::Color.new(red: 0, green: 0, blue: 0, alpha: 1),
     __LINE__ => Sass::Value::Color.new(hue: 0, saturation: 0, lightness: 0, alpha: 1),
     __LINE__ => Sass::Value::Color.new(hue: 0, whiteness: 0, blackness: 0, alpha: 1),
