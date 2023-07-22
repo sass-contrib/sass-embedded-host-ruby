@@ -10,6 +10,8 @@ module Sass
       include CalculationValue
 
       def initialize(name, arguments)
+        arguments.each(&:assert_calculation_value)
+
         @name = name.freeze
         @arguments = arguments.freeze
       end
@@ -26,21 +28,18 @@ module Sass
         # @param argument [CalculationValue]
         # @return [Calculation]
         def calc(argument)
-          argument.assert_calculation_value
           new('calc', [argument])
         end
 
         # @param arguments [Array<CalculationValue>]
         # @return [Calculation]
         def min(arguments)
-          arguments.each(&:assert_calculation_value)
           new('min', arguments)
         end
 
         # @param arguments [Array<CalculationValue>]
         # @return [Calculation]
         def max(arguments)
-          arguments.each(&:assert_calculation_value)
           new('max', arguments)
         end
 
@@ -54,11 +53,7 @@ module Sass
             raise Sass::ScriptError, 'Argument must be an unquoted SassString or CalculationInterpolation.'
           end
 
-          arguments = [min]
-          arguments.push(value) unless value.nil?
-          arguments.push(max) unless max.nil?
-          arguments.each(&:assert_calculation_value)
-          new('clamp', arguments)
+          new('clamp', [min, value, max].compact)
         end
 
         private
