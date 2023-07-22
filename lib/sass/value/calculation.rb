@@ -9,22 +9,9 @@ module Sass
       include Value
       include CalculationValue
 
-      def initialize(name, arguments)
-        arguments.each(&:assert_calculation_value)
-
-        @name = name.freeze
-        @arguments = arguments.freeze
-      end
-
-      # @return [::String]
-      attr_reader :name
-
-      # @return [Array<CalculationValue>]
-      attr_reader :arguments
-
-      private_class_method :new
-
       class << self
+        private :new
+
         # @param argument [CalculationValue]
         # @return [Calculation]
         def calc(argument)
@@ -63,6 +50,23 @@ module Sass
             (value.is_a?(Sass::Value::String) && !value.quoted?)
         end
       end
+
+      protected
+
+      def initialize(name, arguments)
+        arguments.each(&:assert_calculation_value)
+
+        @name = name.freeze
+        @arguments = arguments.freeze
+      end
+
+      public
+
+      # @return [::String]
+      attr_reader :name
+
+      # @return [Array<CalculationValue>]
+      attr_reader :arguments
 
       # @return [Calculation]
       def assert_calculation(_name = nil)
