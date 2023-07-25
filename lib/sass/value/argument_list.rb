@@ -26,7 +26,7 @@ module Sass
         @keywords
       end
 
-      protected
+      private
 
       def initialize_copy(orig)
         super

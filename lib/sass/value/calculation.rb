@@ -51,7 +51,7 @@ module Sass
         end
       end
 
-      protected
+      private
 
       def initialize(name, arguments)
         arguments.each(&:assert_calculation_value)
