@@ -41,8 +41,8 @@ module Sass
 
       # @return [CalculationValue]
       # @raise [ScriptError]
-      def assert_calculation_value(_name = nil)
-        raise Sass::ScriptError, "Expected #{self} to be an unquoted string." if quoted?
+      def assert_calculation_value(name = nil)
+        raise Sass::ScriptError.new("Expected #{self} to be an unquoted string.", name) if quoted?
 
         self
       end
