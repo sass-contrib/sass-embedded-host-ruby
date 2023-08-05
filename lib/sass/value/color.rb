@@ -27,7 +27,7 @@ module Sass
                      lightness: nil,
                      whiteness: nil,
                      blackness: nil,
-                     alpha: nil)
+                     alpha: 1)
         @alpha = alpha.nil? ? 1 : FuzzyMath.assert_between(alpha, 0, 1, 'alpha')
         if red && green && blue
           @red = FuzzyMath.assert_between(FuzzyMath.round(red), 0, 255, 'red')
