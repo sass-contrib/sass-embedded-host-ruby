@@ -312,7 +312,6 @@ describe Sass::Value::Calculation do
         Sass.compile_string('a {b: foo()}',
                             functions: { 'foo()': fn }).css
       end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
         expect(error.full_message).to match(/"foo" is not a recognized calculation type/)
       end
     end
