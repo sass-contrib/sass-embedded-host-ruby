@@ -226,31 +226,6 @@ RSpec.describe Sass do
     end
   end
 
-  it 'prefers a relative importer load to an importer' do
-    result = described_class.compile_string(
-      '@import "other";',
-      importers: [{
-        canonicalize: lambda { |*|
-          raise 'canonicalize() should not be called'
-        },
-        load: lambda { |*|
-          raise 'load() should not be called'
-        }
-      }],
-      url: 'o:style.scss',
-      importer: {
-        canonicalize: ->(url, **) { url },
-        load: lambda { |*|
-          return {
-            contents: 'a {from: relative}',
-            syntax: 'scss'
-          }
-        }
-      }
-    )
-    expect(result.css).to eq("a {\n  from: relative;\n}")
-  end
-
   it 'prefers an importer to a load path' do
     sandbox do |dir|
       dir.write({
@@ -334,6 +309,161 @@ RSpec.describe Sass do
         expect(error).to be_a(Sass::CompileError)
         expect(error.span.start.line).to eq(0)
       end
+    end
+  end
+
+  describe "compile_string()'s importer option" do
+    it 'loads relative imports from the entrypoint' do
+      result = described_class.compile_string(
+        '@import "orange";',
+        importer: {
+          canonicalize: lambda { |url, **|
+            expect(url).to eq('u:orange')
+            url
+          },
+          load: lambda { |url|
+            color = url.split(':')[1]
+            return {
+              contents: ".#{color} {color: #{color}}",
+              syntax: 'scss'
+            }
+          }
+        },
+        url: 'u:entrypoint'
+      )
+
+      expect(result.css).to eq(".orange {\n  color: orange;\n}")
+    end
+
+    it 'takes precedence over the importer list for relative URLs' do
+      result = described_class.compile_string(
+        '@import "other";',
+        importer: {
+          canonicalize: lambda { |url, **|
+            url
+          },
+          load: lambda { |_url|
+            return {
+              contents: 'a {from: relative}',
+              syntax: 'scss'
+            }
+          }
+        },
+        importers: [{
+          canonicalize: lambda { |*|
+            raise 'canonicalize() should not be called'
+          },
+          load: lambda { |*|
+            raise 'load() should not be called'
+          }
+        }],
+        url: 'o:style.scss'
+      )
+
+      expect(result.css).to eq("a {\n  from: relative;\n}")
+    end
+
+    it "doesn't load absolute imports" do
+      result = described_class.compile_string(
+        '@import "u:orange";',
+        importer: {
+          canonicalize: lambda { |*|
+            raise 'canonicalize() should not be called'
+          },
+          load: lambda { |*|
+            raise 'load() should not be called'
+          }
+        },
+        importers: [{
+          canonicalize: lambda { |url, **|
+            expect(url).to eq('u:orange')
+            url
+          },
+          load: lambda { |url|
+            color = url.split(':')[1]
+            return {
+              contents: ".#{color} {color: #{color}}",
+              syntax: 'scss'
+            }
+          }
+        }],
+        url: 'x:entrypoint'
+      )
+
+      expect(result.css).to eq(".orange {\n  color: orange;\n}")
+    end
+
+    it "doesn't load from other importers" do
+      result = described_class.compile_string(
+        '@import "u:midstream";',
+        importer: {
+          canonicalize: lambda { |*|
+            raise 'canonicalize() should not be called'
+          },
+          load: lambda { |*|
+            raise 'load() should not be called'
+          }
+        },
+        importers: [{
+          canonicalize: lambda { |url, **|
+            url
+          },
+          load: lambda { |url|
+            pathname = url.split(':')[1]
+            if pathname == 'midstream'
+              return {
+                contents: "@import 'orange';",
+                syntax: 'scss'
+              }
+            else
+              color = pathname
+              return {
+                contents: ".#{color} {color: #{color}}",
+                syntax: 'scss'
+              }
+            end
+          }
+        }],
+        url: 'x:entrypoint'
+      )
+
+      expect(result.css).to eq(".orange {\n  color: orange;\n}")
+    end
+
+    it 'importer order is preserved for absolute imports' do
+      # The second importer should only be invoked once, because when the
+      # "first:other" import is resolved it should be passed to the first
+      # importer first despite being in the second importer's file.
+      second_called = false
+      result = described_class.compile_string(
+        '@import "second:other";',
+        importers: [{
+          canonicalize: lambda { |url, **|
+            url if url.start_with?('first:')
+          },
+          load: lambda { |*|
+            return {
+              contents: 'a {from: first}',
+              syntax: 'scss'
+            }
+          }
+        }, {
+          canonicalize: lambda { |url, **|
+            raise 'Second importer should only be called once.' if second_called
+
+            second_called = true
+            url if url.start_with?('second:')
+          },
+          load: lambda { |*|
+            return {
+              contents: '@import "first:other";',
+              syntax: 'scss'
+            }
+          }
+        }]
+      )
+
+      expect(result.css).to eq("a {\n  from: first;\n}")
     end
   end
 
