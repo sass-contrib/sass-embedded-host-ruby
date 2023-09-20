@@ -297,10 +297,7 @@ describe Sass::Value::Calculation do
       expect do
         Sass.compile_string('a {b: foo()}',
                             functions: { 'foo()': fn }).css
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.full_message).to match(/SassString or CalculationInterpolation/)
-      end
+      end.to raise_error(Sass::CompileError, /SassString or CalculationInterpolation/)
     end
 
     it 'an unknown calculation function' do
@@ -311,9 +308,7 @@ describe Sass::Value::Calculation do
       expect do
         Sass.compile_string('a {b: foo()}',
                             functions: { 'foo()': fn }).css
-      end.to raise_error do |error|
-        expect(error.full_message).to match(/"foo" is not a recognized calculation type/)
-      end
+      end.to raise_error(/"foo" is not a recognized calculation type/)
     end
   end
 

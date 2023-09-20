@@ -23,6 +23,3 @@ RSpec/MultipleExpectations:
 
 RSpec/NestedGroups:
   Enabled: false
-
-Style/MultilineBlockChain:
-  Enabled: false

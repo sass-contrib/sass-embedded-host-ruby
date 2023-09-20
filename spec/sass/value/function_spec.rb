@@ -83,11 +83,10 @@ describe Sass::Value::Function do
               'foo()': fn
             }
           )
-        end.to raise_error do |error|
-          expect(error).to be_a(Sass::CompileError)
-          expect(error.span.start.line).to eq(0)
-          expect(error.span.url).to be_nil
-        end
+        end.to raise_error(an_instance_of(Sass::CompileError).and(
+                             having_attributes(span: having_attributes(start: having_attributes(line: 0),
+                                                                       url: nil))
+                           ))
 
         expect(fn).to have_received(:call)
       end

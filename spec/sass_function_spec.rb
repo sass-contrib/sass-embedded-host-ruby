@@ -93,10 +93,9 @@ RSpec.describe Sass do
             'foo()': ->(_args) { raise 'heck' }
           }
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                         ))
     end
 
     it 'not returning' do
@@ -107,10 +106,9 @@ RSpec.describe Sass do
             'foo()': ->(_args) {}
           }
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                         ))
     end
 
     describe 'returning a non-Value' do
@@ -122,10 +120,9 @@ RSpec.describe Sass do
               'foo()': ->(_args) { 'wrong' }
             }
           )
-        end.to raise_error do |error|
-          expect(error).to be_a(Sass::CompileError)
-          expect(error.span.start.line).to eq(0)
-        end
+        end.to raise_error(an_instance_of(Sass::CompileError).and(
+                             having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                           ))
       end
 
       it 'in a calculation' do
@@ -136,10 +133,9 @@ RSpec.describe Sass do
               'foo()': ->(_args) { Sass::Value::Calculation.calc('wrong') }
             }
           )
-        end.to raise_error do |error|
-          expect(error).to be_a(Sass::CompileError)
-          expect(error.span.start.line).to eq(0)
-        end
+        end.to raise_error(an_instance_of(Sass::CompileError).and(
+                             having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                           ))
       end
     end
   end

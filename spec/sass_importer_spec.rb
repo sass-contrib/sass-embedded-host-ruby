@@ -139,10 +139,9 @@ RSpec.describe Sass do
           }
         }]
       )
-    end.to raise_error do |error|
-      expect(error).to be_a(Sass::CompileError)
-      expect(error.span.start.line).to eq(0)
-    end
+    end.to raise_error(an_instance_of(Sass::CompileError).and(
+                         having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                       ))
   end
 
   it 'wraps an error in load()' do
@@ -158,10 +157,9 @@ RSpec.describe Sass do
           }
         }]
       )
-    end.to raise_error do |error|
-      expect(error).to be_a(Sass::CompileError)
-      expect(error.span.start.line).to eq(0)
-    end
+    end.to raise_error(an_instance_of(Sass::CompileError).and(
+                         having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                       ))
   end
 
   it 'avoids importer when canonicalize() returns nil' do
@@ -197,10 +195,9 @@ RSpec.describe Sass do
           }],
           load_paths: [dir.path('dir')]
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                         ))
     end
   end
 
@@ -305,10 +302,9 @@ RSpec.describe Sass do
             }
           }]
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                         ))
     end
   end
 
@@ -650,10 +646,9 @@ RSpec.describe Sass do
             }
           ]
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                         ))
     end
 
     it 'rejects a non-file URL' do
@@ -662,10 +657,9 @@ RSpec.describe Sass do
           '@import "other";',
           importers: [{ find_file_url: ->(*) { 'u:other.scss' } }]
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)))
+                         ))
     end
 
     describe 'when the resolved file has extension' do
@@ -714,11 +708,10 @@ RSpec.describe Sass do
               '@import "other";',
               importers: [{ find_file_url: ->(*) { dir.url('other') } }]
             )
-          end.to raise_error do |error|
-            expect(error).to be_a(Sass::CompileError)
-            expect(error.span.start.line).to eq(0)
-            expect(error.span.url).to eq(dir.url('_other.css'))
-          end
+          end.to raise_error(an_instance_of(Sass::CompileError).and(
+                               having_attributes(span: having_attributes(start: having_attributes(line: 0),
+                                                                         url: dir.url('_other.css')))
+                             ))
         end
       end
     end
@@ -777,9 +770,7 @@ RSpec.describe Sass do
             }
           }]
         )
-      end.to raise_error do |error|
-        expect(error).not_to be_a(Sass::CompileError)
-      end
+      end.to raise_error(ArgumentError)
     end
   end
 
@@ -798,11 +789,12 @@ RSpec.describe Sass do
             }
           }]
         )
-      end.to raise_error do |error|
-        expect(error).to be_a(Sass::CompileError)
-        expect(error.span.start.line).to eq(0)
-        expect(error.message).to include("Invalid argument for string field 'contents' (given StringIO)")
-      end
+      end.to raise_error(an_instance_of(Sass::CompileError).and(
+                           having_attributes(span: having_attributes(start: having_attributes(line: 0)),
+                                             message: include(
+                                               "Invalid argument for string field 'contents' (given StringIO)"
+                                             ))
+                         ))
     end
   end
 
@@ -821,10 +813,11 @@ RSpec.describe Sass do
           }
         }]
       )
-    end.to raise_error do |error|
-      expect(error).to be_a(Sass::CompileError)
-      expect(error.span.start.line).to eq(0)
-      expect(error.message).to include('The importer must return an absolute URL')
-    end
+    end.to raise_error(an_instance_of(Sass::CompileError).and(
+                         having_attributes(span: having_attributes(start: having_attributes(line: 0)),
+                                           message: include(
+                                             'The importer must return an absolute URL'
+                                           ))
+                       ))
   end
 end

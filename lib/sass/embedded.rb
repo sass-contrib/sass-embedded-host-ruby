@@ -118,7 +118,7 @@ module Sass
     #   compilation to avoid deluging users in console noise. If you set verbose to +true+, it will instead print every
     #   deprecation warning it encounters.
     # @return [CompileResult]
-    # @raise [CompileError]
+    # @raise [ArgumentError, CompileError]
     # @see https://sass-lang.com/documentation/js-api/functions/compile/
     def compile(path,
                 load_paths: [],
@@ -189,7 +189,7 @@ module Sass
     #   compilation to avoid deluging users in console noise. If you set verbose to +true+, it will instead print every
     #   deprecation warning it encounters.
     # @return [CompileResult]
-    # @raise [CompileError]
+    # @raise [ArgumentError, CompileError]
     # @see https://sass-lang.com/documentation/js-api/functions/compilestring/
     def compile_string(source,
                        importer: nil,

@@ -371,9 +371,11 @@ module SassConfig
 
     uri
   rescue Gem::RemoteFetcher::FetchError
-    Gem::SpecFetcher.fetcher.detect do |name_tuple|
+    tuples = Gem::SpecFetcher.fetcher.detect(:released) do |name_tuple|
       name_tuple.name == spec.name && name_tuple.platform == 'ruby'
-    end.reverse_each do |name_tuple, _|
+    end
+
+    tuples.sort.reverse_each do |name_tuple, _source|
       uri = "#{repo}/#{name_tuple.version}/protoc-#{name_tuple.version}-#{os}-#{cpu}.exe"
 
       Gem::RemoteFetcher.fetcher.fetch_https(URI.parse("#{uri}.sha1"))

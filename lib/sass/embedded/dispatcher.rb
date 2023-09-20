@@ -18,10 +18,11 @@ module Sass
           loop do
             receive_proto
           rescue IOError, Errno::EBADF, Errno::EPROTO => e
-            @mutex.synchronize do
+            values = @mutex.synchronize do
               @id = UINT_MAX
               @observers.values
-            end.each do |observer|
+            end
+            values.each do |observer|
               observer.error(e)
             end
             break
