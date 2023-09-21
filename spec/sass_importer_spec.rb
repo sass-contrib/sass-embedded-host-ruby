@@ -7,7 +7,7 @@ RSpec.describe Sass do
     result = described_class.compile_string(
       '@import "orange";',
       importers: [{
-        canonicalize: ->(url, **) { "u:#{url}" },
+        canonicalize: ->(url, _context) { "u:#{url}" },
         load: lambda { |url|
           color = url.split(':')[1]
           return {
@@ -67,7 +67,7 @@ RSpec.describe Sass do
       result = described_class.compile_string(
         '@import "/orange";',
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             expect(url).to eq('/orange')
             "u:#{url}"
           },
@@ -87,7 +87,7 @@ RSpec.describe Sass do
       result = described_class.compile_string(
         '@import "C:/orange";',
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             expect(url).to eq('file:///C:/orange')
             "u:#{url}"
           },
@@ -104,11 +104,269 @@ RSpec.describe Sass do
     end
   end
 
+  describe 'the containing URL' do
+    it 'is nil for a potentially canonical scheme' do
+      result = described_class.compile_string(
+        '@import "u:orange"',
+        importers: [{
+          canonicalize: lambda { |url, context|
+            expect(context.containing_url).to be_nil
+            url
+          },
+          load: lambda { |*|
+            return {
+              contents: '@a',
+              syntax: 'scss'
+            }
+          }
+        }]
+      )
+
+      expect(result.css).to eq('@a;')
+    end
+
+    describe 'for a non-canonical scheme' do
+      describe 'in a list' do
+        it 'is set to the original URL' do
+          result = described_class.compile_string(
+            '@import "u:orange"',
+            importers: [{
+              canonicalize: lambda { |url, context|
+                expect(context.containing_url).to eq('x:original.scss')
+                url.gsub(/^u:/, 'x:')
+              },
+              load: lambda { |*|
+                return {
+                  contents: '@a',
+                  syntax: 'scss'
+                }
+              },
+              non_canonical_scheme: ['u']
+            }],
+            url: 'x:original.scss'
+          )
+
+          expect(result.css).to eq('@a;')
+        end
+
+        it 'is nil if the original URL is nil' do
+          result = described_class.compile_string(
+            '@import "u:orange"',
+            importers: [{
+              canonicalize: lambda { |url, context|
+                expect(context.containing_url).to be_nil
+                url.gsub(/^u:/, 'x:')
+              },
+              load: lambda { |*|
+                return {
+                  contents: '@a',
+                  syntax: 'scss'
+                }
+              },
+              non_canonical_scheme: ['u']
+            }]
+          )
+
+          expect(result.css).to eq('@a;')
+        end
+      end
+
+      describe 'as a string' do
+        it 'is set to the original URL' do
+          result = described_class.compile_string(
+            '@import "u:orange"',
+            importers: [{
+              canonicalize: lambda { |url, context|
+                expect(context.containing_url).to eq('x:original.scss')
+                url.gsub(/^u:/, 'x:')
+              },
+              load: lambda { |*|
+                return {
+                  contents: '@a',
+                  syntax: 'scss'
+                }
+              },
+              non_canonical_scheme: 'u'
+            }],
+            url: 'x:original.scss'
+          )
+
+          expect(result.css).to eq('@a;')
+        end
+
+        it 'is nil if the original URL is nil' do
+          result = described_class.compile_string(
+            '@import "u:orange"',
+            importers: [{
+              canonicalize: lambda { |url, context|
+                expect(context.containing_url).to be_nil
+                url.gsub(/^u:/, 'x:')
+              },
+              load: lambda { |*|
+                return {
+                  contents: '@a',
+                  syntax: 'scss'
+                }
+              },
+              non_canonical_scheme: 'u'
+            }]
+          )
+
+          expect(result.css).to eq('@a;')
+        end
+      end
+    end
+
+    describe 'for a schemeless load' do
+      it 'is set to the original URL' do
+        result = described_class.compile_string(
+          '@import "orange"',
+          importers: [{
+            canonicalize: lambda { |url, context|
+              expect(context.containing_url).to eq('x:original.scss')
+              "u:#{url}"
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            }
+          }],
+          url: 'x:original.scss'
+        )
+
+        expect(result.css).to eq('@a;')
+      end
+
+      it 'is nil if the original URL is nil' do
+        result = described_class.compile_string(
+          '@import "orange"',
+          importers: [{
+            canonicalize: lambda { |url, context|
+              expect(context.containing_url).to be_nil
+              "u:#{url}"
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            }
+          }]
+        )
+
+        expect(result.css).to eq('@a;')
+      end
+    end
+  end
+
+  describe 'throws an error if the importer returns a canonical URL with a non-canonical scheme' do
+    it 'set as a list' do
+      expect do
+        described_class.compile_string(
+          '@import "orange"',
+          importers: [{
+            canonicalize: lambda { |url, _context|
+              "u:#{url}"
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            },
+            non_canonical_scheme: ['u']
+          }]
+        )
+      end.to raise_sass_compile_error.with_line(0)
+    end
+
+    it 'set as a string' do
+      expect do
+        described_class.compile_string(
+          '@import "orange"',
+          importers: [{
+            canonicalize: lambda { |url, _context|
+              "u:#{url}"
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            },
+            non_canonical_scheme: 'u'
+          }]
+        )
+      end.to raise_sass_compile_error.with_line(0)
+    end
+  end
+
+  describe 'throws an error for an invalid scheme:' do
+    it 'empty' do
+      expect do
+        described_class.compile_string(
+          'a {b: c}',
+          importers: [{
+            canonicalize: lambda { |*|
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            },
+            non_canonical_scheme: ''
+          }]
+        )
+      end.to raise_sass_compile_error
+    end
+
+    it 'uppercase' do
+      expect do
+        described_class.compile_string(
+          'a {b: c}',
+          importers: [{
+            canonicalize: lambda { |*|
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            },
+            non_canonical_scheme: 'U'
+          }]
+        )
+      end.to raise_sass_compile_error
+    end
+
+    it 'colon' do
+      expect do
+        described_class.compile_string(
+          'a {b: c}',
+          importers: [{
+            canonicalize: lambda { |*|
+            },
+            load: lambda { |*|
+              return {
+                contents: '@a',
+                syntax: 'scss'
+              }
+            },
+            non_canonical_scheme: 'u:'
+          }]
+        )
+      end.to raise_sass_compile_error
+    end
+  end
+
   it "uses an importer's source map URL" do
     result = described_class.compile_string(
       '@import "orange";',
       importers: [{
-        canonicalize: lambda { |url, **|
+        canonicalize: lambda { |url, _context|
           "u:#{url}"
         },
         load: lambda { |url|
@@ -147,7 +405,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@import "orange";',
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             "u:#{url}"
           },
           load: lambda { |*|
@@ -184,7 +442,7 @@ RSpec.describe Sass do
         described_class.compile_string(
           '@import "other";',
           importers: [{
-            canonicalize: lambda { |url, **|
+            canonicalize: lambda { |url, _context|
               "u:#{url}"
             },
             load: ->(*) {}
@@ -227,7 +485,7 @@ RSpec.describe Sass do
       result = described_class.compile(
         dir.path('input.scss'),
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             "u:#{url}"
           },
           load: lambda { |*|
@@ -305,7 +563,7 @@ RSpec.describe Sass do
       result = described_class.compile_string(
         '@import "orange";',
         importer: {
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             expect(url).to eq('u:orange')
             url
           },
@@ -327,7 +585,7 @@ RSpec.describe Sass do
       result = described_class.compile_string(
         '@import "other";',
         importer: {
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             url
           },
           load: lambda { |_url|
@@ -363,7 +621,7 @@ RSpec.describe Sass do
           }
         },
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             expect(url).to eq('u:orange')
             url
           },
@@ -393,7 +651,7 @@ RSpec.describe Sass do
           }
         },
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             url
           },
           load: lambda { |url|
@@ -426,7 +684,7 @@ RSpec.describe Sass do
       result = described_class.compile_string(
         '@import "second:other";',
         importers: [{
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             url if url.start_with?('first:')
           },
           load: lambda { |*|
@@ -436,7 +694,7 @@ RSpec.describe Sass do
             }
           }
         }, {
-          canonicalize: lambda { |url, **|
+          canonicalize: lambda { |url, _context|
             raise 'Second importer should only be called once.' if second_called
 
             second_called = true
@@ -457,8 +715,8 @@ RSpec.describe Sass do
 
   describe 'from_import is' do
     def expect_from_import(canonicalize, expected)
-      allow(canonicalize).to receive(:call) { |url, from_import:|
-        expect(from_import).to be(expected)
+      allow(canonicalize).to receive(:call) { |url, context|
+        expect(context.from_import).to be(expected)
         "u:#{url}"
       }
       {
@@ -578,7 +836,7 @@ RSpec.describe Sass do
         result = described_class.compile_string(
           '@import "u:other";',
           importers: [{
-            find_file_url: lambda { |url, **|
+            find_file_url: lambda { |url, _context|
               expect(url).to eq('u:other')
               dir.url('dir/other')
             }
@@ -709,8 +967,8 @@ RSpec.describe Sass do
           described_class.compile_string(
             '@import "other";',
             importers: [{
-              find_file_url: lambda { |*, from_import:|
-                expect(from_import).to be(true)
+              find_file_url: lambda { |_url, context|
+                expect(context.from_import).to be(true)
                 dir.url('other')
               }
             }]
@@ -725,13 +983,65 @@ RSpec.describe Sass do
           described_class.compile_string(
             '@use "other";',
             importers: [{
-              find_file_url: lambda { |*, from_import:|
-                expect(from_import).to be(false)
+              find_file_url: lambda { |_url, context|
+                expect(context.from_import).to be(false)
                 dir.url('other')
               }
             }]
           )
         end
+      end
+    end
+  end
+
+  describe 'containing_url is' do
+    it 'set for a relative URL' do
+      sandbox do |dir|
+        dir.write({ '_other.scss' => 'a {b: c}' })
+        result = described_class.compile_string(
+          '@import "other";',
+          importers: [{
+            find_file_url: lambda { |_url, context|
+              expect(context.containing_url).to eq('x:original.scss')
+              dir.url('other')
+            }
+          }],
+          url: 'x:original.scss'
+        )
+        expect(result.css).to eq("a {\n  b: c;\n}")
+      end
+    end
+
+    it 'set for an absolute URL' do
+      sandbox do |dir|
+        dir.write({ '_other.scss' => 'a {b: c}' })
+        result = described_class.compile_string(
+          '@import "u:other";',
+          importers: [{
+            find_file_url: lambda { |_url, context|
+              expect(context.containing_url).to eq('x:original.scss')
+              dir.url('other')
+            }
+          }],
+          url: 'x:original.scss'
+        )
+        expect(result.css).to eq("a {\n  b: c;\n}")
+      end
+    end
+
+    it 'unset when the URL is unavailable' do
+      sandbox do |dir|
+        dir.write({ '_other.scss' => 'a {b: c}' })
+        result = described_class.compile_string(
+          '@import "u:other";',
+          importers: [{
+            find_file_url: lambda { |_url, context|
+              expect(context.containing_url).to be_nil
+              dir.url('other')
+            }
+          }]
+        )
+        expect(result.css).to eq("a {\n  b: c;\n}")
       end
     end
   end
@@ -765,7 +1075,7 @@ RSpec.describe Sass do
         described_class.compile_string(
           '@import "other";',
           importers: [{
-            canonicalize: ->(url, **) { "u:#{url}" },
+            canonicalize: ->(url, _context) { "u:#{url}" },
             load: lambda { |*|
               return {
                 contents: StringIO.new('not a string'),
@@ -785,7 +1095,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@import "other";',
         importers: [{
-          canonicalize: ->(url, **) { "u:#{url}" },
+          canonicalize: ->(url, _context) { "u:#{url}" },
           load: lambda { |*|
             return {
               contents: '',
