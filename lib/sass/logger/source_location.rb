@@ -11,6 +11,7 @@ module Sass
       # @return [Integer]
       attr_reader :offset, :line, :column
 
+      # @!visibility private
       def initialize(offset, line, column)
         @offset = offset
         @line = line

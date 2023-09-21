@@ -15,6 +15,7 @@ module Sass
       # @return [String, nil]
       attr_reader :url, :context
 
+      # @!visibility private
       def initialize(start, end_, text, url, context)
         @start = start
         @end = end_

@@ -12,6 +12,7 @@ module Sass
     # @return [Array<String>]
     attr_reader :loaded_urls
 
+    # @!visibility private
     def initialize(message, full_message, sass_stack, span, loaded_urls)
       super(message)
       @full_message = full_message

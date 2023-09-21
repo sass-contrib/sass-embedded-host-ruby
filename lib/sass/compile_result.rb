@@ -14,6 +14,7 @@ module Sass
     # @return [Array<String>]
     attr_reader :loaded_urls
 
+    # @!visibility private
     def initialize(css, source_map, loaded_urls)
       @css = css
       @source_map = source_map

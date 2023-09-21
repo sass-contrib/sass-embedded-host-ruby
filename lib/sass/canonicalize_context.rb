@@ -12,6 +12,7 @@ module Sass
     # @return [Boolean]
     attr_reader :from_import
 
+    # @!visibility private
     def initialize(containing_url, from_import)
       @containing_url = containing_url
       @from_import = from_import
