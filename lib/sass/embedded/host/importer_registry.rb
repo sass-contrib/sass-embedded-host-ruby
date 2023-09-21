@@ -26,7 +26,7 @@ module Sass
         end
 
         def register(importer)
-          importer = Structifier.to_struct(importer, :canonicalize, :load, :find_file_url)
+          importer = Structifier.to_struct(importer, :canonicalize, :load, :non_canonical_scheme, :find_file_url)
 
           is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
           is_file_importer = importer.respond_to?(:find_file_url)
@@ -39,7 +39,17 @@ module Sass
           @importers_by_id[id] = importer
           if is_importer
             EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-              importer_id: id
+              importer_id: id,
+              non_canonical_scheme: if importer.respond_to?(:non_canonical_scheme)
+                                      non_canonical_scheme = importer.non_canonical_scheme
+                                      if non_canonical_scheme.is_a?(String)
+                                        [non_canonical_scheme]
+                                      else
+                                        non_canonical_scheme || []
+                                      end
+                                    else
+                                      []
+                                    end
             )
           else
             EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
@@ -50,7 +60,8 @@ module Sass
 
         def canonicalize(canonicalize_request)
           importer = @importers_by_id[canonicalize_request.importer_id]
-          url = importer.canonicalize(canonicalize_request.url, from_import: canonicalize_request.from_import)&.to_s
+          url = importer.canonicalize(canonicalize_request.url,
+                                      Protofier.from_proto_canonicalize_context(canonicalize_request))&.to_s
 
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
@@ -84,7 +95,8 @@ module Sass
 
         def file_import(file_import_request)
           importer = @importers_by_id[file_import_request.importer_id]
-          file_url = importer.find_file_url(file_import_request.url, from_import: file_import_request.from_import)&.to_s
+          file_url = importer.find_file_url(file_import_request.url,
+                                            Protofier.from_proto_canonicalize_context(file_import_request))&.to_s
 
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,

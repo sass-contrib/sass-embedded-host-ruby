@@ -8,6 +8,13 @@ module Sass
     module Protofier
       module_function
 
+      def from_proto_canonicalize_context(canonicalize_request)
+        CanonicalizeContext.new(
+          canonicalize_request.containing_url == '' ? nil : canonicalize_request.containing_url,
+          canonicalize_request.from_import
+        )
+      end
+
       def from_proto_compile_response(compile_response)
         oneof = compile_response.result
         result = compile_response.public_send(oneof)
