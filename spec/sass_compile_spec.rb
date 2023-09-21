@@ -228,20 +228,14 @@ RSpec.describe Sass do
     describe 'error' do
       it 'requires plain CSS with explicit syntax' do
         expect { described_class.compile_string('$a: b; c {d: $a}', syntax: 'css') }
-          .to raise_error(an_instance_of(Sass::CompileError).and(
-                            having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                      url: nil))
-                          ))
+          .to raise_sass_compile_error.with_line(0).without_url
       end
 
       it 'relative loads fail without a URL' do
         sandbox do |dir|
           dir.write({ '_other.scss' => 'a {b: c}' })
           expect { described_class.compile_string("@use \"#{dir.relative_url('other')}\";") }
-            .to raise_error(an_instance_of(Sass::CompileError).and(
-                              having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                        url: nil))
-                            ))
+            .to raise_sass_compile_error.with_line(0).without_url
         end
       end
 
@@ -249,10 +243,7 @@ RSpec.describe Sass do
         sandbox do |dir|
           dir.write({ '_other.scss' => 'a {b: c}' })
           expect { described_class.compile_string("@use \"#{dir.relative_url('other')}\";", url: 'unknown:style.scss') }
-            .to raise_error(an_instance_of(Sass::CompileError).and(
-                              having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                        url: 'unknown:style.scss'))
-                            ))
+            .to raise_sass_compile_error.with_line(0).with_url('unknown:style.scss')
         end
       end
 
@@ -261,10 +252,7 @@ RSpec.describe Sass do
           sandbox do |dir|
             url = dir.url('foo.scss')
             expect { described_class.compile_string('a {b:', url: url) }
-              .to raise_error(an_instance_of(Sass::CompileError).and(
-                                having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                          url: url))
-                              ))
+              .to raise_sass_compile_error.with_line(0).with_url(url)
           end
         end
 
@@ -272,10 +260,7 @@ RSpec.describe Sass do
           sandbox do |dir|
             url = dir.url('foo.scss')
             expect { described_class.compile_string('@error "oh no"', url: url) }
-              .to raise_error(an_instance_of(Sass::CompileError).and(
-                                having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                          url: url))
-                              ))
+              .to raise_sass_compile_error.with_line(0).with_url(url)
           end
         end
 
@@ -283,10 +268,7 @@ RSpec.describe Sass do
           sandbox do |dir|
             url = dir.url('foo.scss')
             expect { described_class.compile_string('@use "sass:math"; @use "sass:math"', url: url) }
-              .to raise_error(an_instance_of(Sass::CompileError).and(
-                                having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                          url: url))
-                              ))
+              .to raise_sass_compile_error.with_line(0).with_url(url)
           end
         end
       end
@@ -422,10 +404,7 @@ RSpec.describe Sass do
         sandbox do |dir|
           dir.write({ 'input.css' => '$a: b; c {d: $a}' })
           expect { described_class.compile(dir.path('input.css')) }
-            .to raise_error(an_instance_of(Sass::CompileError).and(
-                              having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                        url: dir.url('input.css')))
-                            ))
+            .to raise_sass_compile_error.with_line(0).with_url(dir.url('input.css'))
         end
       end
 
@@ -434,10 +413,7 @@ RSpec.describe Sass do
           sandbox do |dir|
             dir.write({ 'input.scss' => 'a {b:' })
             expect { described_class.compile(dir.path('input.scss')) }
-              .to raise_error(an_instance_of(Sass::CompileError).and(
-                                having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                          url: dir.url('input.scss')))
-                              ))
+              .to raise_sass_compile_error.with_line(0).with_url(dir.url('input.scss'))
           end
         end
 
@@ -445,10 +421,7 @@ RSpec.describe Sass do
           sandbox do |dir|
             dir.write({ 'input.scss' => '@error "oh no"' })
             expect { described_class.compile(dir.path('input.scss')) }
-              .to raise_error(an_instance_of(Sass::CompileError).and(
-                                having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                          url: dir.url('input.scss')))
-                              ))
+              .to raise_sass_compile_error.with_line(0).with_url(dir.url('input.scss'))
           end
         end
       end

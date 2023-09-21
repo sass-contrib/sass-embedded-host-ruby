@@ -68,10 +68,7 @@ describe Sass::Value::ArgumentList do
           'foo($arg...)': fn
         }
       ).css
-    end.to raise_error(an_instance_of(Sass::CompileError).and(
-                         having_attributes(span: having_attributes(start: having_attributes(line: 0),
-                                                                   url: nil))
-                       ))
+    end.to raise_sass_compile_error.with_line(0).without_url
 
     expect(fn).to have_received(:call)
   end

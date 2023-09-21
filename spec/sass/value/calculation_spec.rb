@@ -286,7 +286,7 @@ describe Sass::Value::Calculation do
       expect do
         Sass.compile_string('a {b: foo()}',
                             functions: { 'foo()': fn }).css
-      end.to raise_error(Sass::CompileError)
+      end.to raise_sass_compile_error
     end
 
     it 'clamp() with the wrong argument' do
@@ -297,7 +297,7 @@ describe Sass::Value::Calculation do
       expect do
         Sass.compile_string('a {b: foo()}',
                             functions: { 'foo()': fn }).css
-      end.to raise_error(Sass::CompileError, /SassString or CalculationInterpolation/)
+      end.to raise_sass_compile_error.with_message('SassString or CalculationInterpolation')
     end
 
     it 'an unknown calculation function' do
