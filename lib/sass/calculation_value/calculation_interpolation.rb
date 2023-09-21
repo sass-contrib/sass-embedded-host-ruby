@@ -4,6 +4,7 @@ module Sass
   module CalculationValue
     # A string injected into a SassCalculation using interpolation.
     #
+    # @deprecated Use unquoted {Sass::Value::String} instead.
     # @see https://sass-lang.com/documentation/js-api/classes/calculationinterpolation/
     class CalculationInterpolation
       include CalculationValue
