@@ -27,6 +27,7 @@ describe Sass::Value::Map do
       expect { map.assert_calculation }.to raise_error(Sass::ScriptError)
       expect { map.assert_color }.to raise_error(Sass::ScriptError)
       expect { map.assert_function }.to raise_error(Sass::ScriptError)
+      expect { map.assert_mixin }.to raise_error(Sass::ScriptError)
       expect { map.assert_number }.to raise_error(Sass::ScriptError)
       expect { map.assert_string }.to raise_error(Sass::ScriptError)
     end

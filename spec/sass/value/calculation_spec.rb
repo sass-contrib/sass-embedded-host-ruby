@@ -33,6 +33,7 @@ describe Sass::Value::Calculation do
       expect { calculation.assert_function }.to raise_error(Sass::ScriptError)
       expect { calculation.assert_map }.to raise_error(Sass::ScriptError)
       expect(calculation.to_map).to be_nil
+      expect { calculation.assert_mixin }.to raise_error(Sass::ScriptError)
       expect { calculation.assert_number }.to raise_error(Sass::ScriptError)
       expect { calculation.assert_string }.to raise_error(Sass::ScriptError)
     end

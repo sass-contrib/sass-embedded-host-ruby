@@ -57,6 +57,7 @@ describe Sass::Value::String do
       expect { value.assert_function }.to raise_error(Sass::ScriptError)
       expect { value.assert_map }.to raise_error(Sass::ScriptError)
       expect(value.to_map).to be_nil
+      expect { value.assert_mixin }.to raise_error(Sass::ScriptError)
       expect { value.assert_number }.to raise_error(Sass::ScriptError)
     end
   end

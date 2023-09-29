@@ -97,6 +97,7 @@ describe Sass::Value::ArgumentList do
       expect { list.assert_function }.to raise_error(Sass::ScriptError)
       expect { list.assert_map }.to raise_error(Sass::ScriptError)
       expect(list.to_map).to be_nil
+      expect { list.assert_mixin }.to raise_error(Sass::ScriptError)
       expect { list.assert_number }.to raise_error(Sass::ScriptError)
       expect { list.assert_string }.to raise_error(Sass::ScriptError)
     end
