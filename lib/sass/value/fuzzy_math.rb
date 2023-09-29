@@ -67,11 +67,11 @@ module Sass
       end
 
       def hash(number)
-        @hash ||= if number.finite?
-                    (number * INVERSE_EPSILON).round.hash
-                  else
-                    number.hash
-                  end
+        if number.finite?
+          (number * INVERSE_EPSILON).round.hash
+        else
+          number.hash
+        end
       end
     end
 

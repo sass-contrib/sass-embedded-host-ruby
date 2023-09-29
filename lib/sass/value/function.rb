@@ -8,8 +8,6 @@ module Sass
     class Function
       include Value
 
-      # @overload initialize(id)
-      #   @param id [Numeric]
       # @overload initialize(signature, callback)
       #   @param signature [::String]
       #   @param callback [Proc]
@@ -42,7 +40,7 @@ module Sass
 
       # @return [Integer]
       def hash
-        id.nil? ? signature.hash : id.hash
+        @hash ||= id.nil? ? signature.hash : id.hash
       end
 
       # @return [Function]
