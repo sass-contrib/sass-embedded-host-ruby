@@ -133,6 +133,7 @@ module Sass
         @result
       ensure
         @channel&.disconnect
+        @queue&.close
       end
 
       def await
@@ -153,6 +154,7 @@ module Sass
         @result
       ensure
         @channel&.disconnect
+        @queue&.close
       end
 
       def id
