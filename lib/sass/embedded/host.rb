@@ -121,8 +121,8 @@ module Sass
       private
 
       def await0
-        @channel = @dispatcher.connect(self)
         @queue = Queue.new
+        @channel = @dispatcher.connect(self)
 
         yield
 
@@ -136,8 +136,8 @@ module Sass
       end
 
       def await
-        @channel = @dispatcher.connect(self)
         @queue = Queue.new
+        @channel = @dispatcher.connect(self)
 
         yield
 
