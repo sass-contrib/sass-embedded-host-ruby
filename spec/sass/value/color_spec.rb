@@ -37,6 +37,7 @@ describe Sass::Value::Color do
         expect { color.assert_function }.to raise_error(Sass::ScriptError)
         expect { color.assert_map }.to raise_error(Sass::ScriptError)
         expect(color.to_map).to be_nil
+        expect { color.assert_mixin }.to raise_error(Sass::ScriptError)
         expect { color.assert_number }.to raise_error(Sass::ScriptError)
         expect { color.assert_string }.to raise_error(Sass::ScriptError)
       end

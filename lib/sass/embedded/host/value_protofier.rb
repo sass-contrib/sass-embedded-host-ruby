@@ -96,6 +96,12 @@ module Sass
                 )
               )
             end
+          when Sass::Value::Mixin
+            EmbeddedProtocol::Value.new(
+              compiler_mixin: EmbeddedProtocol::Value::CompilerMixin.new(
+                id: obj.id
+              )
+            )
           when Sass::Value::Calculation
             EmbeddedProtocol::Value.new(
               calculation: Calculation.to_proto(obj)
@@ -176,6 +182,8 @@ module Sass
             Sass::Value::Function.new(obj.id)
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
+          when :compiler_mixin
+            Sass::Value::Mixin.new(obj.id)
           when :calculation
             Calculation.from_proto(obj)
           when :singleton
