@@ -82,10 +82,10 @@ module Sass
               )
             )
           when Sass::Value::Function
-            if obj.id
+            if obj.instance_eval { @id }
               EmbeddedProtocol::Value.new(
                 compiler_function: EmbeddedProtocol::Value::CompilerFunction.new(
-                  id: obj.id
+                  id: obj.instance_eval { @id }
                 )
               )
             else
@@ -99,7 +99,7 @@ module Sass
           when Sass::Value::Mixin
             EmbeddedProtocol::Value.new(
               compiler_mixin: EmbeddedProtocol::Value::CompilerMixin.new(
-                id: obj.id
+                id: obj.instance_eval { @id }
               )
             )
           when Sass::Value::Calculation
@@ -179,11 +179,17 @@ module Sass
               end
             )
           when :compiler_function
-            Sass::Value::Function.new(obj.id)
+            Sass::Value::Function.new(nil, nil).instance_eval do
+              @id = obj.id
+              self
+            end
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :compiler_mixin
-            Sass::Value::Mixin.new(obj.id)
+            Sass::Value::Mixin.new.instance_eval do
+              @id = obj.id
+              self
+            end
           when :calculation
             Calculation.from_proto(obj)
           when :singleton

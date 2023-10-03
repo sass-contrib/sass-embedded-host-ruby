@@ -8,13 +8,8 @@ module Sass
     class Mixin
       include Value
 
-      # @!visibility private
-      def initialize(id)
-        @id = id
-      end
-
       # @return [Integer]
-      attr_reader :id
+      protected attr_reader :id # rubocop:disable Style/AccessModifierDeclarations
 
       # @return [::Boolean]
       def ==(other)

@@ -8,20 +8,15 @@ module Sass
     class Function
       include Value
 
-      # @overload initialize(signature, callback)
-      #   @param signature [::String]
-      #   @param callback [Proc]
-      def initialize(id_or_signature, callback = nil)
-        if id_or_signature.is_a? Numeric
-          @id = id_or_signature
-        else
-          @signature = id_or_signature
-          @callback = callback
-        end
+      # @param signature [::String]
+      # @param callback [Proc]
+      def initialize(signature, callback)
+        @signature = signature
+        @callback = callback
       end
 
       # @return [Integer, nil]
-      attr_reader :id
+      protected attr_reader :id # rubocop:disable Style/AccessModifierDeclarations
 
       # @return [::String, nil]
       attr_reader :signature
