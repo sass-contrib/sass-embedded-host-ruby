@@ -16,7 +16,9 @@ module Sass
       end
 
       # @return [Integer, nil]
-      protected attr_reader :id # rubocop:disable Style/AccessModifierDeclarations
+      attr_reader :id
+
+      protected :id
 
       # @return [::String, nil]
       attr_reader :signature

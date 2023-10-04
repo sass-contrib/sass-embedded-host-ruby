@@ -9,7 +9,9 @@ module Sass
       include Value
 
       # @return [Integer]
-      protected attr_reader :id # rubocop:disable Style/AccessModifierDeclarations
+      attr_reader :id
+
+      protected :id
 
       # @return [::Boolean]
       def ==(other)
