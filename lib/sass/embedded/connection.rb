@@ -36,11 +36,10 @@ module Sass
       def close
         @stdin_mutex.synchronize do
           @stdin.close
+          @wait_thread.join
           @stdout.close
           @stderr.close
         end
-
-        @wait_thread.value
       end
 
       def closed?
