@@ -35,9 +35,9 @@ module Sass
 
       def close
         @stdin_mutex.synchronize do
-          @stdin.close unless @stdin.closed?
-          @stdout.close unless @stdout.closed?
-          @stderr.close unless @stderr.closed?
+          @stdin.close
+          @stdout.close
+          @stderr.close
         end
 
         @wait_thread.value

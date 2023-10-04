@@ -86,11 +86,13 @@ module Sass
       end
 
       def error(message)
-        @error = if message.is_a?(EmbeddedProtocol::ProtocolError)
-                   Errno::EPROTO.new(message.message)
-                 else
-                   message
-                 end
+        case message
+        when EmbeddedProtocol::ProtocolError
+          @dispatcher.error
+          @error = Errno::EPROTO.new(message.message)
+        else
+          @error ||= message
+        end
         @queue.close
       end
 

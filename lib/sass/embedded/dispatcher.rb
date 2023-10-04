@@ -48,7 +48,9 @@ module Sass
           return unless @observers.empty?
 
           if @id == UINT_MAX
-            close
+            Thread.new do
+              close
+            end
           else
             @id = 1
           end
@@ -65,6 +67,12 @@ module Sass
 
       def closed?
         @connection.closed?
+      end
+
+      def error
+        @mutex.synchronize do
+          @id = UINT_MAX
+        end
       end
 
       def send_proto(...)

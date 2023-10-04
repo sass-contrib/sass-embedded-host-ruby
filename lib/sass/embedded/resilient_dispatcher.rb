@@ -11,27 +11,31 @@ module Sass
         @mutex = Mutex.new
       end
 
-      def close
+      def close(...)
         @mutex.synchronize do
-          @dispatcher.close
+          @dispatcher.close(...)
         end
       end
 
-      def closed?
+      def closed?(...)
         @mutex.synchronize do
-          @dispatcher.closed?
+          @dispatcher.closed?(...)
         end
       end
 
-      def connect(host)
-        @dispatcher.connect(host)
+      def connect(...)
+        @dispatcher.connect(...)
       rescue Errno::EBUSY
         @mutex.synchronize do
-          @dispatcher.connect(host)
+          @dispatcher.connect(...)
         rescue Errno::EBUSY
           @dispatcher = Dispatcher.new
-          @dispatcher.connect(host)
+          @dispatcher.connect(...)
         end
+      end
+
+      def error(...)
+        @dispatcher.error(...)
       end
     end
 
