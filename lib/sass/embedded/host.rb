@@ -123,33 +123,31 @@ module Sass
       private
 
       def await0
-        @queue = Queue.new
-        @channel = @dispatcher.connect(self)
+        listen do
+          yield
 
-        yield
-
-        @queue.pop
-
-        raise @error if @error
-
-        @result
-      ensure
-        @channel&.disconnect
-        @queue&.close
+          @queue.pop
+        end
       end
 
       def await
+        listen do
+          yield
+
+          while (proto = @queue.pop)
+            outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+            oneof = outbound_message.message
+            message = outbound_message.public_send(oneof)
+            public_send(oneof, message)
+          end
+        end
+      end
+
+      def listen
         @queue = Queue.new
         @channel = @dispatcher.connect(self)
 
         yield
-
-        while (proto = @queue.pop)
-          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
-          oneof = outbound_message.message
-          message = outbound_message.public_send(oneof)
-          public_send(oneof, message)
-        end
 
         raise @error if @error
 
