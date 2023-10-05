@@ -8,6 +8,10 @@ module Sass
     class Mixin
       include Value
 
+      class << self
+        private :new
+      end
+
       # @return [Integer]
       attr_reader :id
 

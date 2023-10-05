@@ -186,7 +186,7 @@ module Sass
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :compiler_mixin
-            Sass::Value::Mixin.new.instance_eval do
+            Sass::Value::Mixin.send(:new).instance_eval do
               @id = obj.id
               self
             end
