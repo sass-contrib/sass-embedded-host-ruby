@@ -280,10 +280,6 @@ module Sass
                   right: to_proto(value.right)
                 )
               )
-            when Sass::CalculationValue::CalculationInterpolation
-              EmbeddedProtocol::Value::Calculation::CalculationValue.new(
-                interpolation: value.value
-              )
             else
               raise Sass::ScriptError, "Unknown CalculationValue #{value}"
             end
@@ -305,8 +301,6 @@ module Sass
                 from_proto(obj.left),
                 from_proto(obj.right)
               )
-            when :interpolation
-              Sass::CalculationValue::CalculationInterpolation.new(obj)
             else
               raise Sass::ScriptError, "Unknown CalculationValue #{value}"
             end

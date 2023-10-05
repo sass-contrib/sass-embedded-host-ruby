@@ -9,23 +9,10 @@ module Sass
     class CalculationInterpolation
       include CalculationValue
 
-      # @param value [::String]
-      def initialize(value)
-        @value = value
-      end
-
-      # @return [::String]
-      attr_reader :value
-
-      # @return [::Boolean]
-      def ==(other)
-        other.is_a?(Sass::CalculationValue::CalculationInterpolation) &&
-          other.value == value
-      end
-
-      # @return [Integer]
-      def hash
-        @hash ||= value.hash
+      class << self
+        def new(value)
+          Sass::Value::String.new("(#{value})", quoted: false)
+        end
       end
     end
   end

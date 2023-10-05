@@ -388,10 +388,4 @@ describe Sass::Value::Calculation do
       end
     end
   end
-
-  describe 'CalculationInterpolation' do
-    it 'stores value' do
-      expect(Sass::CalculationValue::CalculationInterpolation.new('1').value).to eq('1')
-    end
-  end
 end
