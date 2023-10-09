@@ -7,8 +7,7 @@ describe Sass::Value::Calculation do
     Sass::Value::Number.new(1),
     Sass::Value::String.new('1', quoted: false),
     described_class.calc(Sass::Value::Number.new(1)),
-    Sass::CalculationValue::CalculationOperation.new('+', Sass::Value::Number.new(1), Sass::Value::Number.new(1)),
-    Sass::CalculationValue::CalculationInterpolation.new('')
+    Sass::CalculationValue::CalculationOperation.new('+', Sass::Value::Number.new(1), Sass::Value::Number.new(1))
   ]
   invalid_calculation_values = [Sass::Value::String.new('1', quoted: true)]
 
@@ -164,8 +163,7 @@ describe Sass::Value::Calculation do
     # When `clamp()` is called with less than three arguments, the list of
     # accepted values is much narrower
     valid_clamp_values = [
-      Sass::Value::String.new('1', quoted: false),
-      Sass::CalculationValue::CalculationInterpolation.new('1')
+      Sass::Value::String.new('1', quoted: false)
     ]
     invalid_clamp_values = [
       Sass::Value::Number.new(1),
@@ -298,7 +296,7 @@ describe Sass::Value::Calculation do
       expect do
         Sass.compile_string('a {b: foo()}',
                             functions: { 'foo()': fn }).css
-      end.to raise_sass_compile_error.with_message('SassString or CalculationInterpolation')
+      end.to raise_sass_compile_error.with_message('SassString')
     end
 
     it 'an unknown calculation function' do
