@@ -4,8 +4,6 @@ require 'spec_helper'
 
 describe Sass::Value::Mixin do
   it 'can round-trip a mixin reference from Sass' do
-    skip 'TODO: enable after dart-sass release'
-
     fn = double
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(1)
