@@ -37,7 +37,7 @@ module Sass
         def clamp(min, value = nil, max = nil)
           if (value.nil? && !valid_clamp_arg?(min)) ||
              (max.nil? && [min, value].none? { |x| x && valid_clamp_arg?(x) })
-            raise Sass::ScriptError, 'Argument must be an unquoted SassString or CalculationInterpolation.'
+            raise Sass::ScriptError, 'Argument must be an unquoted SassString.'
           end
 
           new('clamp', [min, value, max].compact)
@@ -46,8 +46,7 @@ module Sass
         private
 
         def valid_clamp_arg?(value)
-          value.is_a?(Sass::CalculationValue::CalculationInterpolation) ||
-            (value.is_a?(Sass::Value::String) && !value.quoted?)
+          value.is_a?(Sass::Value::String) && !value.quoted?
         end
       end
 

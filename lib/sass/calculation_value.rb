@@ -13,5 +13,4 @@ module Sass
   end
 end
 
-require_relative 'calculation_value/calculation_interpolation'
 require_relative 'calculation_value/calculation_operation'
