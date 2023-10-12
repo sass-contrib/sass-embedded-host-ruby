@@ -9,6 +9,7 @@ module Sass
     # It runs the `sass --embedded` command.
     class Connection
       def initialize
+        @mutex = Mutex.new
         @stdin, @stdout, @stderr, @wait_thread = begin
           Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
         rescue Errno::ENOENT
@@ -21,8 +22,6 @@ module Sass
 
         @stdin.binmode
         @stdout.binmode
-        @stdin_mutex = Mutex.new
-        @stdout_mutex = Mutex.new
 
         Thread.new do
           loop do
@@ -31,10 +30,27 @@ module Sass
             break
           end
         end
+
+        Thread.new do
+          loop do
+            length = Varint.read(@stdout)
+            id = Varint.read(@stdout)
+            proto = @stdout.read(length - Varint.length(id))
+            yield id, proto
+          rescue IOError, Errno::EBADF => e
+            yield 0xffffffff, EmbeddedProtocol::OutboundMessage.new(
+              error: EmbeddedProtocol::ProtocolError.new(
+                type: :PARSE,
+                message: e.message
+              )
+            ).to_proto
+            break
+          end
+        end
       end
 
       def close
-        @stdin_mutex.synchronize do
+        @mutex.synchronize do
           @stdin.close
           @wait_thread.join
           @stdout.close
@@ -43,25 +59,16 @@ module Sass
       end
 
       def closed?
-        @stdin_mutex.synchronize do
+        @mutex.synchronize do
           @stdin.closed?
         end
       end
 
       def write(id, proto)
-        @stdin_mutex.synchronize do
+        @mutex.synchronize do
           Varint.write(@stdin, Varint.length(id) + proto.length)
           Varint.write(@stdin, id)
           @stdin.write(proto)
-        end
-      end
-
-      def read
-        @stdout_mutex.synchronize do
-          length = Varint.read(@stdout)
-          id = Varint.read(@stdout)
-          proto = @stdout.read(length - Varint.length(id))
-          return id, proto
         end
       end
     end
