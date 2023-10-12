@@ -88,7 +88,6 @@ module Sass
       def error(message)
         case message
         when EmbeddedProtocol::ProtocolError
-          @dispatcher.error
           @error = Errno::EPROTO.new(message.message)
         else
           @error ||= message

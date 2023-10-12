@@ -6,33 +6,46 @@ module Sass
     #
     # It dispatches messages between mutliple instances of {Host} and a single {Connection} to the compiler.
     class Dispatcher
-      UINT_MAX = 0xffffffff
-
       def initialize
-        @connection = Connection.new
-        @observers = {}
         @id = 1
+        @observers = {}
         @mutex = Mutex.new
+        @connection = Connection.new do |id, proto|
+          case id
+          when 1...0xffffffff
+            @mutex.synchronize { @observers[id] }.receive_proto(proto)
+          when 0
+            outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+            oneof = outbound_message.message
+            message = outbound_message.public_send(oneof)
+            @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
+          when 0xffffffff
+            outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+            oneof = outbound_message.message
+            message = outbound_message.public_send(oneof)
+            raise Errno::EPROTO, message.message
+          else
+            raise Errno::EPROTO
+          end
+        rescue Errno::EPROTO => e
+          observers = @mutex.synchronize do
+            @id = 0xffffffff
+            @observers.values
+          end
 
-        Thread.new do
-          loop do
-            receive_proto
-          rescue IOError, Errno::EBADF, Errno::EPROTO => e
-            values = @mutex.synchronize do
-              @id = UINT_MAX
-              @observers.values
-            end
-            values.each do |observer|
+          if observers.empty?
+            close
+          else
+            observers.each do |observer|
               observer.error(e)
             end
-            break
           end
         end
       end
 
       def subscribe(observer)
         @mutex.synchronize do
-          raise Errno::EBUSY if @id == UINT_MAX
+          raise Errno::EBUSY if @id == 0xffffffff
 
           id = @id
           @id = id.next
@@ -47,7 +60,7 @@ module Sass
 
           return unless @observers.empty?
 
-          if @id == UINT_MAX
+          if @id == 0xffffffff
             Thread.new do
               close
             end
@@ -69,36 +82,8 @@ module Sass
         @connection.closed?
       end
 
-      def error
-        @mutex.synchronize do
-          @id = UINT_MAX
-        end
-      end
-
       def send_proto(...)
         @connection.write(...)
-      end
-
-      private
-
-      def receive_proto
-        id, proto = @connection.read
-        case id
-        when 1...UINT_MAX
-          @mutex.synchronize { @observers[id] }.receive_proto(proto)
-        when 0
-          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
-          oneof = outbound_message.message
-          message = outbound_message.public_send(oneof)
-          @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
-        when UINT_MAX
-          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
-          oneof = outbound_message.message
-          message = outbound_message.public_send(oneof)
-          raise Errno::EPROTO, message.message
-        else
-          raise Errno::EPROTO
-        end
       end
 
       # The {Channel} between {Dispatcher} and {Host}.
