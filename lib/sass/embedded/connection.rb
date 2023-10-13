@@ -8,7 +8,7 @@ module Sass
     #
     # It runs the `sass --embedded` command.
     class Connection
-      def initialize
+      def initialize(dispatcher)
         @mutex = Mutex.new
         @stdin, @stdout, @stderr, @wait_thread = begin
           Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
@@ -36,14 +36,9 @@ module Sass
             length = Varint.read(@stdout)
             id = Varint.read(@stdout)
             proto = @stdout.read(length - Varint.length(id))
-            yield id, proto
-          rescue IOError, Errno::EBADF => e
-            yield 0xffffffff, EmbeddedProtocol::OutboundMessage.new(
-              error: EmbeddedProtocol::ProtocolError.new(
-                type: :PARSE,
-                message: e.message
-              )
-            ).to_proto
+            dispatcher.receive_proto(id, proto)
+          rescue IOError, Errno::EBADF, Errno::EPROTO => e
+            dispatcher.error(e)
             break
           end
         end

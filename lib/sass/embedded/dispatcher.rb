@@ -10,11 +10,7 @@ module Sass
         @id = 1
         @observers = {}
         @mutex = Mutex.new
-        @connection = Connection.new do |id, proto|
-          receive_proto(id, proto)
-        rescue Errno::EPROTO => e
-          error(e)
-        end
+        @connection = Connection.new(self)
       end
 
       def subscribe(observer)
@@ -71,12 +67,6 @@ module Sass
         end
       end
 
-      def send_proto(...)
-        @connection.write(...)
-      end
-
-      private
-
       def receive_proto(id, proto)
         case id
         when 1...0xffffffff
@@ -94,6 +84,10 @@ module Sass
         else
           raise Errno::EPROTO
         end
+      end
+
+      def send_proto(...)
+        @connection.write(...)
       end
 
       # The {Channel} between {Dispatcher} and {Host}.
