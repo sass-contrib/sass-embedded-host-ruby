@@ -89,6 +89,7 @@ module Sass
         case message
         when EmbeddedProtocol::ProtocolError
           @error = Errno::EPROTO.new(message.message)
+          @channel.error(@error)
         else
           @error ||= message
         end

@@ -11,35 +11,9 @@ module Sass
         @observers = {}
         @mutex = Mutex.new
         @connection = Connection.new do |id, proto|
-          case id
-          when 1...0xffffffff
-            @mutex.synchronize { @observers[id] }.receive_proto(proto)
-          when 0
-            outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
-            oneof = outbound_message.message
-            message = outbound_message.public_send(oneof)
-            @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
-          when 0xffffffff
-            outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
-            oneof = outbound_message.message
-            message = outbound_message.public_send(oneof)
-            raise Errno::EPROTO, message.message
-          else
-            raise Errno::EPROTO
-          end
+          receive_proto(id, proto)
         rescue Errno::EPROTO => e
-          observers = @mutex.synchronize do
-            @id = 0xffffffff
-            @observers.values
-          end
-
-          if observers.empty?
-            close
-          else
-            observers.each do |observer|
-              observer.error(e)
-            end
-          end
+          error(e)
         end
       end
 
@@ -82,8 +56,44 @@ module Sass
         @connection.closed?
       end
 
+      def error(error)
+        observers = @mutex.synchronize do
+          @id = 0xffffffff
+          @observers.values
+        end
+
+        if observers.empty?
+          close
+        else
+          observers.each do |observer|
+            observer.error(error)
+          end
+        end
+      end
+
       def send_proto(...)
         @connection.write(...)
+      end
+
+      private
+
+      def receive_proto(id, proto)
+        case id
+        when 1...0xffffffff
+          @mutex.synchronize { @observers[id] }.receive_proto(proto)
+        when 0
+          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+          oneof = outbound_message.message
+          message = outbound_message.public_send(oneof)
+          @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
+        when 0xffffffff
+          outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
+          oneof = outbound_message.message
+          message = outbound_message.public_send(oneof)
+          raise Errno::EPROTO, message.message
+        else
+          raise Errno::EPROTO
+        end
       end
 
       # The {Channel} between {Dispatcher} and {Host}.
@@ -97,6 +107,10 @@ module Sass
 
         def disconnect
           @dispatcher.unsubscribe(id)
+        end
+
+        def error(...)
+          @dispatcher.error(...)
         end
 
         def send_proto(...)
