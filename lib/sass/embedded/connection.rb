@@ -45,18 +45,14 @@ module Sass
       end
 
       def close
-        @mutex.synchronize do
-          @stdin.close
-          @wait_thread.join
-          @stdout.close
-          @stderr.close
-        end
+        @stdin.close
+        @wait_thread.join
+        @stdout.close
+        @stderr.close
       end
 
       def closed?
-        @mutex.synchronize do
-          @stdin.closed?
-        end
+        @stdin.closed? && !@wait_thread.alive?
       end
 
       def write(id, proto)
