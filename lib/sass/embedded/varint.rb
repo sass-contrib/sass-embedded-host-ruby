@@ -26,13 +26,11 @@ module Sass
       end
 
       def write(writeable, value)
-        bytes = []
         until value < 0x80
-          bytes << ((value & 0x7f) | 0x80)
+          writeable << ((value & 0x7f) | 0x80)
           value >>= 7
         end
-        bytes << value
-        writeable.write bytes.pack('C*')
+        writeable << value
       end
     end
 

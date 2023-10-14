@@ -9,7 +9,6 @@ module Sass
     # It runs the `sass --embedded` command.
     class Connection
       def initialize(dispatcher)
-        @mutex = Mutex.new
         @stdin, stdout, stderr, @wait_thread = begin
           Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
         rescue Errno::ENOENT
@@ -55,11 +54,10 @@ module Sass
       end
 
       def write(id, proto)
-        @mutex.synchronize do
-          Varint.write(@stdin, Varint.length(id) + proto.length)
-          Varint.write(@stdin, id)
-          @stdin.write(proto)
-        end
+        buffer = []
+        Varint.write(buffer, Varint.length(id) + proto.length)
+        Varint.write(buffer, id)
+        @stdin.write(buffer.pack('C*'), proto)
       end
     end
 
