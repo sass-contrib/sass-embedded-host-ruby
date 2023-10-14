@@ -2,6 +2,8 @@
 
 require 'open3'
 
+require_relative '../../../ext/sass/cli'
+
 module Sass
   class Embedded
     # The stdio based {Connection} between the {Dispatcher} and the compiler.
@@ -21,15 +23,6 @@ module Sass
         @stdin.binmode
 
         Thread.new do
-          loop do
-            warn(stderr.readline, uplevel: 1)
-          rescue IOError, Errno::EBADF
-            break
-          end
-          stderr.close
-        end
-
-        Thread.new do
           stdout.binmode
           loop do
             length = Varint.read(stdout)
@@ -41,6 +34,15 @@ module Sass
             break
           end
           stdout.close
+        end
+
+        Thread.new do
+          loop do
+            warn(stderr.readline, uplevel: 1)
+          rescue IOError, Errno::EBADF
+            break
+          end
+          stderr.close
         end
       end
 

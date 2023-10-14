@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../../ext/sass/cli'
 require_relative 'canonicalize_context'
 require_relative 'compile_error'
 require_relative 'compile_result'
