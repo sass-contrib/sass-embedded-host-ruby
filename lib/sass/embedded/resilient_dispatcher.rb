@@ -33,10 +33,6 @@ module Sass
           @dispatcher.connect(...)
         end
       end
-
-      def error(...)
-        @dispatcher.error(...)
-      end
     end
 
     private_constant :ResilientDispatcher
