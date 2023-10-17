@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Sass do
   def remote_eq(lhs, rhs)
     to_host_value = lambda { |value|
-      if value.is_a? Sass::Value::ArgumentList
+      if value.is_a?(Sass::Value::ArgumentList)
         value.dup
       else
         value

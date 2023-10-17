@@ -10,7 +10,7 @@ module Sass
         module_function
 
         def to_struct(obj, *symbols)
-          return obj unless obj.is_a? Hash
+          return obj unless obj.is_a?(Hash)
 
           struct = Object.new
           symbols.each do |key|

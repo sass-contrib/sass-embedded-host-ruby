@@ -30,7 +30,7 @@ module Sass
       # @param index [Numeric, Value]
       # @return [List<(Value, Value)>, Value]
       def at(index)
-        if index.is_a? Numeric
+        if index.is_a?(Numeric)
           index = index.floor
           index = to_a_length + index if index.negative?
           return nil if index.negative? || index >= to_a_length

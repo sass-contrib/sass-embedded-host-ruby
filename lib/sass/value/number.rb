@@ -25,12 +25,12 @@ module Sass
           denominator_units = []
         when ::Hash
           numerator_units = unit.fetch(:numerator_units, [])
-          unless numerator_units.is_a? Array
+          unless numerator_units.is_a?(Array)
             raise Sass::ScriptError, "invalid numerator_units #{numerator_units.inspect}"
           end
 
           denominator_units = unit.fetch(:denominator_units, [])
-          unless denominator_units.is_a? Array
+          unless denominator_units.is_a?(Array)
             raise Sass::ScriptError, "invalid denominator_units #{denominator_units.inspect}"
           end
         else
@@ -75,7 +75,7 @@ module Sass
 
       # @return [::Boolean]
       def ==(other)
-        return false unless other.is_a? Sass::Value::Number
+        return false unless other.is_a?(Sass::Value::Number)
 
         return false if numerator_units.length != other.numerator_units.length ||
                         denominator_units.length != other.denominator_units.length

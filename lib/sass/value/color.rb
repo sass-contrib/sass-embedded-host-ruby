@@ -50,42 +50,42 @@ module Sass
 
       # @return [Integer]
       def red
-        hsl_to_rgb unless defined? @red
+        hsl_to_rgb unless defined?(@red)
 
         @red
       end
 
       # @return [Integer]
       def green
-        hsl_to_rgb unless defined? @green
+        hsl_to_rgb unless defined?(@green)
 
         @green
       end
 
       # @return [Integer]
       def blue
-        hsl_to_rgb unless defined? @blue
+        hsl_to_rgb unless defined?(@blue)
 
         @blue
       end
 
       # @return [Numeric]
       def hue
-        rgb_to_hsl unless defined? @hue
+        rgb_to_hsl unless defined?(@hue)
 
         @hue
       end
 
       # @return [Numeric]
       def saturation
-        rgb_to_hsl unless defined? @saturation
+        rgb_to_hsl unless defined?(@saturation)
 
         @saturation
       end
 
       # @return [Numeric]
       def lightness
-        rgb_to_hsl unless defined? @lightness
+        rgb_to_hsl unless defined?(@lightness)
 
         @lightness
       end
