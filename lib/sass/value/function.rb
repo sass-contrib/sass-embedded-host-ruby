@@ -29,7 +29,7 @@ module Sass
       # @return [::Boolean]
       def ==(other)
         if id.nil?
-          other.equal? self
+          other.equal?(self)
         else
           other.is_a?(Sass::Value::Function) && other.id == id
         end

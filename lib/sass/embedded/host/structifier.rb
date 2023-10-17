@@ -17,7 +17,7 @@ module Sass
             next unless obj.key?(key)
 
             value = obj[key]
-            if value.respond_to? :call
+            if value.respond_to?(:call)
               struct.define_singleton_method key do |*args, **kwargs|
                 value.call(*args, **kwargs)
               end
