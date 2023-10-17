@@ -9,7 +9,7 @@
                   │            │      from host threads      │            │
 ┌─────────────┐   │    sass    │                             │    sass    │   ┌─────────────────────┐
 │             ├───►            │                             │            ├───►                     │
-│ host thread │   │  embedded  │                             │  embedded  │   │ compilation isolate │
+│     ...     │   │  embedded  │                             │  embedded  │   │         ...         │
 │             ◄───┤            │                             │            ◄───┤                     │
 └─────────────┘   │    host    │                             │  compiler  │   └─────────────────────┘
                   │            │         read stdout         │            │
