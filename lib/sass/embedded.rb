@@ -70,9 +70,8 @@ module Sass
         at_exit do
           @instance.close
         end
+        @instance
       end
-
-      @instance
     end
   end
   # rubocop:enable Layout/LineLength
