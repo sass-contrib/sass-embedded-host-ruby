@@ -104,9 +104,7 @@ module Sass
         end
 
         def error(...)
-          Thread.new do
-            @dispatcher.error(...)
-          end
+          @dispatcher.error(...)
         end
 
         def send_proto(...)
