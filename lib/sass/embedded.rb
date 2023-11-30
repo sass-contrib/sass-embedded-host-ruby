@@ -63,4 +63,14 @@ module Sass
     end
   end
   # rubocop:enable Layout/LineLength
+
+  # The {Embedded} module.
+  module Embedded
+    module_function
+
+    # @deprecated Use {Compiler.new} instead.
+    def new
+      Compiler.new
+    end
+  end
 end

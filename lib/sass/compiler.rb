@@ -16,7 +16,7 @@ require_relative 'logger/source_span'
 require_relative 'value'
 
 module Sass
-  # The {Embedded} host for using dart-sass. Each instance creates its own
+  # The {Compiler} for using dart-sass. Each instance creates its own
   # communication {Dispatcher} with a dedicated compiler process.
   #
   # @example
