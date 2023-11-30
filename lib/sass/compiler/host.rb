@@ -8,7 +8,7 @@ require_relative 'host/structifier'
 require_relative 'host/value_protofier'
 
 module Sass
-  class Embedded
+  class Compiler
     # The {Host} class.
     #
     # It communicates with {Dispatcher} and handles the host logic.

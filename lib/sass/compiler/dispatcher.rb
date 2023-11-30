@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  class Embedded
+  class Compiler
     # The {Dispatcher} class.
     #
     # It dispatches messages between mutliple instances of {Host} and a single {Connection} to the compiler.

@@ -5,7 +5,7 @@ require 'open3'
 require_relative '../../../ext/sass/cli'
 
 module Sass
-  class Embedded
+  class Compiler
     # The stdio based {Connection} between the {Dispatcher} and the compiler.
     #
     # It runs the `sass --embedded` command.

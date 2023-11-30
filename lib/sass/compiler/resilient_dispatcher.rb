@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  class Embedded
+  class Compiler
     # The {ResilientDispatcher} class.
     #
     # It recovers from failures and continues to function.

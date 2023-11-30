@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sass
-  class Embedded
+  class Compiler
     # The {Varint} module.
     #
     # It reads and writes varints.
