@@ -54,7 +54,43 @@ module Sass
       @mutex.synchronize do
         return @compiler if @compiler
 
-        compiler = Compiler.new
+        compiler = Class.new(Compiler) do
+          def initialize
+            @dispatcher = self.class.const_get(:ResilientDispatcher).new(Class.new(self.class.const_get(:Dispatcher)) do
+              def initialize
+                super
+
+                idle_timeout = 10
+                @last_accessed_time = current_time
+
+                Thread.new do
+                  duration = idle_timeout
+                  loop do
+                    sleep(duration.negative? ? idle_timeout : duration)
+                    evicted = @mutex.synchronize do
+                      duration = idle_timeout - (current_time - @last_accessed_time)
+                      @id = 0xffffffff if @observers.empty? && duration.negative?
+                    end
+                    break if evicted
+                  end
+                  close
+                end
+              end
+
+              private
+
+              def idle
+                super
+
+                @last_accessed_time = current_time
+              end
+
+              def current_time
+                Process.clock_gettime(Process::CLOCK_MONOTONIC)
+              end
+            end)
+          end
+        end.new
 
         Process.singleton_class.prepend(Module.new do
           define_method :_fork do

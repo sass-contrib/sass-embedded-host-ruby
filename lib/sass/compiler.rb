@@ -26,7 +26,7 @@ module Sass
   #   sass.close
   class Compiler
     def initialize
-      @dispatcher = ResilientDispatcher.new
+      @dispatcher = ResilientDispatcher.new(Dispatcher)
     end
 
     # Compiles the Sass file at +path+ to CSS.
