@@ -10,7 +10,7 @@ RSpec.describe Sass do
         canonicalize: ->(url, _context) { "u:#{url}" },
         load: lambda { |url|
           color = url.split(':')[1]
-          return {
+          {
             contents: ".#{color} {color: #{color}}",
             syntax: 'scss'
           }
@@ -28,7 +28,7 @@ RSpec.describe Sass do
         canonicalize: ->(*) { 'u:blue' },
         load: lambda { |url|
           color = url.split(':')[1]
-          return {
+          {
             contents: ".#{color} {color: #{color}}",
             syntax: 'scss'
           }
@@ -49,7 +49,7 @@ RSpec.describe Sass do
         canonicalize: ->(*) { 'u:blue' },
         load: lambda { |url|
           color = url.split(':')[1]
-          return {
+          {
             contents: ".#{color} {color: #{color}}",
             syntax: 'scss'
           }
@@ -72,7 +72,7 @@ RSpec.describe Sass do
             "u:#{url}"
           },
           load: lambda { |*|
-            return {
+            {
               contents: 'a {b: c}',
               syntax: 'scss'
             }
@@ -92,7 +92,7 @@ RSpec.describe Sass do
             "u:#{url}"
           },
           load: lambda { |*|
-            return {
+            {
               contents: 'a {b: c}',
               syntax: 'scss'
             }
@@ -114,7 +114,7 @@ RSpec.describe Sass do
             url
           },
           load: lambda { |*|
-            return {
+            {
               contents: '@a',
               syntax: 'scss'
             }
@@ -136,7 +136,7 @@ RSpec.describe Sass do
                 url.gsub(/^u:/, 'x:')
               },
               load: lambda { |*|
-                return {
+                {
                   contents: '@a',
                   syntax: 'scss'
                 }
@@ -158,7 +158,7 @@ RSpec.describe Sass do
                 url.gsub(/^u:/, 'x:')
               },
               load: lambda { |*|
-                return {
+                {
                   contents: '@a',
                   syntax: 'scss'
                 }
@@ -181,7 +181,7 @@ RSpec.describe Sass do
                 url.gsub(/^u:/, 'x:')
               },
               load: lambda { |*|
-                return {
+                {
                   contents: '@a',
                   syntax: 'scss'
                 }
@@ -203,7 +203,7 @@ RSpec.describe Sass do
                 url.gsub(/^u:/, 'x:')
               },
               load: lambda { |*|
-                return {
+                {
                   contents: '@a',
                   syntax: 'scss'
                 }
@@ -227,7 +227,7 @@ RSpec.describe Sass do
               "u:#{url}"
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -248,7 +248,7 @@ RSpec.describe Sass do
               "u:#{url}"
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -271,7 +271,7 @@ RSpec.describe Sass do
               "u:#{url}"
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -291,7 +291,7 @@ RSpec.describe Sass do
               "u:#{url}"
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -312,7 +312,7 @@ RSpec.describe Sass do
             canonicalize: lambda { |*|
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -331,7 +331,7 @@ RSpec.describe Sass do
             canonicalize: lambda { |*|
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -350,7 +350,7 @@ RSpec.describe Sass do
             canonicalize: lambda { |*|
             },
             load: lambda { |*|
-              return {
+              {
                 contents: '@a',
                 syntax: 'scss'
               }
@@ -371,7 +371,7 @@ RSpec.describe Sass do
         },
         load: lambda { |url|
           color = url.split(':')[1]
-          return {
+          {
             contents: ".#{color} {color: #{color}}",
             syntax: 'scss',
             source_map_url: 'u:blue'
@@ -489,7 +489,7 @@ RSpec.describe Sass do
             "u:#{url}"
           },
           load: lambda { |*|
-            return {
+            {
               contents: 'a {from: importer}', syntax: 'scss'
             }
           }
@@ -507,7 +507,7 @@ RSpec.describe Sass do
         importers: [{
           canonicalize: ->(*) { 'u:other' },
           load: lambda { |*|
-            return { contents: '$a: value; b {c: $a}', syntax: 'scss' }
+            { contents: '$a: value; b {c: $a}', syntax: 'scss' }
           }
         }]
       )
@@ -521,7 +521,7 @@ RSpec.describe Sass do
         importers: [{
           canonicalize: ->(*) { 'u:other' },
           load: lambda { |*|
-            return { contents: "$a: value\nb\n  c: $a", syntax: 'indented' }
+            { contents: "$a: value\nb\n  c: $a", syntax: 'indented' }
           }
         }]
       )
@@ -535,7 +535,7 @@ RSpec.describe Sass do
         importers: [{
           canonicalize: ->(*) { 'u:other' },
           load: lambda { |*|
-            return { contents: 'a {b: c}', syntax: 'css' }
+            { contents: 'a {b: c}', syntax: 'css' }
           }
         }]
       )
@@ -550,7 +550,7 @@ RSpec.describe Sass do
           importers: [{
             canonicalize: ->(*) { 'u:other' },
             load: lambda { |*|
-              return { contents: "$a: value\nb\n  c: $a", syntax: 'css' }
+              { contents: "$a: value\nb\n  c: $a", syntax: 'css' }
             }
           }]
         )
@@ -569,7 +569,7 @@ RSpec.describe Sass do
           },
           load: lambda { |url|
             color = url.split(':')[1]
-            return {
+            {
               contents: ".#{color} {color: #{color}}",
               syntax: 'scss'
             }
@@ -589,7 +589,7 @@ RSpec.describe Sass do
             url
           },
           load: lambda { |_url|
-            return {
+            {
               contents: 'a {from: relative}',
               syntax: 'scss'
             }
@@ -627,7 +627,7 @@ RSpec.describe Sass do
           },
           load: lambda { |url|
             color = url.split(':')[1]
-            return {
+            {
               contents: ".#{color} {color: #{color}}",
               syntax: 'scss'
             }
@@ -657,13 +657,13 @@ RSpec.describe Sass do
           load: lambda { |url|
             pathname = url.split(':')[1]
             if pathname == 'midstream'
-              return {
+              {
                 contents: "@import 'orange';",
                 syntax: 'scss'
               }
             else
               color = pathname
-              return {
+              {
                 contents: ".#{color} {color: #{color}}",
                 syntax: 'scss'
               }
@@ -688,7 +688,7 @@ RSpec.describe Sass do
             url if url.start_with?('first:')
           },
           load: lambda { |*|
-            return {
+            {
               contents: 'a {from: first}',
               syntax: 'scss'
             }
@@ -701,7 +701,7 @@ RSpec.describe Sass do
             url if url.start_with?('second:')
           },
           load: lambda { |*|
-            return {
+            {
               contents: '@import "first:other";',
               syntax: 'scss'
             }
@@ -721,7 +721,7 @@ RSpec.describe Sass do
       }
       {
         canonicalize: canonicalize,
-        load: ->(*) { return { contents: '', syntax: 'scss' } }
+        load: ->(*) { { contents: '', syntax: 'scss' } }
       }
     end
 
@@ -1061,7 +1061,7 @@ RSpec.describe Sass do
               dir.url('other')
             },
             load: lambda { |*|
-              return { contents: 'a {b: c}', syntax: 'scss' }
+              { contents: 'a {b: c}', syntax: 'scss' }
             }
           }]
         )
@@ -1077,7 +1077,7 @@ RSpec.describe Sass do
           importers: [{
             canonicalize: ->(url, _context) { "u:#{url}" },
             load: lambda { |*|
-              return {
+              {
                 contents: StringIO.new('not a string'),
                 syntax: 'scss'
               }
@@ -1097,7 +1097,7 @@ RSpec.describe Sass do
         importers: [{
           canonicalize: ->(url, _context) { "u:#{url}" },
           load: lambda { |*|
-            return {
+            {
               contents: '',
               syntax: 'scss',
               source_map_url: {}

@@ -164,7 +164,7 @@ module FileUtils
       cp source_path, dest_path
     else
       fetcher = Gem::RemoteFetcher.fetcher
-      symbol = "fetch_#{scheme}".to_sym
+      symbol = :"fetch_#{scheme}"
       raise ArgumentError, "Unsupported URI scheme #{scheme}" unless fetcher.respond_to?(symbol)
 
       if Rake::FileUtilsExt.verbose_flag
