@@ -6,8 +6,9 @@ module Sass
     #
     # It recovers from failures and continues to function.
     class ResilientDispatcher
-      def initialize
-        @dispatcher = Dispatcher.new
+      def initialize(dispatcher_class)
+        @dispatcher_class = dispatcher_class
+        @dispatcher = @dispatcher_class.new
         @mutex = Mutex.new
       end
 
@@ -29,7 +30,7 @@ module Sass
         @mutex.synchronize do
           @dispatcher.connect(...)
         rescue Errno::EBUSY
-          @dispatcher = Dispatcher.new
+          @dispatcher = @dispatcher_class.new
           @dispatcher.connect(...)
         end
       end

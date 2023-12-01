@@ -35,7 +35,7 @@ module Sass
               close
             end
           else
-            @id = 1
+            idle
           end
         end
       end
@@ -88,6 +88,12 @@ module Sass
 
       def send_proto(...)
         @connection.write(...)
+      end
+
+      private
+
+      def idle
+        @id = 1
       end
 
       # The {Channel} between {Dispatcher} and {Host}.
