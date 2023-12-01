@@ -54,11 +54,20 @@ module Sass
       @mutex.synchronize do
         return @instance if @instance
 
-        @instance = Compiler.new
+        instance = Compiler.new
+
+        Process.singleton_class.prepend(Module.new do
+          define_method :_fork do
+            instance.close
+            super()
+          end
+        end)
+
         at_exit do
-          @instance.close
+          instance.close
         end
-        @instance
+
+        @instance = instance
       end
     end
   end
