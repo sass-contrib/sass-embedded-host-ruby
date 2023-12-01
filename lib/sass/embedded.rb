@@ -13,7 +13,7 @@ require_relative 'embedded/version'
 # @example
 #   Sass.compile_string('h1 { font-size: 40px; }')
 module Sass
-  @instance = nil
+  @compiler = nil
   @mutex = Mutex.new
 
   # rubocop:disable Layout/LineLength
@@ -25,7 +25,7 @@ module Sass
     # @raise (see Compiler#compile)
     # @see Compiler#compile
     def compile(...)
-      instance.compile(...)
+      compiler.compile(...)
     end
 
     # Compiles a stylesheet whose contents is +source+ to CSS.
@@ -35,7 +35,7 @@ module Sass
     # @raise (see Compiler#compile_string)
     # @see Compiler#compile_string
     def compile_string(...)
-      instance.compile_string(...)
+      compiler.compile_string(...)
     end
 
     # @param (see Compiler#info)
@@ -43,31 +43,31 @@ module Sass
     # @raise (see Compiler#info)
     # @see Compiler#info
     def info
-      instance.info
+      compiler.info
     end
 
     private
 
-    def instance
-      return @instance if @instance
+    def compiler
+      return @compiler if @compiler
 
       @mutex.synchronize do
-        return @instance if @instance
+        return @compiler if @compiler
 
-        instance = Compiler.new
+        compiler = Compiler.new
 
         Process.singleton_class.prepend(Module.new do
           define_method :_fork do
-            instance.close
+            compiler.close
             super()
           end
         end)
 
         at_exit do
-          instance.close
+          compiler.close
         end
 
-        @instance = instance
+        @compiler = compiler
       end
     end
   end
