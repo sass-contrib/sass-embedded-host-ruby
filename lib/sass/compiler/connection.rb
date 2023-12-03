@@ -22,8 +22,10 @@ module Sass
           Open3.popen3(ELF::INTERPRETER, *CLI::COMMAND, '--embedded', chdir: __dir__)
         end
         @stdin.binmode
+        @wait_thread.name = 'sass-embedded-process-waiter'
 
         Thread.new do
+          Thread.current.name = 'sass-embedded-process-stdout-poller'
           stdout.binmode
           loop do
             length = Varint.read(stdout)
@@ -38,6 +40,7 @@ module Sass
         end
 
         Thread.new do
+          Thread.current.name = 'sass-embedded-process-stderr-poller'
           loop do
             warn(stderr.readline, uplevel: 1)
           rescue IOError, Errno::EBADF
