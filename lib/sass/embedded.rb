@@ -56,7 +56,7 @@ module Sass
 
         compiler = Class.new(Compiler) do
           def initialize
-            @dispatcher = self.class.const_get(:ResilientDispatcher).new(Class.new(self.class.const_get(:Dispatcher)) do
+            @dispatcher = Compiler.const_get(:ResilientDispatcher).new(Class.new(Compiler.const_get(:Dispatcher)) do
               def initialize
                 super
 
