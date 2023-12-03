@@ -95,8 +95,9 @@ module Sass
 
         Process.singleton_class.prepend(Module.new do
           define_method :_fork do
-            compiler.close
-            super()
+            pid = super()
+            compiler.close if pid.zero?
+            pid
           end
         end)
 

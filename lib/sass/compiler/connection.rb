@@ -12,7 +12,7 @@ module Sass
     class Connection
       def initialize(dispatcher)
         @mutex = Mutex.new
-        @stdin, stdout, stderr, @wait_thread = begin
+        @stdin, @stdout, @stderr, @wait_thread = begin
           Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
         rescue Errno::ENOENT
           require_relative '../elf'
@@ -26,33 +26,35 @@ module Sass
 
         Thread.new do
           Thread.current.name = 'sass-embedded-process-stdout-poller'
-          stdout.binmode
+          @stdout.binmode
           loop do
-            length = Varint.read(stdout)
-            id = Varint.read(stdout)
-            proto = stdout.read(length - Varint.length(id))
+            length = Varint.read(@stdout)
+            id = Varint.read(@stdout)
+            proto = @stdout.read(length - Varint.length(id))
             dispatcher.receive_proto(id, proto)
           rescue IOError, Errno::EBADF, Errno::EPROTO => e
             dispatcher.error(e)
             break
           end
-          stdout.close
+          @stdout.close
         end
 
         Thread.new do
           Thread.current.name = 'sass-embedded-process-stderr-poller'
           loop do
-            warn(stderr.readline, uplevel: 1)
+            warn(@stderr.readline, uplevel: 1)
           rescue IOError, Errno::EBADF
             break
           end
-          stderr.close
+          @stderr.close
         end
       end
 
       def close
         @stdin.close
         @wait_thread.join
+        @stdout.close
+        @stderr.close
       end
 
       def closed?

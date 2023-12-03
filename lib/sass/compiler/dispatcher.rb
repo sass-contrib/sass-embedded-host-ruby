@@ -45,6 +45,9 @@ module Sass
       end
 
       def close
+        @mutex.synchronize do
+          @id = 0xffffffff
+        end
         @connection.close
       end
 
