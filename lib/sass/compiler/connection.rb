@@ -21,11 +21,20 @@ module Sass
 
           Open3.popen3(ELF::INTERPRETER, *CLI::COMMAND, '--embedded', chdir: __dir__)
         end
+
         @stdin.binmode
 
         Thread.new do
           Thread.current.name = 'sass-embedded-process-stdout-poller'
+
+          # # https://dart.dev/tools/dart-devtools
+          # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
+          #   warn(@stdout.readline, uplevel: 1)
+          #   warn(@stdout.readline, uplevel: 1)
+          # end
+
           @stdout.binmode
+
           loop do
             length = Varint.read(@stdout)
             id = Varint.read(@stdout)
