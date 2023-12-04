@@ -31,10 +31,9 @@ module Sass
             id = Varint.read(@stdout)
             proto = @stdout.read(length - Varint.length(id))
             dispatcher.receive_proto(id, proto)
-          rescue IOError, Errno::EBADF, Errno::EPROTO => e
-            dispatcher.error(e)
-            break
           end
+        rescue IOError, Errno::EBADF, Errno::EPROTO => e
+          dispatcher.error(e)
           @mutex.synchronize do
             @stdout.close
           end
@@ -44,9 +43,8 @@ module Sass
           Thread.current.name = 'sass-embedded-process-stderr-poller'
           loop do
             warn(@stderr.readline, uplevel: 1)
-          rescue IOError, Errno::EBADF
-            break
           end
+        rescue IOError, Errno::EBADF
           @mutex.synchronize do
             @stderr.close
           end
