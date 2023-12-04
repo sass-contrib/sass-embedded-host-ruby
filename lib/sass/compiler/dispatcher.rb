@@ -11,6 +11,7 @@ module Sass
         @observers = {}
         @mutex = Mutex.new
         @connection = Connection.new(self)
+        ForkTracker.add(self)
       end
 
       def subscribe(observer)
@@ -49,6 +50,7 @@ module Sass
           @id = 0xffffffff
         end
         @connection.close
+        ForkTracker.delete(self)
       end
 
       def closed?
