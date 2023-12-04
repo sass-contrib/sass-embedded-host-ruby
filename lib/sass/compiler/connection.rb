@@ -36,7 +36,9 @@ module Sass
             dispatcher.error(e)
             break
           end
-          @stdout.close
+          @mutex.synchronize do
+            @stdout.close
+          end
         end
 
         Thread.new do
@@ -46,19 +48,25 @@ module Sass
           rescue IOError, Errno::EBADF
             break
           end
-          @stderr.close
+          @mutex.synchronize do
+            @stderr.close
+          end
         end
       end
 
       def close
-        @stdin.close
-        @wait_thread.join
-        @stdout.close
-        @stderr.close
+        @mutex.synchronize do
+          @stdin.close
+          @wait_thread.join
+          @stdout.close
+          @stderr.close
+        end
       end
 
       def closed?
-        @stdin.closed? && !@wait_thread.alive?
+        @mutex.synchronize do
+          @stdin.closed? && !@wait_thread.alive?
+        end
       end
 
       def write(id, proto)
