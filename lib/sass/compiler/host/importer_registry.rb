@@ -65,7 +65,7 @@ module Sass
 
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
-            url: url
+            url:
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
@@ -100,7 +100,7 @@ module Sass
 
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
-            file_url: file_url
+            file_url:
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(

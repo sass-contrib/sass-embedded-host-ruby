@@ -207,10 +207,10 @@ module FileUtils
     raise if spec.nil? || source.nil?
 
     if Rake::FileUtilsExt.nowrite_flag
-      installer = Gem::Installer.for_spec(spec, { force: true, install_dir: install_dir })
+      installer = Gem::Installer.for_spec(spec, { force: true, install_dir: })
     else
       path = source.download(spec, install_dir)
-      installer = Gem::Installer.at(path, { force: true, install_dir: install_dir })
+      installer = Gem::Installer.at(path, { force: true, install_dir: })
       installer.install
     end
 

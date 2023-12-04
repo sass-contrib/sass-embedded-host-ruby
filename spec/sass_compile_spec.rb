@@ -41,7 +41,7 @@ RSpec.describe Sass do
 
         it 'contains the URL if one is passed' do
           url = 'file:///foo.scss'
-          expect(described_class.compile_string('a {b: c}', url: url).loaded_urls)
+          expect(described_class.compile_string('a {b: c}', url:).loaded_urls)
             .to eq([url])
         end
 
@@ -49,7 +49,7 @@ RSpec.describe Sass do
           sandbox do |dir|
             url = dir.url('input.scss')
             dir.write({ '_other.scss' => 'a {b: c}' })
-            expect(described_class.compile_string('@use "other"', url: url).loaded_urls)
+            expect(described_class.compile_string('@use "other"', url:).loaded_urls)
               .to eq([
                        url,
                        dir.url('_other.scss')
@@ -64,7 +64,7 @@ RSpec.describe Sass do
                         '_midstream.scss' => '@use "upstream"',
                         '_upstream.scss' => 'a {b: c}'
                       })
-            expect(described_class.compile_string('@use "midstream"', url: url).loaded_urls)
+            expect(described_class.compile_string('@use "midstream"', url:).loaded_urls)
               .to eq([
                        url,
                        dir.url('_midstream.scss'),
@@ -82,7 +82,7 @@ RSpec.describe Sass do
                           '_right.scss' => '@use "upstream"',
                           '_upstream.scss' => 'a {b: c}'
                         })
-              expect(described_class.compile_string('@use "left"; @use "right"', url: url).loaded_urls)
+              expect(described_class.compile_string('@use "left"; @use "right"', url:).loaded_urls)
                 .to eq([
                          url,
                          dir.url('_left.scss'),
@@ -100,7 +100,7 @@ RSpec.describe Sass do
                           '_right.scss' => '@import "upstream"',
                           '_upstream.scss' => 'a {b: c}'
                         })
-              expect(described_class.compile_string('@import "left"; @import "right"', url: url).loaded_urls)
+              expect(described_class.compile_string('@import "left"; @import "right"', url:).loaded_urls)
                 .to eq([
                          url,
                          dir.url('_left.scss'),
@@ -251,7 +251,7 @@ RSpec.describe Sass do
         it 'in syntax errors' do
           sandbox do |dir|
             url = dir.url('foo.scss')
-            expect { described_class.compile_string('a {b:', url: url) }
+            expect { described_class.compile_string('a {b:', url:) }
               .to raise_sass_compile_error.with_line(0).with_url(url)
           end
         end
@@ -259,7 +259,7 @@ RSpec.describe Sass do
         it 'in runtime errors' do
           sandbox do |dir|
             url = dir.url('foo.scss')
-            expect { described_class.compile_string('@error "oh no"', url: url) }
+            expect { described_class.compile_string('@error "oh no"', url:) }
               .to raise_sass_compile_error.with_line(0).with_url(url)
           end
         end
@@ -267,7 +267,7 @@ RSpec.describe Sass do
         it 'with multi-span errors' do
           sandbox do |dir|
             url = dir.url('foo.scss')
-            expect { described_class.compile_string('@use "sass:math"; @use "sass:math"', url: url) }
+            expect { described_class.compile_string('@use "sass:math"; @use "sass:math"', url:) }
               .to raise_sass_compile_error.with_line(0).with_url(url)
           end
         end

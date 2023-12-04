@@ -37,14 +37,14 @@ module Sass
         compile_response = await do
           alert_color = $stderr.tty? if alert_color.nil?
 
-          @function_registry = FunctionRegistry.new(functions, alert_color: alert_color)
-          @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color: alert_color)
+          @function_registry = FunctionRegistry.new(functions, alert_color:)
+          @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color:)
           @logger_registry = LoggerRegistry.new(logger)
 
           send_message(compile_request: EmbeddedProtocol::InboundMessage::CompileRequest.new(
             string: unless source.nil?
                       EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
-                        source: source,
+                        source:,
                         url: url&.to_s,
                         syntax: Protofier.to_proto_syntax(syntax),
                         importer: (@importer_registry.register(importer) unless importer.nil?)
@@ -52,15 +52,15 @@ module Sass
                     end,
             path: (File.absolute_path(path) unless path.nil?),
             style: Protofier.to_proto_output_style(style),
-            charset: charset,
-            source_map: source_map,
-            source_map_include_sources: source_map_include_sources,
+            charset:,
+            source_map:,
+            source_map_include_sources:,
             importers: @importer_registry.importers,
             global_functions: @function_registry.global_functions,
-            alert_ascii: alert_ascii,
-            alert_color: alert_color,
-            quiet_deps: quiet_deps,
-            verbose: verbose
+            alert_ascii:,
+            alert_color:,
+            quiet_deps:,
+            verbose:
           ))
         end
 
@@ -70,7 +70,7 @@ module Sass
       def version_request
         version_response = await0 do
           send_message0(version_request: EmbeddedProtocol::InboundMessage::VersionRequest.new(
-            id: id
+            id:
           ))
         end
 

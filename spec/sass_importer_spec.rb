@@ -720,7 +720,7 @@ RSpec.describe Sass do
         "u:#{url}"
       }
       {
-        canonicalize: canonicalize,
+        canonicalize:,
         load: ->(*) { { contents: '', syntax: 'scss' } }
       }
     end

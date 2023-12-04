@@ -183,7 +183,7 @@ module Sass
       def convert_value(new_numerator_units, new_denominator_units, name = nil)
         coerce_or_convert_value(new_numerator_units, new_denominator_units,
                                 coerce_unitless: false,
-                                name: name)
+                                name:)
       end
 
       # @param other [Number]
@@ -200,9 +200,9 @@ module Sass
       def convert_value_to_match(other, name = nil, other_name = nil)
         coerce_or_convert_value(other.numerator_units, other.denominator_units,
                                 coerce_unitless: false,
-                                name: name,
-                                other: other,
-                                other_name: other_name)
+                                name:,
+                                other:,
+                                other_name:)
       end
 
       # @param new_numerator_units [Array<::String>]
@@ -221,7 +221,7 @@ module Sass
       def coerce_value(new_numerator_units, new_denominator_units, name = nil)
         coerce_or_convert_value(new_numerator_units, new_denominator_units,
                                 coerce_unitless: true,
-                                name: name)
+                                name:)
       end
 
       # @param unit [::String]
@@ -244,9 +244,9 @@ module Sass
       def coerce_value_to_match(other, name = nil, other_name = nil)
         coerce_or_convert_value(other.numerator_units, other.denominator_units,
                                 coerce_unitless: true,
-                                name: name,
-                                other: other,
-                                other_name: other_name)
+                                name:,
+                                other:,
+                                other_name:)
       end
 
       # @return [Number]

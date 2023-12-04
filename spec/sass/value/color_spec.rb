@@ -4,15 +4,15 @@ require 'spec_helper'
 
 describe Sass::Value::Color do
   def rgb(red, green, blue, alpha = nil)
-    Sass::Value::Color.new(red: red, green: green, blue: blue, alpha: alpha)
+    Sass::Value::Color.new(red:, green:, blue:, alpha:)
   end
 
   def hsl(hue, saturation, lightness, alpha = nil)
-    Sass::Value::Color.new(hue: hue, saturation: saturation, lightness: lightness, alpha: alpha)
+    Sass::Value::Color.new(hue:, saturation:, lightness:, alpha:)
   end
 
   def hwb(hue, whiteness, blackness, alpha = nil)
-    Sass::Value::Color.new(hue: hue, whiteness: whiteness, blackness: blackness, alpha: alpha)
+    Sass::Value::Color.new(hue:, whiteness:, blackness:, alpha:)
   end
 
   describe 'construction' do

@@ -75,23 +75,23 @@ module Sass
       raise ArgumentError, 'path must be set' if path.nil?
 
       Host.new(@dispatcher).compile_request(
-        path: path,
+        path:,
         source: nil,
         importer: nil,
-        load_paths: load_paths,
+        load_paths:,
         syntax: nil,
         url: nil,
-        charset: charset,
-        source_map: source_map,
-        source_map_include_sources: source_map_include_sources,
-        style: style,
-        functions: functions,
-        importers: importers,
-        alert_color: alert_color,
-        alert_ascii: alert_ascii,
-        logger: logger,
-        quiet_deps: quiet_deps,
-        verbose: verbose
+        charset:,
+        source_map:,
+        source_map_include_sources:,
+        style:,
+        functions:,
+        importers:,
+        alert_color:,
+        alert_ascii:,
+        logger:,
+        quiet_deps:,
+        verbose:
       )
     end
 
@@ -150,22 +150,22 @@ module Sass
 
       Host.new(@dispatcher).compile_request(
         path: nil,
-        source: source,
-        importer: importer,
-        load_paths: load_paths,
-        syntax: syntax,
-        url: url,
-        charset: charset,
-        source_map: source_map,
-        source_map_include_sources: source_map_include_sources,
-        style: style,
-        functions: functions,
-        importers: importers,
-        alert_color: alert_color,
-        alert_ascii: alert_ascii,
-        logger: logger,
-        quiet_deps: quiet_deps,
-        verbose: verbose
+        source:,
+        importer:,
+        load_paths:,
+        syntax:,
+        url:,
+        charset:,
+        source_map:,
+        source_map_include_sources:,
+        style:,
+        functions:,
+        importers:,
+        alert_color:,
+        alert_ascii:,
+        logger:,
+        quiet_deps:,
+        verbose:
       )
     end
 

@@ -13,7 +13,7 @@ module Sass
       # @param keywords [Hash<::String, Value>]
       # @param separator [::String]
       def initialize(contents = [], keywords = {}, separator = ',')
-        super(contents, separator: separator)
+        super(contents, separator:)
 
         @id = 0
         @keywords_accessed = false

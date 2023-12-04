@@ -38,8 +38,8 @@ module Sandbox
       end
     end
 
-    def chdir(&block)
-      Dir.chdir @root, &block
+    def chdir(&)
+      Dir.chdir(@root, &)
     end
 
     private

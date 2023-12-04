@@ -55,8 +55,8 @@ module Sass
 
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
             id: function_call_request.id,
-            success: success,
-            accessed_argument_lists: accessed_argument_lists
+            success:,
+            accessed_argument_lists:
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
