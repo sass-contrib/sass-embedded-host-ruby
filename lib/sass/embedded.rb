@@ -68,11 +68,11 @@ module Sass
                   duration = idle_timeout
                   loop do
                     sleep(duration.negative? ? idle_timeout : duration)
-                    evicted = @mutex.synchronize do
+                    reaped = @mutex.synchronize do
                       duration = idle_timeout - (current_time - @last_accessed_time)
-                      _close if _idle? && duration.negative?
+                      duration.negative? && _idle? && _close
                     end
-                    break if evicted
+                    break if reaped
                   end
                   close
                 end
