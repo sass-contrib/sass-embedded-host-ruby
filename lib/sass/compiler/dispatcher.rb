@@ -16,7 +16,7 @@ module Sass
 
       def subscribe(observer)
         @mutex.synchronize do
-          raise Errno::EBUSY if @id == 0xffffffff
+          raise Errno::EBUSY if _closed?
 
           id = @id
           @id = id.next
@@ -29,14 +29,14 @@ module Sass
         @mutex.synchronize do
           @observers.delete(id)
 
-          return unless @observers.empty?
+          return unless _idle?
 
-          if @id == 0xffffffff
+          if _closed?
             Thread.new do
               close
             end
           else
-            idle
+            _idle
           end
         end
       end
@@ -47,7 +47,7 @@ module Sass
 
       def close
         @mutex.synchronize do
-          @id = 0xffffffff
+          _close
         end
         @connection.close
         ForkTracker.delete(self)
@@ -59,7 +59,7 @@ module Sass
 
       def error(error)
         observers = @mutex.synchronize do
-          @id = 0xffffffff
+          _close
           @observers.values
         end
 
@@ -97,8 +97,20 @@ module Sass
 
       private
 
-      def idle
+      def _close
+        @id = 0xffffffff
+      end
+
+      def _closed?
+        @id == 0xffffffff
+      end
+
+      def _idle
         @id = 1
+      end
+
+      def _idle?
+        @observers.empty?
       end
 
       # The {Channel} between {Dispatcher} and {Host}.

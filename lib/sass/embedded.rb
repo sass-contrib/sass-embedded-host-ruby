@@ -70,7 +70,7 @@ module Sass
                     sleep(duration.negative? ? idle_timeout : duration)
                     evicted = @mutex.synchronize do
                       duration = idle_timeout - (current_time - @last_accessed_time)
-                      @id = 0xffffffff if @observers.empty? && duration.negative?
+                      _close if _idle? && duration.negative?
                     end
                     break if evicted
                   end
@@ -80,7 +80,7 @@ module Sass
 
               private
 
-              def idle
+              def _idle
                 super
 
                 @last_accessed_time = current_time
