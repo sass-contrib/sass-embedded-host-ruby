@@ -5,27 +5,30 @@ module Sass
   #
   # It tracks objects that need to be closed after `Process.fork`.
   module ForkTracker
-    @mutex = Mutex.new
-    @hash = {}.compare_by_identity
+    HASH = {}.compare_by_identity
 
-    class << self
-      def add(obj)
-        @mutex.synchronize do
-          @hash[obj] = true
-        end
-      end
+    MUTEX = Mutex.new
 
-      def delete(obj)
-        @mutex.synchronize do
-          @hash.delete(obj)
-        end
-      end
+    private_constant :HASH, :MUTEX
 
-      def each(...)
-        @mutex.synchronize do
-          @hash.keys
-        end.each(...)
+    module_function
+
+    def add(obj)
+      MUTEX.synchronize do
+        HASH[obj] = true
       end
+    end
+
+    def delete(obj)
+      MUTEX.synchronize do
+        HASH.delete(obj)
+      end
+    end
+
+    def each(...)
+      MUTEX.synchronize do
+        HASH.keys
+      end.each(...)
     end
 
     # The {CoreExt} module.
