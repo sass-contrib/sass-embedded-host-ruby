@@ -25,7 +25,7 @@ module Sass
         @stdin.binmode
 
         Thread.new do
-          Thread.current.name = 'sass-embedded-process-stdout-poller'
+          Thread.current.name = "sass-embedded-process-stdout-poller-#{@wait_thread.pid}"
 
           # # https://dart.dev/tools/dart-devtools
           # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
@@ -49,7 +49,7 @@ module Sass
         end
 
         Thread.new do
-          Thread.current.name = 'sass-embedded-process-stderr-poller'
+          Thread.current.name = "sass-embedded-process-stderr-poller-#{@wait_thread.pid}"
           loop do
             warn(@stderr.readline, uplevel: 0)
           end
@@ -59,7 +59,7 @@ module Sass
           end
         end
 
-        @wait_thread.name = 'sass-embedded-process-waiter'
+        @wait_thread.name = "sass-embedded-process-waiter-#{@wait_thread.pid}"
       end
 
       def close
