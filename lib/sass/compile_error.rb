@@ -84,8 +84,10 @@ module Sass
           end
         when 92
           buffer << 92 << 92
+        when 9
+          buffer << 9
         else
-          if (codepoint < 32 && codepoint != 9) || codepoint > 126
+          if codepoint < 32 || codepoint > 126
             buffer << 92
             buffer.concat(codepoint.to_s(16).codepoints)
             buffer << 32
