@@ -23,15 +23,20 @@ module Sass
     end
 
     # @return [String]
-    def full_message(...)
+    def full_message(highlight: nil, **)
       return super if @full_message.nil?
 
-      +@full_message
+      highlight = $stderr.tty? if highlight.nil?
+      if highlight
+        +@full_message
+      else
+        @full_message.gsub(/\e\[[0-9;]*m/, '')
+      end
     end
 
     # @return [String]
     def to_css_string
-      message = full_message(highlight: false).gsub(/\e\[[0-9;]*m/, '')
+      message = full_message(highlight: false, order: :top)
 
       <<~CSS
         /* #{message.gsub('*/', "*\u2060/").gsub("\r\n", "\n").split("\n").join("\n * ")} */
