@@ -35,7 +35,7 @@ module Sass
     end
 
     # @return [String]
-    def to_css_string
+    def to_css
       message = full_message(highlight: false, order: :top)
 
       <<~CSS
