@@ -14,6 +14,7 @@ require_relative 'fork_tracker'
 require_relative 'logger/silent'
 require_relative 'logger/source_location'
 require_relative 'logger/source_span'
+require_relative 'serializer'
 require_relative 'value'
 
 module Sass
