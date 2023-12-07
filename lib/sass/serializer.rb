@@ -9,7 +9,7 @@ module Sass
       include_single_quote = false
       include_double_quote = false
 
-      buffer = [0]
+      buffer = [34]
       string.each_codepoint do |codepoint|
         case codepoint
         when 34
@@ -46,7 +46,7 @@ module Sass
           end
         end
       end
-      buffer[0] = force_double_quote || !include_double_quote ? 34 : 39
+      buffer[0] = 39 unless force_double_quote || !include_double_quote
       buffer << buffer[0]
       buffer.pack('U*')
     end
