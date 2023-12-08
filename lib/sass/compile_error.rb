@@ -45,7 +45,7 @@ module Sass
           position: static;
           display: block;
           padding: 1em;
-          margin-bottom: 1em;
+          margin: 0 0 1em;
           border-bottom: 2px solid;
           font-family: monospace, monospace;
           white-space: pre;
