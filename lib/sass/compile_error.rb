@@ -42,6 +42,7 @@ module Sass
         /* #{message.gsub('*/', "*\u2060/").gsub("\r\n", "\n").split("\n").join("\n * ")} */
 
         body::before {
+          position: static;
           display: block;
           padding: 1em;
           margin-bottom: 1em;
