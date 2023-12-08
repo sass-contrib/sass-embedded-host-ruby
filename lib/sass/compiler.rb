@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'canonicalize_context'
-require_relative 'compile_error'
 require_relative 'compile_result'
 require_relative 'compiler/connection'
 require_relative 'compiler/dispatcher'

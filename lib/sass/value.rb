@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'calculation_value'
-require_relative 'script_error'
 
 module Sass
   # The abstract base class of Sass's value types.
