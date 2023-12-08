@@ -7,13 +7,13 @@ module Sass
   # The `sass` command line interface
   class CLI
     begin
-      exec(*COMMAND, *ARGV)
+      Kernel.exec(*COMMAND, *ARGV)
     rescue Errno::ENOENT
       require_relative '../lib/sass/elf'
 
       raise if ELF::INTERPRETER.nil?
 
-      exec(ELF::INTERPRETER, *COMMAND, *ARGV)
+      Kernel.exec(ELF::INTERPRETER, *COMMAND, *ARGV)
     end
   end
 

@@ -29,8 +29,8 @@ module Sass
 
           # # https://dart.dev/tools/dart-devtools
           # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
-          #   warn(@stdout.readline, uplevel: 0)
-          #   warn(@stdout.readline, uplevel: 0)
+          #   Kernel.warn(@stdout.readline, uplevel: 0)
+          #   Kernel.warn(@stdout.readline, uplevel: 0)
           # end
 
           @stdout.binmode
@@ -51,7 +51,7 @@ module Sass
         Thread.new do
           Thread.current.name = "sass-embedded-process-stderr-poller-#{@wait_thread.pid}"
           loop do
-            warn(@stderr.readline, uplevel: 0)
+            Kernel.warn(@stderr.readline, uplevel: 0)
           end
         rescue IOError, Errno::EBADF
           @mutex.synchronize do
