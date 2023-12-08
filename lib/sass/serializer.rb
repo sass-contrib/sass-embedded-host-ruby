@@ -6,9 +6,8 @@ module Sass
     module_function
 
     def dump_quoted_string(string)
-      include_single_quote = false
       include_double_quote = false
-
+      include_single_quote = false
       buffer = [34]
       string.each_codepoint do |codepoint|
         case codepoint
