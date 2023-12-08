@@ -23,7 +23,7 @@ module Sass
     end
 
     # @return [String]
-    def full_message(highlight: nil, **)
+    def full_message(highlight: nil, order: nil, **)
       return super if @full_message.nil?
 
       highlight = Exception.to_tty? if highlight.nil?
