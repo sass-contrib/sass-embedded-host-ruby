@@ -49,5 +49,25 @@ RSpec.describe Sass::CompileError do
           end
       end
     end
+
+    it 'generates css comment with UTF-8 character set' do
+      expect { Sass.compile_string('/* コメント */ a {') }
+        .to raise_error(described_class) do |error|
+          expect(error.full_message).to include('コメント')
+          comment = %r{/\*[^*]*\*+([^/*][^*]*\*+)*/}.match(error.to_css)[0]
+          expect(comment).to include('コメント')
+        end
+    end
+
+    it 'generates css rule with US-ASCII character set' do
+      expect { Sass.compile_string('/* コメント */ a {') }
+        .to raise_error(described_class) do |error|
+          expect(error.full_message).to include('コメント')
+          rule = error.to_css.sub(%r{/\*[^*]*\*+([^/*][^*]*\*+)*/}, '')
+          expect(rule).not_to include('コメント')
+          expect(rule.codepoints).to all(be < 128)
+          expect(Sass.compile_string(rule).css).to include('コメント')
+        end
+    end
   end
 end
