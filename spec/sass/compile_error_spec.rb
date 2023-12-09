@@ -54,7 +54,7 @@ RSpec.describe Sass::CompileError do
       expect { Sass.compile_string('/* コメント */ a {') }
         .to raise_error(described_class) do |error|
           expect(error.full_message).to include('コメント')
-          comment = %r{/\*[^*]*\*+([^/*][^*]*\*+)*/}.match(error.to_css)[0]
+          comment = error.to_css[%r{/\*[^*]*\*+([^/*][^*]*\*+)*/}]
           expect(comment).to include('コメント')
         end
     end
