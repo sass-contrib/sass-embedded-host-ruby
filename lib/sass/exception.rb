@@ -46,7 +46,8 @@ module Sass
           display: block;
           padding: 1em;
           margin: 0 0 1em;
-          border-bottom: 2px solid;
+          border-width: 0 0 2px;
+          border-bottom-style: solid;
           font-family: monospace, monospace;
           white-space: pre;
           content: #{Serializer.dump_quoted_string(message)};
