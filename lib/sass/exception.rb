@@ -26,7 +26,7 @@ module Sass
     def full_message(highlight: nil, order: nil, **)
       return super if @full_message.nil?
 
-      highlight = Exception.to_tty? if highlight.nil?
+      highlight = Exception.respond_to?(:to_tty?) && Exception.to_tty? if highlight.nil?
       if highlight
         +@full_message
       else
@@ -60,12 +60,5 @@ module Sass
     def initialize(message, name = nil)
       super(name.nil? ? message : "$#{name}: #{message}")
     end
-  end
-end
-
-# https://github.com/jruby/jruby/issues/8033
-unless Exception.respond_to?(:to_tty?)
-  def Exception.to_tty?
-    $stderr == STDERR && STDERR.tty? # rubocop:disable Style/GlobalStdStream
   end
 end
