@@ -29,8 +29,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
     spec.files += [
       'ext/sass/Rakefile',
       'ext/sass/expand-archive.ps1',
-      'ext/sass/package.json',
-      'ext/sass/win32_api.rb'
+      'ext/sass/package.json'
     ]
   end
 

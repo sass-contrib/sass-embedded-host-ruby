@@ -257,19 +257,7 @@ module SassConfig
 
     ARCH = "#{CPU}-#{OS}".freeze
 
-    EMULATION = if ARCH == 'aarch64-windows'
-                  begin
-                    require_relative 'win32_api'
-
-                    if Win32API.x64?
-                      'x86_64'
-                    elsif Win32API.x86?
-                      'i386'
-                    end
-                  rescue LoadError
-                    'i386'
-                  end
-                end
+    EMULATION = ('x86_64' if ARCH == 'aarch64-windows')
   end
 
   private_constant :Platform
