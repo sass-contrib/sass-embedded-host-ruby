@@ -251,8 +251,6 @@ module SassConfig
             'arm'
           when /ppc64le|powerpc64le/
             'powerpc64le'
-          when /s390x/
-            's390x'
           else
             RbConfig::CONFIG['host_cpu']
           end
