@@ -9,7 +9,7 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.email         = ['i@ntk.me']
   spec.summary       = 'Use dart-sass with Ruby!'
   spec.description   = 'A Ruby library that will communicate with Embedded Dart Sass using the Embedded Sass protocol.'
-  spec.homepage      = 'https://github.com/ntkme/sass-embedded-host-ruby'
+  spec.homepage      = 'https://github.com/sass-contrib/sass-embedded-host-ruby'
   spec.license       = 'MIT'
   spec.metadata      = {
     'documentation_uri' => "https://rubydoc.info/gems/#{spec.name}/#{spec.version}",
