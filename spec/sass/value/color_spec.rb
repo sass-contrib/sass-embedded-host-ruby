@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/color.test.ts
 describe Sass::Value::Color do
   def rgb(red, green, blue, alpha = nil)
     Sass::Value::Color.new(red:, green:, blue:, alpha:)

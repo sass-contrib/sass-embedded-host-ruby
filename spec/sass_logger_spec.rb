@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/logger.node.test.ts
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/logger.test.ts
 RSpec.describe Sass do
   it 'emits debug to stderr by default' do
     stdio = capture_stdio do

@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/function.test.ts
 RSpec.describe Sass do
   it 'passes an argument to a custom function and uses its return value' do
     fn = double

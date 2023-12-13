@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/importer.node.test.ts
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/importer.test.ts
 RSpec.describe Sass do
   it 'uses an importer to resolve an @import' do
     result = described_class.compile_string(

@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/list.test.ts
 describe Sass::Value::List do
   describe 'construction' do
     list = nil

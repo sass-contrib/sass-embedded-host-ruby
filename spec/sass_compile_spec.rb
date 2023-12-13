@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/compile.node.test.ts
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/compile.test.ts
 RSpec.describe Sass do
   describe '.compile_string' do
     describe 'success' do

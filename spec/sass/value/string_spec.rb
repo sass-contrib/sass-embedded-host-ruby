@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/string.test.ts
 describe Sass::Value::String do
   describe 'construction' do
     it 'creates a quoted string with the given text' do

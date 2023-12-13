@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/boolean.test.ts
 describe Sass::Value::Boolean do
   describe 'sassTrue' do
     value = Sass::Value::Boolean::TRUE

@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/function.test.ts
 describe Sass::Value::Function do
   it 'can round-trip a function reference from Sass' do
     fn = double
