@@ -29,7 +29,7 @@ module Sass
         @mutex.synchronize do
           @observers.delete(id)
 
-          return unless _idle?
+          return unless @observers.empty?
 
           if _closed?
             Thread.new do
@@ -110,7 +110,7 @@ module Sass
       end
 
       def _idle?
-        @observers.empty?
+        @id == 1
       end
 
       # The {Channel} between {Dispatcher} and {Host}.

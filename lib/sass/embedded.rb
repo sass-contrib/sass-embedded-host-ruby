@@ -70,7 +70,7 @@ module Sass
                     sleep(duration.negative? ? idle_timeout : duration)
                     break if @mutex.synchronize do
                       duration = idle_timeout - (current_time - @last_accessed_time)
-                      duration.negative? && _idle? && _close
+                      _closed? || (duration.negative? && _idle? && _close)
                     end
                   end
                   close
