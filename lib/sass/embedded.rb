@@ -69,11 +69,15 @@ module Sass
                   loop do
                     sleep(duration.negative? ? idle_timeout : duration)
                     break if @mutex.synchronize do
+                      raise Errno::EBUSY if _closed?
+
                       duration = idle_timeout - (current_time - @last_accessed_time)
-                      _closed? || (duration.negative? && _idle? && _close)
+                      duration.negative? && _idle? && _close
                     end
                   end
                   close
+                rescue Errno::EBUSY
+                  # do nothing
                 end
               end
 
