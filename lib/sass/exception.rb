@@ -36,10 +36,10 @@ module Sass
 
     # @return [String]
     def to_css
-      message = full_message(highlight: false, order: :top)
+      content = full_message(highlight: false, order: :top)
 
       <<~CSS
-        /* #{message.gsub('*/', "*\u2060/").gsub("\r\n", "\n").split("\n").join("\n * ")} */
+        /* #{content.gsub('*/', "*\u2060/").gsub("\r\n", "\n").split("\n").join("\n * ")} */
 
         body::before {
           position: static;
@@ -50,7 +50,7 @@ module Sass
           border-bottom-style: solid;
           font-family: monospace, monospace;
           white-space: pre;
-          content: #{Serializer.dump_quoted_string(message)};
+          content: #{Serializer.dump_quoted_string(content)};
         }
       CSS
     end
