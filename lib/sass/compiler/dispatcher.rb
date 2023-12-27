@@ -75,12 +75,12 @@ module Sass
       def receive_proto(id, proto)
         case id
         when 1...0xffffffff
-          @mutex.synchronize { @observers[id] }.receive_proto(proto)
+          @mutex.synchronize { @observers[id] }&.receive_proto(proto)
         when 0
           outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
           oneof = outbound_message.message
           message = outbound_message.public_send(oneof)
-          @mutex.synchronize { @observers[message.id] }.public_send(oneof, message)
+          @mutex.synchronize { @observers[message.id] }&.public_send(oneof, message)
         when 0xffffffff
           outbound_message = EmbeddedProtocol::OutboundMessage.decode(proto)
           oneof = outbound_message.message

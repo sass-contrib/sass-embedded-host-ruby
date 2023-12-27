@@ -100,6 +100,8 @@ module Sass
 
       def log_event(message)
         @logger_registry.log(message)
+      rescue StandardError => e
+        @channel.error(e)
       end
 
       def canonicalize_request(message)
