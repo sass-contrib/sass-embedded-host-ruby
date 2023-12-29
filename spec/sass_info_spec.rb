@@ -9,7 +9,7 @@ RSpec.describe Sass do
     end
 
     it 'followed by its package version' do
-      version = described_class.info.split("\t")[1]
+      version = described_class.info.split[1]
       expect { Gem::Version.new(version) }.not_to raise_error
     end
   end
