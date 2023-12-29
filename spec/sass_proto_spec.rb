@@ -14,7 +14,7 @@ RSpec.describe Sass do
 
     result = nil
     Sass.compile_string(
-      'a{b:yield(lhs()==rhs())}',
+      '$_: yield(lhs()==rhs());',
       functions: {
         'yield($value)' => lambda { |args|
           result = args[0].assert_boolean.to_bool
