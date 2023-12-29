@@ -8,7 +8,7 @@ module Sass
     # map as well as the positional arguments.
     #
     # @see https://sass-lang.com/documentation/js-api/classes/sassargumentlist/
-    class ArgumentList < Value::List
+    class ArgumentList < List
       # @param contents [Array<Value>]
       # @param keywords [Hash<::String, Value>]
       # @param separator [::String]
