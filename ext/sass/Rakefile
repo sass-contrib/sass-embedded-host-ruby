@@ -285,11 +285,9 @@ module SassConfig
          when 'linux'
            'linux'
          when 'linux-android'
-           repo = 'https://github.com/sass-contrib/dart-sass-android'
            'android'
          when 'linux-musl'
-           repo = 'https://github.com/sass-contrib/dart-sass-musl'
-           'linux'
+           'linux-musl'
          when 'windows'
            'windows'
          else
