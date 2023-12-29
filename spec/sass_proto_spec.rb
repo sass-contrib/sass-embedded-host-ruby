@@ -127,7 +127,7 @@ RSpec.describe Sass do
 
       expect(
         described_class.compile_string(
-          'a {b: foo(bar())}',
+          '$_: foo(bar());',
           functions: {
             'foo($arg)': foo,
             'bar()': bar
