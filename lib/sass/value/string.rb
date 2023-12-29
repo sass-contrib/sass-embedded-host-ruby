@@ -59,6 +59,15 @@ module Sass
 
         index.negative? ? text.length + index : index - 1
       end
+
+      # @return [String]
+      def to_s
+        if @quoted
+          Serializer.serialize_quoted_string(@text)
+        else
+          Serializer.serialize_unquoted_string(@text)
+        end
+      end
     end
   end
 end

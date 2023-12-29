@@ -26,7 +26,7 @@ module Sass
         when 9
           buffer << 9
         else
-          if codepoint < 32 || codepoint > 126
+          if codepoint < 32 || codepoint >= 127
             buffer << 92
             buffer.concat(codepoint.to_s(16).codepoints)
             buffer << 32
@@ -55,7 +55,7 @@ module Sass
         when 9
           buffer << 9
         else
-          if codepoint < 32 || codepoint > 126
+          if codepoint < 32 || codepoint >= 127
             buffer << 92
             buffer.concat(codepoint.to_s(16).codepoints)
             buffer << 32
@@ -66,6 +66,73 @@ module Sass
       end
       buffer << 34
       buffer.pack('U*')
+    end
+
+    def serialize_quoted_string(string)
+      include_double_quote = false
+      include_single_quote = false
+      buffer = [34]
+      string.each_codepoint do |codepoint|
+        case codepoint
+        when 34
+          return serialize_double_quoted_string(string) if include_single_quote
+
+          include_double_quote = true
+          buffer << 34
+        when 39
+          return serialize_double_quoted_string(string) if include_double_quote
+
+          include_single_quote = true
+          buffer << 39
+        when 92
+          buffer << 92 << 92
+        when 9
+          buffer << 9
+        else
+          if codepoint < 32 || codepoint == 127
+            buffer << 92
+            buffer.concat(codepoint.to_s(16).codepoints)
+            buffer << 32
+          else
+            buffer << codepoint
+          end
+        end
+      end
+      if include_double_quote
+        buffer[0] = 39
+        buffer << 39
+      else
+        buffer << 34
+      end
+      buffer.pack('U*')
+    end
+
+    def serialize_double_quoted_string(string)
+      buffer = [34]
+      string.each_codepoint do |codepoint|
+        case codepoint
+        when 34
+          buffer << 92 << 34
+        when 92
+          buffer << 92 << 92
+        when 9
+          buffer << 9
+        else
+          if codepoint < 32 || codepoint == 127
+            buffer << 92
+            buffer.concat(codepoint.to_s(16).codepoints)
+            buffer << 32
+          else
+            buffer << codepoint
+          end
+        end
+      end
+      buffer << 34
+      buffer.pack('U*')
+    end
+
+    def serialize_unquoted_string(string)
+      string.gsub(/\n +/, "\n")
     end
   end
 
