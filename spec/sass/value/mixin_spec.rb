@@ -8,8 +8,20 @@ describe Sass::Value::Mixin do
     fn = double
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(1)
-      expect(args[0]).to be_a(described_class)
-      args[0]
+      value = args[0]
+
+      expect(value).to be_a(described_class)
+      expect { value.assert_boolean }.to raise_error(Sass::ScriptError)
+      expect { value.assert_calculation }.to raise_error(Sass::ScriptError)
+      expect { value.assert_color }.to raise_error(Sass::ScriptError)
+      expect { value.assert_function }.to raise_error(Sass::ScriptError)
+      expect { value.assert_map }.to raise_error(Sass::ScriptError)
+      expect(value.to_map).to be_nil
+      expect(value.assert_mixin).to be(value)
+      expect { value.assert_number }.to raise_error(Sass::ScriptError)
+      expect { value.assert_string }.to raise_error(Sass::ScriptError)
+
+      value
     }
 
     expect(
