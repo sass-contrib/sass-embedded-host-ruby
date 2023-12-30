@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Sass::ELF', skip: (File.exist?('/proc/self/exe') ? false : '/proc/self/exe is not available') do
-  let!(:described_class) do
+  let(:described_class) do
     require 'sass/elf'
 
     Sass.const_get(:ELF)
@@ -16,7 +16,7 @@ RSpec.describe 'Sass::ELF', skip: (File.exist?('/proc/self/exe') ? false : '/pro
   end
 
   describe 'dart program interpreter' do
-    let!(:interpreter) do
+    let(:interpreter) do
       File.open(Sass.const_get(:CLI)::COMMAND[0], 'rb') do |file|
         described_class.new(file).interpreter
       end

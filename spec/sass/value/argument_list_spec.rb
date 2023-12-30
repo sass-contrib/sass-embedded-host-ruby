@@ -75,9 +75,8 @@ describe Sass::Value::ArgumentList do
   end
 
   describe 'construction' do
-    list = nil
-    before do
-      list = described_class.new(
+    let(:list) do
+      described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         { 'd' => Sass::Value::String.new('e') }
       )
@@ -117,9 +116,8 @@ describe Sass::Value::ArgumentList do
   end
 
   describe 'equality' do
-    list = nil
-    before do
-      list = described_class.new(
+    let(:list) do
+      described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         { 'd' => Sass::Value::String.new('e') }
       )

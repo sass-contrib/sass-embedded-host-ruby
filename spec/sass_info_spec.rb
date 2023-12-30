@@ -4,7 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Sass do
   describe '.info' do
-    identifier = 'sass-embedded'
+    let(:identifier) do
+      'sass-embedded'
+    end
 
     it 'begins with a unique identifier for the Sass implementation' do
       expect(described_class.info).to start_with(identifier)

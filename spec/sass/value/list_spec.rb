@@ -5,9 +5,8 @@ require 'spec_helper'
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/list.test.ts
 describe Sass::Value::List do
   describe 'construction' do
-    list = nil
-    before do
-      list = described_class.new(
+    let(:list) do
+      described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         separator: ','
       )
@@ -36,9 +35,8 @@ describe Sass::Value::List do
   end
 
   describe 'equality' do
-    list = nil
-    before do
-      list = described_class.new(
+    let(:list) do
+      described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         separator: ','
       )
@@ -111,9 +109,8 @@ describe Sass::Value::List do
   end
 
   describe 'Sass to Ruby index conversion' do
-    list = nil
-    before do
-      list = described_class.new(
+    let(:list) do
+      described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')]
       )
     end
@@ -196,9 +193,8 @@ describe Sass::Value::List do
   end
 
   describe 'at()' do
-    list = nil
-    before do
-      list = described_class.new(
+    let(:list) do
+      described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')]
       )
     end
@@ -231,9 +227,8 @@ describe Sass::Value::List do
   end
 
   describe 'single-element list' do
-    list = nil
-    before do
-      list = described_class.new([Sass::Value::Number.new(1)])
+    let(:list) do
+      described_class.new([Sass::Value::Number.new(1)])
     end
 
     it 'has a comma separator' do
@@ -250,9 +245,8 @@ describe Sass::Value::List do
   end
 
   describe 'a scalar value' do
-    string = nil
-    before do
-      string = Sass::Value::String.new('blue')
+    let(:string) do
+      Sass::Value::String.new('blue')
     end
 
     it 'has an undecided separator' do
@@ -305,9 +299,8 @@ describe Sass::Value::List do
   end
 
   describe 'an empty list' do
-    list = nil
-    before do
-      list = described_class.new
+    let(:list) do
+      described_class.new
     end
 
     it 'defaults to a comma separator' do

@@ -4,18 +4,22 @@ require 'spec_helper'
 
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/calculation.test.ts
 describe Sass::Value::Calculation do
-  valid_calculation_values = [
-    Sass::Value::Number.new(1),
-    Sass::Value::String.new('1', quoted: false),
-    described_class.calc(Sass::Value::Number.new(1)),
-    Sass::CalculationValue::CalculationOperation.new('+', Sass::Value::Number.new(1), Sass::Value::Number.new(1))
-  ]
-  invalid_calculation_values = [Sass::Value::String.new('1', quoted: true)]
+  let(:valid_calculation_values) do
+    [
+      Sass::Value::Number.new(1),
+      Sass::Value::String.new('1', quoted: false),
+      described_class.calc(Sass::Value::Number.new(1)),
+      Sass::CalculationValue::CalculationOperation.new('+', Sass::Value::Number.new(1), Sass::Value::Number.new(1))
+    ]
+  end
+
+  let(:invalid_calculation_values) do
+    [Sass::Value::String.new('1', quoted: true)]
+  end
 
   describe 'construction' do
-    calculation = nil
-    before do
-      calculation = described_class.calc(Sass::Value::Number.new(1))
+    let(:calculation) do
+      described_class.calc(Sass::Value::Number.new(1))
     end
 
     it 'is a value' do
@@ -313,8 +317,13 @@ describe Sass::Value::Calculation do
   end
 
   describe 'CalculationOperation' do
-    valid_operators = ['+', '-', '*', '/']
-    invalid_operators = ['||', '&&', 'plus', 'minus', '']
+    let(:valid_operators) do
+      ['+', '-', '*', '/']
+    end
+
+    let(:invalid_operators) do
+      ['||', '&&', 'plus', 'minus', '']
+    end
 
     describe 'construction' do
       it 'rejects invalid operators' do
@@ -365,9 +374,8 @@ describe Sass::Value::Calculation do
     end
 
     describe 'stores' do
-      operation = nil
-      before do
-        operation = Sass::CalculationValue::CalculationOperation.new(
+      let(:operation) do
+        Sass::CalculationValue::CalculationOperation.new(
           '+',
           Sass::Value::Number.new(1),
           Sass::Value::Number.new(2)

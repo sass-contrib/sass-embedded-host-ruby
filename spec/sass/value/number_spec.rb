@@ -4,13 +4,14 @@ require 'spec_helper'
 
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/number.test.ts
 describe Sass::Value::Number do
-  precision = 10
+  let(:precision) do
+    10
+  end
 
   describe 'unitless' do
     describe 'integer' do
-      number = nil
-      before do
-        number = described_class.new(123)
+      let(:number) do
+        described_class.new(123)
       end
 
       describe 'construction' do
@@ -167,9 +168,8 @@ describe Sass::Value::Number do
     end
 
     describe 'fuzzy integer' do
-      number = nil
-      before do
-        number = described_class.new(123.000000000001)
+      let(:number) do
+        described_class.new(123.000000000001)
       end
 
       it 'has the correct value' do
@@ -204,9 +204,8 @@ describe Sass::Value::Number do
     end
 
     describe 'double' do
-      number = nil
-      before do
-        number = described_class.new(123.456)
+      let(:number) do
+        described_class.new(123.456)
       end
 
       it 'has the correct value' do
@@ -222,9 +221,8 @@ describe Sass::Value::Number do
   end
 
   describe 'single numerator unit' do
-    number = nil
-    before do
-      number = described_class.new(123, 'px')
+    let(:number) do
+      described_class.new(123, 'px')
     end
 
     describe 'construction' do
@@ -390,9 +388,8 @@ describe Sass::Value::Number do
   end
 
   describe 'numerator and denominator units' do
-    number = nil
-    before do
-      number = described_class.new(123, { numerator_units: ['px'], denominator_units: ['ms'] })
+    let(:number) do
+      described_class.new(123, { numerator_units: ['px'], denominator_units: ['ms'] })
     end
 
     describe 'construction' do

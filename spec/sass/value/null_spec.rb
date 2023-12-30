@@ -4,7 +4,9 @@ require 'spec_helper'
 
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/null.test.ts
 describe Sass::Value::Null do
-  value = Sass::Value::Null::NULL
+  let(:value) do
+    Sass::Value::Null::NULL
+  end
 
   it 'is falsey' do
     expect(value.to_bool).to be(false)

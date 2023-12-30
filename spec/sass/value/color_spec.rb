@@ -18,9 +18,8 @@ describe Sass::Value::Color do
 
   describe 'construction' do
     describe 'type' do
-      color = nil
-      before do
-        color = rgb(18, 52, 86)
+      let(:color) do
+        rgb(18, 52, 86)
       end
 
       it 'is a value' do
@@ -101,9 +100,8 @@ describe Sass::Value::Color do
   end
 
   describe 'an RGB color' do
-    color = nil
-    before do
-      color = rgb(18, 52, 86)
+    let(:color) do
+      rgb(18, 52, 86)
     end
 
     it 'has RGB channels' do
@@ -136,9 +134,8 @@ describe Sass::Value::Color do
   end
 
   describe 'an HSL color' do
-    color = nil
-    before do
-      color = hsl(120, 42, 42)
+    let(:color) do
+      hsl(120, 42, 42)
     end
 
     it 'has RGB channels' do
@@ -176,9 +173,8 @@ describe Sass::Value::Color do
   end
 
   describe 'an HWB color' do
-    color = nil
-    before do
-      color = hwb(120, 42, 42)
+    let(:color) do
+      hwb(120, 42, 42)
     end
 
     it 'has RGB channels' do
@@ -216,9 +212,8 @@ describe Sass::Value::Color do
   end
 
   describe 'changing color values' do
-    color = nil
-    before do
-      color = rgb(18, 52, 86)
+    let(:color) do
+      rgb(18, 52, 86)
     end
 
     describe 'change() for RGB' do

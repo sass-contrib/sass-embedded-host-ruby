@@ -4,12 +4,11 @@ require 'spec_helper'
 
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/map.test.ts
 describe Sass::Value::Map do
-  map = nil
-  before do
-    map = described_class.new({
-                                Sass::Value::String.new('a') => Sass::Value::String.new('b'),
-                                Sass::Value::String.new('c') => Sass::Value::String.new('d')
-                              })
+  let(:map) do
+    described_class.new({
+                          Sass::Value::String.new('a') => Sass::Value::String.new('b'),
+                          Sass::Value::String.new('c') => Sass::Value::String.new('d')
+                        })
   end
 
   describe 'construction' do
@@ -151,12 +150,11 @@ describe Sass::Value::Map do
   end
 
   describe 'at()' do
-    map = nil
-    before do
-      map = described_class.new({
-                                  Sass::Value::String.new('a') => Sass::Value::String.new('b'),
-                                  Sass::Value::String.new('c') => Sass::Value::String.new('d')
-                                })
+    let(:map) do
+      described_class.new({
+                            Sass::Value::String.new('a') => Sass::Value::String.new('b'),
+                            Sass::Value::String.new('c') => Sass::Value::String.new('d')
+                          })
     end
 
     describe 'with a number' do
@@ -227,9 +225,8 @@ describe Sass::Value::Map do
   end
 
   describe 'an empty map' do
-    map = nil
-    before do
-      map = described_class.new
+    let(:map) do
+      described_class.new
     end
 
     it 'has a nil separator' do

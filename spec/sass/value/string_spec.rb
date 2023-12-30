@@ -64,9 +64,8 @@ describe Sass::Value::String do
   end
 
   describe 'index handling' do
-    string = nil
-    before do
-      string = described_class.new('nb')
+    let(:string) do
+      described_class.new('nb')
     end
 
     it 'rejects a zero index' do
@@ -82,9 +81,8 @@ describe Sass::Value::String do
     end
 
     describe 'ASCII' do
-      string = nil
-      before do
-        string = described_class.new('nb')
+      let(:string) do
+        described_class.new('nb')
       end
 
       it 'converts a positive index' do
@@ -104,9 +102,8 @@ describe Sass::Value::String do
     end
 
     describe 'Unicode' do
-      string = nil
-      before do
-        string = described_class.new('a👭b👬c')
+      let(:string) do
+        described_class.new('a👭b👬c')
       end
 
       it 'converts a positive index' do
