@@ -12,22 +12,25 @@ module Sass
         @mutex = Mutex.new
       end
 
-      def close(...)
+      def close
         @mutex.synchronize do
-          @dispatcher.close(...)
+          unless @dispatcher.nil?
+            @dispatcher.close
+            @dispatcher = nil
+          end
         end
       end
 
-      def closed?(...)
+      def closed?
         @mutex.synchronize do
-          @dispatcher.closed?(...)
+          @dispatcher.nil?
         end
       end
 
       def connect(...)
-        @dispatcher.connect(...)
-      rescue Errno::EBUSY
         @mutex.synchronize do
+          raise IOError, 'closed compiler' if @dispatcher.nil?
+
           @dispatcher.connect(...)
         rescue Errno::EBUSY
           @dispatcher = @dispatcher_class.new
