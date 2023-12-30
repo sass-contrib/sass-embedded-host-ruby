@@ -43,7 +43,7 @@ RSpec.describe Sass::Compiler do
     it 'performs complete compilations' do
       result = compiler.compile_string('@import "bar"; .fn {value: foo(baz)}', importers:, functions:, logger:)
       expect(result.css).to eq(".import {\n  value: bar;\n}\n\n.fn {\n  value: baz;\n}")
-      expect(logger[:debug]).to have_received(:call)
+      expect(logger[:debug]).to have_received(:call).once
     end
 
     it 'performs compilations in callbacks' do
@@ -91,7 +91,7 @@ RSpec.describe Sass::Compiler do
         dir.write({ 'input.scss' => '@import "bar"; .fn {value: foo(bar)}' })
         result = compiler.compile(dir.path('input.scss'), importers:, functions:, logger:)
         expect(result.css).to eq(".import {\n  value: bar;\n}\n\n.fn {\n  value: bar;\n}")
-        expect(logger[:debug]).to have_received(:call)
+        expect(logger[:debug]).to have_received(:call).once
       end
     end
 
