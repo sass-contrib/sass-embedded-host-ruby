@@ -41,15 +41,15 @@ describe Sass::Value::Function do
     expect(fn).to have_received(:call)
   end
 
-  it 'can call a function reference from JS' do
+  it 'can call a function reference from Ruby' do
     fn = double
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(0)
-      described_class.new('plusOne($n)', lambda { |args2|
-        expect(args2.length).to eq(1)
-        expect(args2[0].assert_number.value).to eq(2)
-        Sass::Value::Number.new(args2[0].assert_number.value + 1)
-      })
+      described_class.new('plusOne($n)') do |arguments|
+        expect(arguments.length).to eq(1)
+        expect(arguments[0].assert_number.value).to eq(2)
+        Sass::Value::Number.new(arguments[0].assert_number.value + 1)
+      end
     }
 
     expect(
@@ -84,9 +84,7 @@ describe Sass::Value::Function do
       it scope do
         fn = double
         allow(fn).to receive(:call) { |*|
-          described_class.new(signature, lambda { |*|
-            Sass::Value::Null::NULL
-          })
+          described_class.new(signature) { |*| Sass::Value::Null::NULL }
         }
 
         expect do

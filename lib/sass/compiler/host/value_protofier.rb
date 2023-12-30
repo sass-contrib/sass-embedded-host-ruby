@@ -179,7 +179,7 @@ module Sass
               end
             )
           when :compiler_function
-            Sass::Value::Function.new(nil, nil).instance_eval do
+            Sass::Value::Function.new(nil).instance_eval do
               @id = obj.id
               self
             end
