@@ -17,8 +17,8 @@ RSpec.describe Sass do
     end
 
     it 'followed by its package version' do
-      version = described_class.info.slice(identifier.length + 1).split[0]
-      expect { Gem::Version.new(version) }.not_to raise_error
+      version = described_class.info.split[1]
+      expect(version).to eq(described_class::Embedded::VERSION)
     end
   end
 end
