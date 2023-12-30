@@ -4,8 +4,8 @@ require_relative 'canonicalize_context'
 require_relative 'compile_result'
 require_relative 'compiler/connection'
 require_relative 'compiler/dispatcher'
+require_relative 'compiler/dispatcher_manager'
 require_relative 'compiler/host'
-require_relative 'compiler/resilient_dispatcher'
 require_relative 'compiler/varint'
 require_relative 'embedded_protocol'
 require_relative 'exception'
@@ -27,7 +27,7 @@ module Sass
   #   sass.close
   class Compiler
     def initialize
-      @dispatcher = ResilientDispatcher.new(Dispatcher)
+      @dispatcher = DispatcherManager.new(Dispatcher)
     end
 
     # Compiles the Sass file at +path+ to CSS.

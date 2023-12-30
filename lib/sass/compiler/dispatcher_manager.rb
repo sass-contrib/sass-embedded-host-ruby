@@ -2,10 +2,10 @@
 
 module Sass
   class Compiler
-    # The {ResilientDispatcher} class.
+    # The {DispatcherManager} class.
     #
-    # It recovers from failures and continues to function.
-    class ResilientDispatcher
+    # It manages the lifecycle of {Dispatcher}.
+    class DispatcherManager
       def initialize(dispatcher_class)
         @dispatcher_class = dispatcher_class
         @dispatcher = @dispatcher_class.new
@@ -39,6 +39,6 @@ module Sass
       end
     end
 
-    private_constant :ResilientDispatcher
+    private_constant :DispatcherManager
   end
 end
