@@ -18,7 +18,7 @@ describe Sass::Value::Calculation do
   end
 
   describe 'construction' do
-    let(:calculation) do
+    subject(:calculation) do
       described_class.calc(Sass::Value::Number.new(1))
     end
 
@@ -374,7 +374,7 @@ describe Sass::Value::Calculation do
     end
 
     describe 'stores' do
-      let(:operation) do
+      subject(:operation) do
         Sass::CalculationValue::CalculationOperation.new(
           '+',
           Sass::Value::Number.new(1),

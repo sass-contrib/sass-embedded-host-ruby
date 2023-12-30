@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/map.test.ts
 describe Sass::Value::Map do
-  let(:map) do
+  subject(:map) do
     described_class.new({
                           Sass::Value::String.new('a') => Sass::Value::String.new('b'),
                           Sass::Value::String.new('c') => Sass::Value::String.new('d')
@@ -150,7 +150,7 @@ describe Sass::Value::Map do
   end
 
   describe 'at()' do
-    let(:map) do
+    subject(:map) do
       described_class.new({
                             Sass::Value::String.new('a') => Sass::Value::String.new('b'),
                             Sass::Value::String.new('c') => Sass::Value::String.new('d')
@@ -225,7 +225,7 @@ describe Sass::Value::Map do
   end
 
   describe 'an empty map' do
-    let(:map) do
+    subject(:map) do
       described_class.new
     end
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/list.test.ts
 describe Sass::Value::List do
   describe 'construction' do
-    let(:list) do
+    subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         separator: ','
@@ -35,7 +35,7 @@ describe Sass::Value::List do
   end
 
   describe 'equality' do
-    let(:list) do
+    subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         separator: ','
@@ -109,7 +109,7 @@ describe Sass::Value::List do
   end
 
   describe 'Sass to Ruby index conversion' do
-    let(:list) do
+    subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')]
       )
@@ -193,7 +193,7 @@ describe Sass::Value::List do
   end
 
   describe 'at()' do
-    let(:list) do
+    subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')]
       )
@@ -227,7 +227,7 @@ describe Sass::Value::List do
   end
 
   describe 'single-element list' do
-    let(:list) do
+    subject(:list) do
       described_class.new([Sass::Value::Number.new(1)])
     end
 
@@ -245,7 +245,7 @@ describe Sass::Value::List do
   end
 
   describe 'a scalar value' do
-    let(:string) do
+    subject(:string) do
       Sass::Value::String.new('blue')
     end
 
@@ -299,7 +299,7 @@ describe Sass::Value::List do
   end
 
   describe 'an empty list' do
-    let(:list) do
+    subject(:list) do
       described_class.new
     end
 

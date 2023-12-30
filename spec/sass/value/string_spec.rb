@@ -64,7 +64,7 @@ describe Sass::Value::String do
   end
 
   describe 'index handling' do
-    let(:string) do
+    subject(:string) do
       described_class.new('nb')
     end
 
@@ -81,7 +81,7 @@ describe Sass::Value::String do
     end
 
     describe 'ASCII' do
-      let(:string) do
+      subject(:string) do
         described_class.new('nb')
       end
 
@@ -102,7 +102,7 @@ describe Sass::Value::String do
     end
 
     describe 'Unicode' do
-      let(:string) do
+      subject(:string) do
         described_class.new('a👭b👬c')
       end
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/boolean.test.ts
 describe Sass::Value::Boolean do
   describe 'sassTrue' do
-    let(:value) do
+    subject(:value) do
       Sass::Value::Boolean::TRUE
     end
 
@@ -38,7 +38,7 @@ describe Sass::Value::Boolean do
   end
 
   describe 'sassFalse' do
-    let(:value) do
+    subject(:value) do
       Sass::Value::Boolean::FALSE
     end
 

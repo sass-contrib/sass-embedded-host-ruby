@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/null.test.ts
 describe Sass::Value::Null do
-  let(:value) do
+  subject(:value) do
     Sass::Value::Null::NULL
   end
 

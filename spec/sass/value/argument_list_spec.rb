@@ -75,7 +75,7 @@ describe Sass::Value::ArgumentList do
   end
 
   describe 'construction' do
-    let(:list) do
+    subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         { 'd' => Sass::Value::String.new('e') }
@@ -116,7 +116,7 @@ describe Sass::Value::ArgumentList do
   end
 
   describe 'equality' do
-    let(:list) do
+    subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
         { 'd' => Sass::Value::String.new('e') }

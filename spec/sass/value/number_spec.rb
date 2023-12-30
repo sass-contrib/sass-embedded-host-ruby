@@ -10,7 +10,7 @@ describe Sass::Value::Number do
 
   describe 'unitless' do
     describe 'integer' do
-      let(:number) do
+      subject(:number) do
         described_class.new(123)
       end
 
@@ -168,7 +168,7 @@ describe Sass::Value::Number do
     end
 
     describe 'fuzzy integer' do
-      let(:number) do
+      subject(:number) do
         described_class.new(123.000000000001)
       end
 
@@ -204,7 +204,7 @@ describe Sass::Value::Number do
     end
 
     describe 'double' do
-      let(:number) do
+      subject(:number) do
         described_class.new(123.456)
       end
 
@@ -221,7 +221,7 @@ describe Sass::Value::Number do
   end
 
   describe 'single numerator unit' do
-    let(:number) do
+    subject(:number) do
       described_class.new(123, 'px')
     end
 
@@ -388,7 +388,7 @@ describe Sass::Value::Number do
   end
 
   describe 'numerator and denominator units' do
-    let(:number) do
+    subject(:number) do
       described_class.new(123, { numerator_units: ['px'], denominator_units: ['ms'] })
     end
 

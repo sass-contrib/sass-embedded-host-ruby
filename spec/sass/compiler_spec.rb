@@ -5,6 +5,14 @@ require 'spec_helper'
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/compiler.node.test.ts
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/compiler.test.ts
 RSpec.describe Sass::Compiler do
+  subject!(:compiler) do
+    described_class.new
+  end
+
+  after do
+    compiler.close
+  end
+
   let(:functions) do
     {
       'foo($args)' => ->(args) { args[0] }
@@ -29,14 +37,6 @@ RSpec.describe Sass::Compiler do
     {
       debug: instance_double(Proc, call: nil)
     }
-  end
-
-  let!(:compiler) do
-    described_class.new
-  end
-
-  after do
-    compiler.close
   end
 
   describe 'compile_string' do

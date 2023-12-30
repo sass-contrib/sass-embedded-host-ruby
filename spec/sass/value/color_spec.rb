@@ -18,7 +18,7 @@ describe Sass::Value::Color do
 
   describe 'construction' do
     describe 'type' do
-      let(:color) do
+      subject(:color) do
         rgb(18, 52, 86)
       end
 
@@ -100,7 +100,7 @@ describe Sass::Value::Color do
   end
 
   describe 'an RGB color' do
-    let(:color) do
+    subject(:color) do
       rgb(18, 52, 86)
     end
 
@@ -134,7 +134,7 @@ describe Sass::Value::Color do
   end
 
   describe 'an HSL color' do
-    let(:color) do
+    subject(:color) do
       hsl(120, 42, 42)
     end
 
@@ -173,7 +173,7 @@ describe Sass::Value::Color do
   end
 
   describe 'an HWB color' do
-    let(:color) do
+    subject(:color) do
       hwb(120, 42, 42)
     end
 
@@ -212,7 +212,7 @@ describe Sass::Value::Color do
   end
 
   describe 'changing color values' do
-    let(:color) do
+    subject(:color) do
       rgb(18, 52, 86)
     end
 
