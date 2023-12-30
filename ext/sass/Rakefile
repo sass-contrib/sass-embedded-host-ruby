@@ -41,12 +41,12 @@ file 'cli.rb' => %w[dart-sass] do |t|
 
   command = if File.exist?(runtime) && File.exist?(snapshot)
               "
-      File.absolute_path('#{runtime}', __dir__),
-      File.absolute_path('#{snapshot}', __dir__)
+      File.absolute_path('#{runtime}', __dir__).freeze,
+      File.absolute_path('#{snapshot}', __dir__).freeze
     "
             else
               "
-      File.absolute_path('#{exe}', __dir__)
+      File.absolute_path('#{exe}', __dir__).freeze
     "
             end
 
