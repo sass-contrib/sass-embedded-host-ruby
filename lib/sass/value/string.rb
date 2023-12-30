@@ -39,14 +39,6 @@ module Sass
         self
       end
 
-      # @return [CalculationValue]
-      # @raise [ScriptError]
-      def assert_calculation_value(name = nil)
-        raise Sass::ScriptError.new("Expected #{self} to be an unquoted string.", name) if quoted?
-
-        self
-      end
-
       # @param sass_index [Number]
       # @return [Integer]
       def sass_index_to_string_index(sass_index, name = nil)

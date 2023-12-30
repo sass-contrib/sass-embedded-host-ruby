@@ -53,7 +53,9 @@ module Sass
       private
 
       def initialize(name, arguments)
-        arguments.each(&:assert_calculation_value)
+        arguments.each do |value|
+          assert_calculation_value(value)
+        end
 
         @name = name.freeze
         @arguments = arguments.freeze

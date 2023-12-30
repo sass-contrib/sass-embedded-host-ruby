@@ -66,12 +66,6 @@ module Sass
       raise Sass::ScriptError.new("#{self} is not a calculation", name)
     end
 
-    # @return [CalculationValue]
-    # @raise [ScriptError]
-    def assert_calculation_value(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a calculation value", name)
-    end
-
     # @return [Color]
     # @raise [ScriptError]
     def assert_color(name = nil)

@@ -5,10 +5,12 @@ module Sass
   #
   # @see https://sass-lang.com/documentation/js-api/types/calculationvalue/
   module CalculationValue
-    # @return [CalculationValue]
-    # @raise [ScriptError]
-    def assert_calculation_value(_name = nil)
-      self
+    private
+
+    def assert_calculation_value(value)
+      raise Sass::ScriptError, "#{value} is not a calculation value" unless value.is_a?(Sass::CalculationValue)
+
+      raise Sass::ScriptError, "Expected #{value} to be unquoted" if value.is_a?(Sass::Value::String) && value.quoted?
     end
   end
 end
