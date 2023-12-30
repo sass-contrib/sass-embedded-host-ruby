@@ -74,7 +74,12 @@ module Sass
           ))
         end
 
-        "sass-embedded\t#{version_response.implementation_version}"
+        info = "#{version_response.implementation_name}\t#{version_response.implementation_version}\t(Sass Compiler)"
+        case version_response.implementation_name
+        when /\bdart\b/i
+          info << "\t[Dart]"
+        end
+        info
       end
 
       def compile_response(message)

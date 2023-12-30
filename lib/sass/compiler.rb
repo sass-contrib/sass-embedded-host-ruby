@@ -174,7 +174,10 @@ module Sass
     # @return [String] Information about the Sass implementation.
     # @see https://sass-lang.com/documentation/js-api/variables/info/
     def info
-      @info ||= Host.new(@dispatcher).version_request
+      @info ||= <<~INFO.freeze
+        sass-embedded\t#{Embedded::VERSION}\t(Embedded Host)\t[Ruby]
+        #{Host.new(@dispatcher).version_request}
+      INFO
     end
 
     def close
