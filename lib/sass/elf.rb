@@ -150,7 +150,7 @@ module Sass
     def initialize(buffer)
       @buffer = buffer
       @ehdr = read_ehdr
-      @buffer.seek(@ehdr[:e_phoff], :SET)
+      @buffer.seek(@ehdr[:e_phoff], IO::SEEK_SET)
       @proghdrs = Array.new(@ehdr[:e_phnum]) do
         read_phdr
       end
@@ -176,7 +176,7 @@ module Sass
       phdr = @proghdrs.find { |p| p[:p_type] == PT_INTERP }
       return if phdr.nil?
 
-      @buffer.seek(phdr[:p_offset], :SET)
+      @buffer.seek(phdr[:p_offset], IO::SEEK_SET)
       interpreter = @buffer.read(phdr[:p_filesz])
       raise ArgumentError unless interpreter.end_with?("\0")
 
