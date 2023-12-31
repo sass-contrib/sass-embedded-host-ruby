@@ -50,7 +50,7 @@ module Sass
           border-bottom-style: solid;
           font-family: monospace, monospace;
           white-space: pre;
-          content: #{Serializer.dump_quoted_string(content)};
+          content: #{Serializer.serialize_quoted_string(content, ascii_only: true)};
         }
       CSS
     end

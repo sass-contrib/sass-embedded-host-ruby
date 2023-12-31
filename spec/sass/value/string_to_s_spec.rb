@@ -11,8 +11,15 @@ describe Sass::Value::String do
         actual = Sass.compile_string("a { b: #{string} }").css
         expect(actual).to eq(expected)
 
-        expected = Sass.compile_string(expected).css
-        expect(actual).to eq(expected)
+        result = nil
+        Sass.compile_string("$_: yield(#{string});",
+                            functions: {
+                              'yield($value)' => lambda { |args|
+                                result = args[0].assert_string
+                                Sass::Value::Null::NULL
+                              }
+                            })
+        expect(result).to eq(string)
       end
 
       it 'with double quote in text' do
@@ -21,8 +28,15 @@ describe Sass::Value::String do
         actual = Sass.compile_string("a { b: #{string} }").css
         expect(actual).to eq(expected)
 
-        expected = Sass.compile_string(expected).css
-        expect(actual).to eq(expected)
+        result = nil
+        Sass.compile_string("$_: yield(#{string});",
+                            functions: {
+                              'yield($value)' => lambda { |args|
+                                result = args[0].assert_string
+                                Sass::Value::Null::NULL
+                              }
+                            })
+        expect(result).to eq(string)
       end
 
       it 'with single quote in text' do
@@ -31,8 +45,15 @@ describe Sass::Value::String do
         actual = Sass.compile_string("a { b: #{string} }").css
         expect(actual).to eq(expected)
 
-        expected = Sass.compile_string(expected).css
-        expect(actual).to eq(expected)
+        result = nil
+        Sass.compile_string("$_: yield(#{string});",
+                            functions: {
+                              'yield($value)' => lambda { |args|
+                                result = args[0].assert_string
+                                Sass::Value::Null::NULL
+                              }
+                            })
+        expect(result).to eq(string)
       end
 
       it 'with double quote and single quote in text' do
@@ -41,18 +62,32 @@ describe Sass::Value::String do
         actual = Sass.compile_string("a { b: #{string} }").css
         expect(actual).to eq(expected)
 
-        expected = Sass.compile_string(expected).css
-        expect(actual).to eq(expected)
+        result = nil
+        Sass.compile_string("$_: yield(#{string});",
+                            functions: {
+                              'yield($value)' => lambda { |args|
+                                result = args[0].assert_string
+                                Sass::Value::Null::NULL
+                              }
+                            })
+        expect(result).to eq(string)
       end
 
       it 'with special characters in text' do
-        string = described_class.new((0..255).to_a.pack('U*'))
+        string = described_class.new((1..256).to_a.pack('U*'))
         expected = Sass.compile_string('a { b: foo() }', functions: { 'foo()' => ->(_) { string } }).css
         actual = Sass.compile_string("a { b: #{string} }").css
-        expect(actual).to eq(expected.sub('\0', "\uFFFD"))
-
-        expected = Sass.compile_string(expected).css
         expect(actual).to eq(expected)
+
+        result = nil
+        Sass.compile_string("$_: yield(#{string});",
+                            functions: {
+                              'yield($value)' => lambda { |args|
+                                result = args[0].assert_string
+                                Sass::Value::Null::NULL
+                              }
+                            })
+        expect(result).to eq(string)
       end
     end
 
@@ -60,50 +95,35 @@ describe Sass::Value::String do
       it 'without quote in text' do
         string = described_class.new('c', quoted: false)
         expected = Sass.compile_string('a { b: foo() }', functions: { 'foo()' => ->(_) { string } }).css
-        actual = Sass.compile_string("a { b: #{string} }").css
-        expect(actual).to eq(expected)
-
-        expected = Sass.compile_string(expected).css
+        actual = "a {\n  b: #{string};\n}"
         expect(actual).to eq(expected)
       end
 
       it 'with double quote in text' do
         string = described_class.new('""', quoted: false)
         expected = Sass.compile_string('a { b: foo() }', functions: { 'foo()' => ->(_) { string } }).css
-        actual = Sass.compile_string("a { b: #{string} }").css
-        expect(actual).to eq(expected)
-
-        expected = Sass.compile_string(expected).css
+        actual = "a {\n  b: #{string};\n}"
         expect(actual).to eq(expected)
       end
 
       it 'with single quote in text' do
         string = described_class.new("''", quoted: false)
         expected = Sass.compile_string('a { b: foo() }', functions: { 'foo()' => ->(_) { string } }).css
-        actual = Sass.compile_string("a { b: #{string} }").css
-        expect(actual).to eq(expected.tr("'", '"'))
-
-        expected = Sass.compile_string(expected).css
+        actual = "a {\n  b: #{string};\n}"
         expect(actual).to eq(expected)
       end
 
       it 'with double quote and single quote in text' do
         string = described_class.new('"\'"', quoted: false)
         expected = Sass.compile_string('a { b: foo() }', functions: { 'foo()' => ->(_) { string } }).css
-        actual = Sass.compile_string("a { b: #{string} }").css
-        expect(actual).to eq(expected)
-
-        expected = Sass.compile_string(expected).css
+        actual = "a {\n  b: #{string};\n}"
         expect(actual).to eq(expected)
       end
 
       it 'with newline followed by spaces in text' do
-        string = described_class.new("a\nb\n c\n  d", quoted: false)
+        string = described_class.new("a b\n c\n  d\n\t e \n f", quoted: false)
         expected = Sass.compile_string('a { b: foo() }', functions: { 'foo()' => ->(_) { string } }).css
-        actual = Sass.compile_string("a { b: #{string} }").css
-        expect(actual).to eq(expected)
-
-        expected = Sass.compile_string(expected).css
+        actual = "a {\n  b: #{string};\n}"
         expect(actual).to eq(expected)
       end
     end

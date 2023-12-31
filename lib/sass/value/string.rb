@@ -54,11 +54,7 @@ module Sass
 
       # @return [String]
       def to_s
-        if @quoted
-          Serializer.serialize_quoted_string(@text)
-        else
-          Serializer.serialize_unquoted_string(@text)
-        end
+        @quoted ? Serializer.serialize_quoted_string(@text) : Serializer.serialize_unquoted_string(@text)
       end
     end
   end
