@@ -74,12 +74,14 @@ module Sass
           ))
         end
 
-        info = "#{version_response.implementation_name}\t#{version_response.implementation_version}\t(Sass Compiler)"
-        case version_response.implementation_name
-        when /\bdart\b/i
-          info << "\t[Dart]"
-        end
-        info
+        lang = case version_response.implementation_name
+               when /\bdart\b/i
+                 '[Dart]'
+               else
+                 '[?]'
+               end
+
+        "#{version_response.implementation_name}\t#{version_response.implementation_version}\t(Sass Compiler)\t#{lang}"
       end
 
       def compile_response(message)
