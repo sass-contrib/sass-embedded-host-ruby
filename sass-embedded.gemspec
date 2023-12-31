@@ -2,7 +2,7 @@
 
 require_relative 'lib/sass/embedded/version'
 
-Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
+Gem::Specification.new do |spec|
   spec.name          = 'sass-embedded'
   spec.version       = Sass::Embedded::VERSION
   spec.authors       = ['なつき']
@@ -14,7 +14,8 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.metadata      = {
     'documentation_uri' => "https://rubydoc.info/gems/#{spec.name}/#{spec.version}",
     'source_code_uri' => "#{spec.homepage}/tree/v#{spec.version}",
-    'funding_uri' => 'https://github.com/sponsors/ntkme'
+    'funding_uri' => 'https://github.com/sponsors/ntkme',
+    'rubygems_mfa_required' => 'true'
   }
 
   spec.bindir      = 'exe'
