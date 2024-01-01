@@ -13,8 +13,8 @@ module Sass
       def initialize(signature, &callback)
         raise Sass::ScriptError, 'no block given' unless signature.nil? || callback
 
-        @signature = signature
-        @callback = callback
+        @signature = signature.freeze
+        @callback = callback.freeze
       end
 
       # @return [Integer, nil]
