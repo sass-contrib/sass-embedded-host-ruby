@@ -75,7 +75,8 @@ RSpec.describe Sass::Compiler do
     it 'handles multiple concurrent compilations' do
       results = Array.new(100) do |i|
         Thread.new do
-          compiler.compile_string("@import \"#{i}\"; .fn {value: foo(#{i})}", importers:, functions:, logger:)
+          compiler.compile_string("@import \"#{i}\"; .fn {value: foo(#{i})}",
+                                  importers:, functions:, logger: Sass::Logger.silent)
         end
       end.map(&:value)
 
@@ -128,7 +129,8 @@ RSpec.describe Sass::Compiler do
           Thread.new do
             filename = "input-#{i}.scss"
             dir.write({ filename => "@import \"#{i}\"; .fn {value: foo(#{i})}" })
-            compiler.compile(dir.path(filename), importers:, functions:, logger:)
+            compiler.compile(dir.path(filename),
+                             importers:, functions:, logger: Sass::Logger.silent)
           end
         end.map(&:value)
 
