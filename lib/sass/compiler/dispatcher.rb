@@ -123,7 +123,7 @@ module Sass
         end
 
         def disconnect
-          @dispatcher.unsubscribe(id)
+          @dispatcher.unsubscribe(@id)
         end
 
         def error(...)
