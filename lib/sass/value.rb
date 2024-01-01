@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'calculation_value'
-
 module Sass
   # The abstract base class of Sass's value types.
   #
@@ -123,6 +121,7 @@ module Sass
   end
 end
 
+require_relative 'calculation_value'
 require_relative 'value/list'
 require_relative 'value/argument_list'
 require_relative 'value/boolean'
