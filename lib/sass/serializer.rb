@@ -18,8 +18,8 @@ module Sass
           # If the character is '"' (U+0022) or "\" (U+005C), then the escaped character.
           buffer << 0x5C << 0x5C
         elsif codepoint < 0x20 || (ascii_only ? codepoint >= 0x7F : codepoint == 0x7F)
-          # If the character is in the range [\1-\1f] (U+0001 to U+001F) or is U+007F, then the character escaped as
-          # code point.
+          # If the character is in the range [\1-\1f] (U+0001 to U+001F) or is U+007F,
+          # then the character escaped as code point.
           buffer << 0x5C
           buffer.concat(codepoint.to_s(16).codepoints)
           buffer << 0x20
