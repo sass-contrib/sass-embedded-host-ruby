@@ -18,12 +18,9 @@ module Sass
       def initialize(operator, left, right)
         raise Sass::ScriptError, "Invalid operator: #{operator}" unless OPERATORS.include?(operator)
 
-        assert_calculation_value(left)
-        assert_calculation_value(right)
-
         @operator = operator.freeze
-        @left = left.freeze
-        @right = right.freeze
+        @left = assert_calculation_value(left, 'left')
+        @right = assert_calculation_value(right, 'right')
       end
 
       # @return [::String]

@@ -7,10 +7,14 @@ module Sass
   module CalculationValue
     private
 
-    def assert_calculation_value(value)
-      raise Sass::ScriptError, "#{value} is not a calculation value" unless value.is_a?(Sass::CalculationValue)
+    def assert_calculation_value(value, name = nil)
+      if !value.is_a?(Sass::CalculationValue) || (value.is_a?(Sass::Value::String) && value.quoted?)
+        raise Sass::ScriptError.new(
+          "#{value} must be one of SassNumber, unquoted SassString, SassCalculation, CalculationOperation", name
+        )
+      end
 
-      raise Sass::ScriptError, "Expected #{value} to be unquoted" if value.is_a?(Sass::Value::String) && value.quoted?
+      value
     end
   end
 end
