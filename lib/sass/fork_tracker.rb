@@ -44,7 +44,7 @@ module Sass
 
     private_constant :CoreExt
 
-    Process.singleton_class.prepend(CoreExt)
+    Process.singleton_class.prepend(CoreExt) if Process.respond_to?(:_fork)
   end
 
   private_constant :ForkTracker
