@@ -44,7 +44,7 @@ module Sass
           send_message(compile_request: EmbeddedProtocol::InboundMessage::CompileRequest.new(
             string: unless source.nil?
                       EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
-                        source:,
+                        source: source.to_str,
                         url: url&.to_s,
                         syntax: Protofier.to_proto_syntax(syntax),
                         importer: (@importer_registry.register(importer) unless importer.nil?)

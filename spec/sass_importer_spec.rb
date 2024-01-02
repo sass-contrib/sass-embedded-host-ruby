@@ -1080,15 +1080,13 @@ RSpec.describe Sass do
             canonicalize: ->(url, _context) { "u:#{url}" },
             load: lambda { |*|
               {
-                contents: StringIO.new('not a string'),
+                contents: :'not a string',
                 syntax: 'scss'
               }
             }
           }]
         )
-      end.to raise_sass_compile_error.with_line(0).with_message(
-        "Invalid argument for string field 'contents' (given StringIO)"
-      )
+      end.to raise_sass_compile_error.with_line(0).with_message("undefined method `to_str'")
     end
   end
 

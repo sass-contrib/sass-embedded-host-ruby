@@ -16,7 +16,7 @@ module Sass
           when Sass::Value::String
             EmbeddedProtocol::Value.new(
               string: EmbeddedProtocol::Value::String.new(
-                text: obj.text,
+                text: obj.text.to_str,
                 quoted: obj.quoted?
               )
             )

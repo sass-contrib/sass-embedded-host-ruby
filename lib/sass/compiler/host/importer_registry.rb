@@ -81,7 +81,7 @@ module Sass
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,
             success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
-              contents: importer_result.contents,
+              contents: importer_result.contents.to_str,
               syntax: Protofier.to_proto_syntax(importer_result.syntax),
               source_map_url: (importer_result.source_map_url&.to_s if importer_result.respond_to?(:source_map_url))
             )
