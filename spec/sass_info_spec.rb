@@ -20,5 +20,9 @@ RSpec.describe Sass do
       version = described_class.info.split[1]
       expect(version).to eq(described_class::Embedded::VERSION)
     end
+
+    it 'has no trailing whitespace' do
+      expect(described_class.info).to eq(described_class.info.strip)
+    end
   end
 end
