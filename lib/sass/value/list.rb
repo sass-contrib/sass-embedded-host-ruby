@@ -21,9 +21,6 @@ module Sass
         @bracketed = bracketed.freeze
       end
 
-      # @return [Array<Value>]
-      attr_reader :contents
-
       # @return [::String, nil]
       attr_reader :separator
 
@@ -35,7 +32,7 @@ module Sass
       # @return [::Boolean]
       def ==(other)
         (other.is_a?(Sass::Value::List) &&
-         other.contents == contents &&
+         other.to_a == to_a &&
          other.separator == separator &&
          other.bracketed? == bracketed?) ||
           (to_a.empty? && other.is_a?(Sass::Value::Map) && other.to_a.empty?)
@@ -56,7 +53,10 @@ module Sass
         @hash ||= contents.hash
       end
 
-      alias to_a contents
+      # @return [Array<Value>]
+      def to_a
+        @contents
+      end
 
       # @return [Map, nil]
       def to_map

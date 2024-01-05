@@ -57,7 +57,7 @@ module Sass
             EmbeddedProtocol::Value.new(
               argument_list: EmbeddedProtocol::Value::ArgumentList.new(
                 id: obj.instance_eval { @id },
-                contents: obj.contents.map { |element| to_proto(element) },
+                contents: obj.to_a.map { |element| to_proto(element) },
                 keywords: obj.keywords.transform_values { |value| to_proto(value) },
                 separator: ListSeparator.to_proto(obj.separator)
               )
@@ -65,7 +65,7 @@ module Sass
           when Sass::Value::List
             EmbeddedProtocol::Value.new(
               list: EmbeddedProtocol::Value::List.new(
-                contents: obj.contents.map { |element| to_proto(element) },
+                contents: obj.to_a.map { |element| to_proto(element) },
                 separator: ListSeparator.to_proto(obj.separator),
                 has_brackets: obj.bracketed?
               )
