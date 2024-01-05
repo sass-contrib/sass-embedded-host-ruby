@@ -37,6 +37,7 @@ jobs:
           - '3.3'
           - head
           - jruby
+          - jruby-head
           - truffleruby
           - truffleruby+graalvm
         exclude:
@@ -58,11 +59,11 @@ jobs:
       - name: Compile
         run: bundle exec rake compile
 
-      - name: Install
-        run: rake -f -r bundler/gem_tasks install
-
       - name: Spec
         run: bundle exec rake spec
+
+      - name: Install
+        run: rake -f -r bundler/gem_tasks install
 
   spec-musl:
 
