@@ -37,7 +37,7 @@ describe Sass::Value::ArgumentList do
       expect(args[0].to_a.length).to eq(0)
       keywords = args[0].keywords
       expect(keywords).to eq({
-                               'bar' => Sass::Value::String.new('baz', quoted: false)
+                               bar: Sass::Value::String.new('baz', quoted: false)
                              })
       Sass::Value::Null::NULL
     }
@@ -78,7 +78,7 @@ describe Sass::Value::ArgumentList do
     subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
-        { 'd' => Sass::Value::String.new('e') }
+        { d: Sass::Value::String.new('e') }
       )
     end
 
@@ -110,7 +110,7 @@ describe Sass::Value::ArgumentList do
 
     it 'returns its keywords' do
       expect(list.keywords).to eq(
-        { 'd' => Sass::Value::String.new('e') }
+        { d: Sass::Value::String.new('e') }
       )
     end
   end
@@ -119,7 +119,7 @@ describe Sass::Value::ArgumentList do
     subject(:list) do
       described_class.new(
         [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
-        { 'd' => Sass::Value::String.new('e') }
+        { d: Sass::Value::String.new('e') }
       )
     end
 
@@ -127,7 +127,7 @@ describe Sass::Value::ArgumentList do
       expect(list).to eq(
         described_class.new(
           [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
-          { 'd' => Sass::Value::String.new('e') }
+          { d: Sass::Value::String.new('e') }
         )
       )
     end
@@ -136,7 +136,7 @@ describe Sass::Value::ArgumentList do
       expect(list).to eq(
         described_class.new(
           [Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')],
-          { 'f' => Sass::Value::String.new('g') }
+          { f: Sass::Value::String.new('g') }
         )
       )
     end

@@ -10,17 +10,17 @@ module Sass
     # @see https://sass-lang.com/documentation/js-api/classes/sassargumentlist/
     class ArgumentList < List
       # @param contents [Array<Value>]
-      # @param keywords [Hash<::String, Value>]
+      # @param keywords [Hash<Symbol, Value>]
       # @param separator [::String]
       def initialize(contents = [], keywords = {}, separator = ',')
         super(contents, separator:)
 
         @id = 0
         @keywords_accessed = false
-        @keywords = keywords.transform_keys(&:to_s).freeze
+        @keywords = keywords.freeze
       end
 
-      # @return [Hash<::String, Value>]
+      # @return [Hash<Symbol, Value>]
       def keywords
         @keywords_accessed = true
         @keywords

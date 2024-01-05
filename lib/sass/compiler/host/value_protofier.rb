@@ -58,7 +58,7 @@ module Sass
               argument_list: EmbeddedProtocol::Value::ArgumentList.new(
                 id: obj.instance_eval { @id },
                 contents: obj.to_a.map { |element| to_proto(element) },
-                keywords: obj.keywords.transform_values { |value| to_proto(value) },
+                keywords: obj.keywords.to_h { |key, value| [key.to_s, to_proto(value)] },
                 separator: ListSeparator.to_proto(obj.separator)
               )
             )
@@ -156,8 +156,8 @@ module Sass
               obj.contents.map do |element|
                 from_proto(element)
               end,
-              obj.keywords.entries.to_h.transform_values! do |value|
-                from_proto(value)
+              obj.keywords.entries.to_h do |key, value|
+                [key.to_sym, from_proto(value)]
               end,
               ListSeparator.from_proto(obj.separator)
             ).instance_eval do
