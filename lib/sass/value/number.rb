@@ -62,8 +62,8 @@ module Sass
         end
 
         @value = value.freeze
-        @numerator_units = numerator_units.freeze
-        @denominator_units = denominator_units.freeze
+        @numerator_units = numerator_units.each(&:freeze).freeze
+        @denominator_units = denominator_units.each(&:freeze).freeze
       end
 
       # @return [Numeric]
