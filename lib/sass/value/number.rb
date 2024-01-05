@@ -38,6 +38,7 @@ module Sass
         end
 
         unless denominator_units.empty? && numerator_units.empty?
+          value = value.dup
           numerator_units = numerator_units.dup
           new_denominator_units = []
 
