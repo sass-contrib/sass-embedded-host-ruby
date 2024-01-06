@@ -28,7 +28,7 @@ module Sass
 
       highlight = Exception.respond_to?(:to_tty?) && Exception.to_tty? if highlight.nil?
       if highlight
-        +@full_message
+        @full_message.dup
       else
         @full_message.gsub(/\e\[[0-9;]*m/, '')
       end
@@ -38,7 +38,7 @@ module Sass
     def to_css
       content = full_message(highlight: false, order: :top)
 
-      <<~CSS
+      <<~CSS.freeze
         /* #{content.gsub('*/', "*\u2060/").gsub("\r\n", "\n").split("\n").join("\n * ")} */
 
         body::before {
@@ -50,7 +50,11 @@ module Sass
           border-bottom-style: solid;
           font-family: monospace, monospace;
           white-space: pre;
-          content: #{Serializer.serialize_quoted_string(content, ascii_only: true)};
+          content: #{Serializer.serialize_quoted_string(content).gsub(/[^[:ascii:]][\h\t ]?/) do |match|
+            replacement = "\\#{match.ord.to_s(16)}"
+            replacement << " #{match[1]}" if match.length > 1
+            replacement
+          end};
         }
       CSS
     end

@@ -5,31 +5,26 @@ module Sass
   module Serializer
     module_function
 
-    def serialize_quoted_string(string, ascii_only: false)
-      buffer = [0x22]
-      string.each_codepoint do |codepoint|
-        if codepoint.zero?
-          # If the character is NULL (U+0000), then the REPLACEMENT CHARACTER (U+FFFD).
-          buffer << 0xFFFD
-        elsif codepoint == 0x22
-          # If the character is '"' (U+0022) or "\" (U+005C), then the escaped character.
-          buffer << 0x5C << 0x22
-        elsif codepoint == 0x5C
-          # If the character is '"' (U+0022) or "\" (U+005C), then the escaped character.
-          buffer << 0x5C << 0x5C
-        elsif codepoint < 0x20 || (ascii_only ? codepoint >= 0x7F : codepoint == 0x7F)
-          # If the character is in the range [\1-\1f] (U+0001 to U+001F) or is U+007F,
-          # then the character escaped as code point.
-          buffer << 0x5C
-          buffer.concat(codepoint.to_s(16).codepoints)
-          buffer << 0x20
-        else
-          # Otherwise, the character itself.
-          buffer << codepoint
-        end
+    CSS_ESCAPE = {
+      "\0" => "\uFFFD",
+      '\\' => '\\\\',
+      '"' => '\\"',
+      "'" => "\\'",
+      **[*"\x01".."\x08", *"\x0A".."\x1F", "\x7F"].product(
+        [*'0'..'9', *'a'..'f', *'A'..'F', "\t", ' ', nil]
+      ).to_h do |c, x|
+        ["#{c}#{x}".freeze, "\\#{c.ord.to_s(16)}#{" #{x}" if x}".freeze]
       end
-      buffer << 0x22
-      buffer.pack('U*')
+    }.freeze
+
+    private_constant :CSS_ESCAPE
+
+    def serialize_quoted_string(string)
+      if !string.include?('"') || string.include?("'")
+        %("#{string.gsub(/[\0\\"]|[\x01-\x08\x0A-\x1F\x7F][\h\t ]?/, CSS_ESCAPE)}")
+      else
+        %('#{string.gsub(/[\0\\']|[\x01-\x08\x0A-\x1F\x7F][\h\t ]?/, CSS_ESCAPE)}')
+      end
     end
 
     def serialize_unquoted_string(string)
