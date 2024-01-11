@@ -41,10 +41,6 @@ module Sass
         end
       end
 
-      def connect(host)
-        Channel.new(self, host)
-      end
-
       def close
         @mutex.synchronize do
           _close
@@ -112,30 +108,6 @@ module Sass
       def _idle?
         @id == 1
       end
-
-      # The {Channel} between {Dispatcher} and {Host}.
-      class Channel
-        attr_reader :id
-
-        def initialize(dispatcher, host)
-          @dispatcher = dispatcher
-          @id = @dispatcher.subscribe(host)
-        end
-
-        def disconnect
-          @dispatcher.unsubscribe(@id)
-        end
-
-        def error(...)
-          @dispatcher.error(...)
-        end
-
-        def send_proto(...)
-          @dispatcher.send_proto(...)
-        end
-      end
-
-      private_constant :Channel
     end
 
     private_constant :Dispatcher
