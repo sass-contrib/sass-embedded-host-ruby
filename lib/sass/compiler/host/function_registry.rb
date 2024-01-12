@@ -42,11 +42,18 @@ module Sass
         end
 
         def function_call(function_call_request)
+          function = case function_call_request.identifier
+                     when :name
+                       @functions_by_name[function_call_request.name]
+                     when :function_id
+                       @functions_by_id[function_call_request.function_id]
+                     end
+
           arguments = function_call_request.arguments.map do |argument|
             value_protofier.from_proto(argument)
           end
 
-          success = value_protofier.to_proto(get(function_call_request).call(arguments))
+          success = value_protofier.to_proto(function.call(arguments))
           accessed_argument_lists = arguments.filter_map do |argument|
             if argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval { @keywords_accessed }
               argument.instance_eval { @id }
@@ -66,15 +73,6 @@ module Sass
         end
 
         private
-
-        def get(function_call_request)
-          case function_call_request.identifier
-          when :name
-            @functions_by_name[function_call_request.name]
-          when :function_id
-            @functions_by_id[function_call_request.function_id]
-          end
-        end
 
         def value_protofier
           @value_protofier ||= ValueProtofier.new(self)
