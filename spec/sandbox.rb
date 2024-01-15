@@ -7,7 +7,7 @@ require 'uri'
 module Sandbox
   def sandbox
     Dir.mktmpdir do |dir|
-      yield SandboxDirectory.new dir
+      yield SandboxDirectory.new(dir)
     end
   end
 
@@ -38,8 +38,8 @@ module Sandbox
       end
     end
 
-    def chdir(&)
-      Dir.chdir(@root, &)
+    def chdir(...)
+      Dir.chdir(@root, ...)
     end
 
     private
