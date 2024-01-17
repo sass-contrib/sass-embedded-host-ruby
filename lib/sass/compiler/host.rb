@@ -60,6 +60,7 @@ module Sass
             alert_ascii:,
             alert_color:,
             quiet_deps:,
+            silent: logger == Logger.silent,
             verbose:
           ))
         end
