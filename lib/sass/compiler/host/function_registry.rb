@@ -52,10 +52,10 @@ module Sass
                      end
 
           arguments = function_call_request.arguments.map do |argument|
-            value_protofier.from_proto(argument)
+            protofier.from_proto(argument)
           end
 
-          success = value_protofier.to_proto(function.call(arguments))
+          success = protofier.to_proto(function.call(arguments))
           accessed_argument_lists = arguments.filter_map do |argument|
             if argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval { @keywords_accessed }
               argument.instance_eval { @id }
@@ -76,8 +76,8 @@ module Sass
 
         private
 
-        def value_protofier
-          @value_protofier ||= ValueProtofier.new(self)
+        def protofier
+          @protofier ||= Protofier.new(self)
         end
       end
 

@@ -3,10 +3,10 @@
 module Sass
   class Compiler
     class Host
-      # The {ValueProtofier} class.
+      # The {Protofier} class.
       #
       # It converts Pure Ruby types and Protobuf Ruby types.
-      class ValueProtofier
+      class Protofier
         def initialize(function_registry)
           @function_registry = function_registry
         end
@@ -384,7 +384,7 @@ module Sass
         private_constant :ListSeparator
       end
 
-      private_constant :ValueProtofier
+      private_constant :Protofier
     end
   end
 end

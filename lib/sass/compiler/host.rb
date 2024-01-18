@@ -4,7 +4,7 @@ require_relative 'host/function_registry'
 require_relative 'host/importer_registry'
 require_relative 'host/logger_registry'
 require_relative 'host/structifier'
-require_relative 'host/value_protofier'
+require_relative 'host/protofier'
 
 module Sass
   class Compiler
