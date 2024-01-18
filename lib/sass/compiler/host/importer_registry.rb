@@ -61,7 +61,7 @@ module Sass
         def canonicalize(canonicalize_request)
           importer = @importers_by_id[canonicalize_request.importer_id]
           url = importer.canonicalize(canonicalize_request.url,
-                                      Protofier.from_proto_canonicalize_context(canonicalize_request))&.to_s
+                                      CanonicalizeContext.new(canonicalize_request))&.to_s
 
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
@@ -96,7 +96,7 @@ module Sass
         def file_import(file_import_request)
           importer = @importers_by_id[file_import_request.importer_id]
           file_url = importer.find_file_url(file_import_request.url,
-                                            Protofier.from_proto_canonicalize_context(file_import_request))&.to_s
+                                            CanonicalizeContext.new(file_import_request))&.to_s
 
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,

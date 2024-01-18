@@ -13,9 +13,9 @@ module Sass
     attr_reader :from_import
 
     # @!visibility private
-    def initialize(containing_url, from_import)
-      @containing_url = containing_url
-      @from_import = from_import
+    def initialize(canonicalize_request)
+      @containing_url = canonicalize_request.containing_url == '' ? nil : canonicalize_request.containing_url
+      @from_import = canonicalize_request.from_import
     end
   end
 end
