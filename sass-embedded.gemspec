@@ -12,6 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/sass-contrib/sass-embedded-host-ruby'
   spec.license       = 'MIT'
   spec.metadata      = {
+    'bug_tracker_uri' => "#{spec.homepage}/issues",
     'documentation_uri' => "https://rubydoc.info/gems/#{spec.name}/#{spec.version}",
     'source_code_uri' => "#{spec.homepage}/tree/v#{spec.version}",
     'funding_uri' => 'https://github.com/sponsors/ntkme',
