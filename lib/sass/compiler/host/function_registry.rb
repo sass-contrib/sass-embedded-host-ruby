@@ -42,13 +42,15 @@ module Sass
         end
 
         def function_call(function_call_request)
-          function = case function_call_request.identifier
+          oneof = function_call_request.identifier
+          identifier = function_call_request.public_send(oneof)
+          function = case oneof
                      when :name
-                       @functions_by_name[function_call_request.name]
+                       @functions_by_name[identifier]
                      when :function_id
-                       @functions_by_id[function_call_request.function_id]
+                       @functions_by_id[identifier]
                      else
-                       raise ArgumentError, "Unknown FunctionCallRequest.identifier #{function_call_request.identifier}"
+                       raise ArgumentError, "Unknown FunctionCallRequest.identifier #{identifier}"
                      end
 
           arguments = function_call_request.arguments.map do |argument|
