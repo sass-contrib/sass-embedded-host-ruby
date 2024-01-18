@@ -12,10 +12,10 @@ module Sass
       attr_reader :offset, :line, :column
 
       # @!visibility private
-      def initialize(offset, line, column)
-        @offset = offset
-        @line = line
-        @column = column
+      def initialize(source_location)
+        @offset = source_location.offset
+        @line = source_location.line
+        @column = source_location.column
       end
     end
   end

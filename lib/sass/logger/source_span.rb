@@ -16,12 +16,12 @@ module Sass
       attr_reader :url, :context
 
       # @!visibility private
-      def initialize(start, end_, text, url, context)
-        @start = start
-        @end = end_
-        @text = text
-        @url = url
-        @context = context
+      def initialize(source_span)
+        @start = source_span.start.nil? ? nil : Logger::SourceLocation.new(source_span.start)
+        @end = source_span.end.nil? ? nil : Logger::SourceLocation.new(source_span.end)
+        @text = source_span.text
+        @url = source_span.url == '' ? nil : source_span.url
+        @context = source_span.context == '' ? nil : source_span.context
       end
     end
   end

@@ -13,7 +13,7 @@ module Sass
           if logger.respond_to?(:debug)
             define_singleton_method(:debug) do |event|
               logger.debug(event.message,
-                           span: Protofier.from_proto_source_span(event.span))
+                           span: event.span.nil? ? nil : Logger::SourceSpan.new(event.span))
             end
           end
 
@@ -21,7 +21,7 @@ module Sass
             define_singleton_method(:warn) do |event|
               logger.warn(event.message,
                           deprecation: event.type == :DEPRECATION_WARNING,
-                          span: Protofier.from_proto_source_span(event.span),
+                          span: event.span.nil? ? nil : Logger::SourceSpan.new(event.span),
                           stack: event.stack_trace)
             end
           end

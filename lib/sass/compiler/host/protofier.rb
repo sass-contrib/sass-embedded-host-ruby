@@ -18,7 +18,7 @@ module Sass
               result.message,
               result.formatted == '' ? nil : result.formatted,
               result.stack_trace == '' ? nil : result.stack_trace,
-              from_proto_source_span(result.span),
+              result.span.nil? ? nil : Logger::SourceSpan.new(result.span),
               compile_response.loaded_urls
             )
           when :success
@@ -30,24 +30,6 @@ module Sass
           else
             raise ArgumentError, "Unknown CompileResponse.result #{result}"
           end
-        end
-
-        def from_proto_source_span(source_span)
-          return if source_span.nil?
-
-          Logger::SourceSpan.new(from_proto_source_location(source_span.start),
-                                 from_proto_source_location(source_span.end),
-                                 source_span.text,
-                                 source_span.url == '' ? nil : source_span.url,
-                                 source_span.context == '' ? nil : source_span.context)
-        end
-
-        def from_proto_source_location(source_location)
-          return if source_location.nil?
-
-          Logger::SourceLocation.new(source_location.offset,
-                                     source_location.line,
-                                     source_location.column)
         end
 
         def to_proto_syntax(syntax)
