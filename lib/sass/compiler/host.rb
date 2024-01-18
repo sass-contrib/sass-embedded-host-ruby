@@ -51,7 +51,14 @@ module Sass
                       )
                     end,
             path: (File.absolute_path(path) unless path.nil?),
-            style: Protofier.to_proto_output_style(style),
+            style: case style&.to_sym
+                   when :expanded
+                     EmbeddedProtocol::OutputStyle::EXPANDED
+                   when :compressed
+                     EmbeddedProtocol::OutputStyle::COMPRESSED
+                   else
+                     raise ArgumentError, 'style must be one of :expanded, :compressed'
+                   end,
             charset:,
             source_map:,
             source_map_include_sources:,
@@ -65,7 +72,26 @@ module Sass
           ))
         end
 
-        Protofier.from_proto_compile_response(compile_response)
+        oneof = compile_response.result
+        result = compile_response.public_send(oneof)
+        case oneof
+        when :failure
+          raise CompileError.new(
+            result.message,
+            result.formatted == '' ? nil : result.formatted,
+            result.stack_trace == '' ? nil : result.stack_trace,
+            result.span.nil? ? nil : Logger::SourceSpan.new(result.span),
+            compile_response.loaded_urls
+          )
+        when :success
+          CompileResult.new(
+            result.css,
+            result.source_map == '' ? nil : result.source_map,
+            compile_response.loaded_urls
+          )
+        else
+          raise ArgumentError, "Unknown CompileResponse.result #{result}"
+        end
       end
 
       def version_request

@@ -47,6 +47,8 @@ module Sass
                        @functions_by_name[function_call_request.name]
                      when :function_id
                        @functions_by_id[function_call_request.function_id]
+                     else
+                       raise ArgumentError, "Unknown FunctionCallRequest.identifier #{function_call_request.identifier}"
                      end
 
           arguments = function_call_request.arguments.map do |argument|
