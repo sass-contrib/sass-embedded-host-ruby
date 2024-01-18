@@ -3,7 +3,6 @@
 require_relative 'host/function_registry'
 require_relative 'host/importer_registry'
 require_relative 'host/logger_registry'
-require_relative 'host/protofier'
 require_relative 'host/structifier'
 require_relative 'host/value_protofier'
 
@@ -46,7 +45,7 @@ module Sass
                       EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
                         source: source.to_str,
                         url: url&.to_s,
-                        syntax: Protofier.to_proto_syntax(syntax),
+                        syntax: @importer_registry.syntax_to_proto(syntax),
                         importer: (@importer_registry.register(importer) unless importer.nil?)
                       )
                     end,

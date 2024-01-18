@@ -82,7 +82,7 @@ module Sass
             id: import_request.id,
             success: EmbeddedProtocol::InboundMessage::ImportResponse::ImportSuccess.new(
               contents: importer_result.contents.to_str,
-              syntax: Protofier.to_proto_syntax(importer_result.syntax),
+              syntax: syntax_to_proto(importer_result.syntax),
               source_map_url: (importer_result.source_map_url&.to_s if importer_result.respond_to?(:source_map_url))
             )
           )
@@ -107,6 +107,19 @@ module Sass
             id: file_import_request.id,
             error: e.full_message(highlight: @highlight, order: :top)
           )
+        end
+
+        def syntax_to_proto(syntax)
+          case syntax&.to_sym
+          when :scss
+            EmbeddedProtocol::Syntax::SCSS
+          when :indented
+            EmbeddedProtocol::Syntax::INDENTED
+          when :css
+            EmbeddedProtocol::Syntax::CSS
+          else
+            raise ArgumentError, 'syntax must be one of :scss, :indented, :css'
+          end
         end
       end
 
