@@ -33,6 +33,8 @@ module Sass
             debug(event)
           when :DEPRECATION_WARNING, :WARNING
             warn(event)
+          else
+            raise ArgumentError, "Unknown LogEvent.type #{event.type}"
           end
         end
 
