@@ -23,8 +23,8 @@ module Sass
           end
 
           @id = 0
-          @functions_by_id = {}
-          @ids_by_function = {}
+          @functions_by_id = {}.compare_by_identity
+          @ids_by_function = {}.compare_by_identity
 
           @highlight = alert_color
         end

@@ -11,7 +11,7 @@ module Sass
 
         def initialize(importers, load_paths, alert_color:)
           @id = 0
-          @importers_by_id = {}
+          @importers_by_id = {}.compare_by_identity
           @importers = importers
                        .map { |importer| register(importer) }
                        .concat(

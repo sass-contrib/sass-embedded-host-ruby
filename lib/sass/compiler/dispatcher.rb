@@ -8,7 +8,7 @@ module Sass
     class Dispatcher
       def initialize
         @id = 1
-        @observers = {}
+        @observers = {}.compare_by_identity
         @mutex = Mutex.new
         @connection = Connection.new(self)
         ForkTracker.add(self)
