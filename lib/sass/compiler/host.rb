@@ -12,8 +12,8 @@ module Sass
     #
     # It communicates with {Dispatcher} and handles the host logic.
     class Host
-      def initialize(dispatcher)
-        @dispatcher = dispatcher
+      def initialize(channel)
+        @channel = channel
       end
 
       def compile_request(path:,
@@ -128,7 +128,7 @@ module Sass
         case message
         when EmbeddedProtocol::ProtocolError
           @error = Errno::EPROTO.new(message.message)
-          @channel.error(@error)
+          @stream.error(@error)
         else
           @error ||= message
         end
@@ -138,7 +138,7 @@ module Sass
       def log_event(message)
         @logger_registry.log(message)
       rescue StandardError => e
-        @channel.error(e)
+        @stream.error(e)
       end
 
       def canonicalize_request(message)
@@ -186,7 +186,7 @@ module Sass
 
       def listen
         @queue = Queue.new
-        @channel = @dispatcher.connect(self)
+        @stream = @channel.stream(self)
 
         yield
 
@@ -194,22 +194,22 @@ module Sass
 
         @result
       ensure
-        @channel&.disconnect
+        @stream&.close
         @queue&.close
       end
 
       def id
-        @channel.id
+        @stream.id
       end
 
       def send_message0(...)
         inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @channel.send_proto(0, inbound_message.to_proto)
+        @stream.send_proto(0, inbound_message.to_proto)
       end
 
       def send_message(...)
         inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @channel.send_proto(id, inbound_message.to_proto)
+        @stream.send_proto(id, inbound_message.to_proto)
       end
     end
 

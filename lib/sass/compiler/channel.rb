@@ -2,10 +2,10 @@
 
 module Sass
   class Compiler
-    # The {DispatcherManager} class.
+    # The {Channel} class.
     #
     # It manages the lifecycle of {Dispatcher}.
-    class DispatcherManager
+    class Channel
       def initialize(dispatcher_class)
         @dispatcher_class = dispatcher_class
         @dispatcher = @dispatcher_class.new
@@ -27,19 +27,19 @@ module Sass
         end
       end
 
-      def connect(host)
+      def stream(host)
         @mutex.synchronize do
           raise IOError, 'closed compiler' if @dispatcher.nil?
 
-          Channel.new(@dispatcher, host)
+          Stream.new(@dispatcher, host)
         rescue Errno::EBUSY
           @dispatcher = @dispatcher_class.new
-          Channel.new(@dispatcher, host)
+          Stream.new(@dispatcher, host)
         end
       end
 
-      # The {Channel} between {Dispatcher} and {Host}.
-      class Channel
+      # The {Stream} between {Dispatcher} and {Host}.
+      class Stream
         attr_reader :id
 
         def initialize(dispatcher, host)
@@ -47,7 +47,7 @@ module Sass
           @id = @dispatcher.subscribe(host)
         end
 
-        def disconnect
+        def close
           @dispatcher.unsubscribe(@id)
         end
 
@@ -60,9 +60,9 @@ module Sass
         end
       end
 
-      private_constant :Channel
+      private_constant :Stream
     end
 
-    private_constant :DispatcherManager
+    private_constant :Channel
   end
 end

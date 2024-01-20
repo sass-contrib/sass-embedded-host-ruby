@@ -55,7 +55,7 @@ module Sass
 
         compiler = Class.new(Compiler) do
           def initialize
-            @dispatcher = Compiler.const_get(:DispatcherManager).new(Class.new(Compiler.const_get(:Dispatcher)) do
+            @channel = Compiler.const_get(:Channel).new(Class.new(Compiler.const_get(:Dispatcher)) do
               def initialize
                 super
 

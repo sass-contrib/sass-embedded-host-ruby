@@ -2,9 +2,9 @@
 
 require_relative 'canonicalize_context'
 require_relative 'compile_result'
+require_relative 'compiler/channel'
 require_relative 'compiler/connection'
 require_relative 'compiler/dispatcher'
-require_relative 'compiler/dispatcher_manager'
 require_relative 'compiler/host'
 require_relative 'compiler/varint'
 require_relative 'embedded/version'
@@ -28,7 +28,7 @@ module Sass
   #   sass.close
   class Compiler
     def initialize
-      @dispatcher = DispatcherManager.new(Dispatcher)
+      @channel = Channel.new(Dispatcher)
     end
 
     # Compiles the Sass file at +path+ to CSS.
@@ -77,7 +77,7 @@ module Sass
                 verbose: false)
       raise ArgumentError, 'path must be set' if path.nil?
 
-      Host.new(@dispatcher).compile_request(
+      Host.new(@channel).compile_request(
         path:,
         source: nil,
         importer: nil,
@@ -151,7 +151,7 @@ module Sass
                        verbose: false)
       raise ArgumentError, 'source must be set' if source.nil?
 
-      Host.new(@dispatcher).compile_request(
+      Host.new(@channel).compile_request(
         path: nil,
         source:,
         importer:,
@@ -177,16 +177,16 @@ module Sass
     def info
       @info ||= [
         ['sass-embedded', Embedded::VERSION, '(Embedded Host)', '[Ruby]'].join("\t"),
-        Host.new(@dispatcher).version_request.join("\t")
+        Host.new(@channel).version_request.join("\t")
       ].join("\n").freeze
     end
 
     def close
-      @dispatcher.close
+      @channel.close
     end
 
     def closed?
-      @dispatcher.closed?
+      @channel.closed?
     end
   end
 end
