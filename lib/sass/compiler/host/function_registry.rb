@@ -30,15 +30,13 @@ module Sass
         end
 
         def register(function)
-          return if @ids_by_function.key?(function)
+          @ids_by_function.fetch(function) do |fn|
+            id = @id
+            @id = id.next
 
-          id = @id
-          @id = id.next
-
-          @ids_by_function[function] = id
-          @functions_by_id[id] = function
-
-          id
+            @functions_by_id[id] = fn
+            @ids_by_function[fn] = id
+          end
         end
 
         def function_call(function_call_request)
