@@ -138,16 +138,22 @@ module FileUtils
   def fetch(source_uri, dest_path = nil)
     require 'rubygems/remote_fetcher'
 
-    unless source_uri.is_a?(URI::Generic)
+    source_uri = begin
+      Gem::Uri.parse!(source_uri)
+    rescue NoMethodError
       begin
-        source_uri = URI.parse(source_uri)
+        URI.parse(source_uri)
       rescue StandardError
-        source_uri = URI.parse(URI::DEFAULT_PARSER.escape(source_uri.to_s))
+        URI.parse(URI::DEFAULT_PARSER.escape(source_uri.to_s))
       end
     end
 
     scheme = source_uri.scheme
-    source_path = URI::DEFAULT_PARSER.unescape(source_uri.path || source_uri.opaque)
+    source_path = begin
+      Gem::URI::DEFAULT_PARSER
+    rescue NameError
+      URI::DEFAULT_PARSER
+    end.unescape(source_uri.path || source_uri.opaque)
 
     if Gem.win_platform? && scheme =~ /^[a-z]$/i && !source_path.include?(':')
       source_path = "#{scheme}:#{source_path}"
@@ -167,10 +173,7 @@ module FileUtils
       symbol = :"fetch_#{scheme}"
       raise ArgumentError, "Unsupported URI scheme #{scheme}" unless fetcher.respond_to?(symbol)
 
-      if Rake::FileUtilsExt.verbose_flag
-        redacted_uri = Gem::RemoteFetcher::FetchError.new('', source_uri).uri
-        Rake.rake_output_message "fetch #{redacted_uri}"
-      end
+      Rake.rake_output_message "fetch #{Gem::Uri.new(source_uri).redacted}" if Rake::FileUtilsExt.verbose_flag
 
       unless Rake::FileUtilsExt.nowrite_flag
         data = fetcher.public_send(symbol, source_uri)
@@ -351,7 +354,7 @@ module SassConfig
 
     uri = "#{repo}/#{version}/protoc-#{version}-#{os}-#{cpu}.exe"
 
-    Gem::RemoteFetcher.fetcher.fetch_https(URI.parse("#{uri}.sha1"))
+    Gem::RemoteFetcher.fetcher.fetch_https(Gem::Uri.new("#{uri}.sha1"))
 
     uri
   rescue Gem::RemoteFetcher::FetchError
@@ -362,7 +365,7 @@ module SassConfig
     tuples.sort.reverse_each do |name_tuple, _source|
       uri = "#{repo}/#{name_tuple.version}/protoc-#{name_tuple.version}-#{os}-#{cpu}.exe"
 
-      Gem::RemoteFetcher.fetcher.fetch_https(URI.parse("#{uri}.sha1"))
+      Gem::RemoteFetcher.fetcher.fetch_https(Gem::Uri.new("#{uri}.sha1"))
 
       return uri
     rescue Gem::RemoteFetcher::FetchError
