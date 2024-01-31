@@ -185,7 +185,7 @@ module FileUtils
   end
 
   def gem_install(name, version, platform)
-    install_dir = File.absolute_path('ruby', __dir__)
+    install_dir = File.absolute_path('ruby')
 
     if Rake::FileUtilsExt.verbose_flag
       Rake.rake_output_message [
