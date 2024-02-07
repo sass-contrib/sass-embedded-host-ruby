@@ -26,35 +26,43 @@ module Sass
         end
 
         def register(importer)
-          importer = Structifier.to_struct(importer, :canonicalize, :load, :non_canonical_scheme, :find_file_url)
-
-          is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
-          is_file_importer = importer.respond_to?(:find_file_url)
-
-          raise ArgumentError, 'importer must be an Importer or a FileImporter' if is_importer == is_file_importer
-
-          id = @id
-          @id = id.next
-
-          @importers_by_id[id] = importer
-          if is_importer
+          if importer.is_a?(Sass::NodePackageImporter)
             EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-              importer_id: id,
-              non_canonical_scheme: if importer.respond_to?(:non_canonical_scheme)
-                                      non_canonical_scheme = importer.non_canonical_scheme
-                                      if non_canonical_scheme.is_a?(String)
-                                        [non_canonical_scheme]
-                                      else
-                                        non_canonical_scheme || []
-                                      end
-                                    else
-                                      []
-                                    end
+              node_package_importer: EmbeddedProtocol::NodePackageImporter.new(
+                entry_point_directory: importer.instance_eval { @entry_point_directory }
+              )
             )
           else
-            EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
-              file_importer_id: id
-            )
+            importer = Structifier.to_struct(importer, :canonicalize, :load, :non_canonical_scheme, :find_file_url)
+
+            is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
+            is_file_importer = importer.respond_to?(:find_file_url)
+
+            raise ArgumentError, 'importer must be an Importer or a FileImporter' if is_importer == is_file_importer
+
+            id = @id
+            @id = id.next
+
+            @importers_by_id[id] = importer
+            if is_importer
+              EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
+                importer_id: id,
+                non_canonical_scheme: if importer.respond_to?(:non_canonical_scheme)
+                                        non_canonical_scheme = importer.non_canonical_scheme
+                                        if non_canonical_scheme.is_a?(String)
+                                          [non_canonical_scheme]
+                                        else
+                                          non_canonical_scheme || []
+                                        end
+                                      else
+                                        []
+                                      end
+              )
+            else
+              EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
+                file_importer_id: id
+              )
+            end
           end
         end
 
