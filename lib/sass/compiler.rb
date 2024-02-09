@@ -19,14 +19,15 @@ require_relative 'serializer'
 require_relative 'value'
 
 module Sass
-  # The {Compiler} for using dart-sass. Each instance creates its own
-  # communication {Dispatcher} with a dedicated compiler process.
+  # A synchronous {Compiler}.
+  # Each compiler instance exposes the {#compile} and {#compile_string} methods within the lifespan of the compiler.
   #
   # @example
   #   sass = Sass::Compiler.new
   #   result = sass.compile_string('h1 { font-size: 40px; }')
   #   result = sass.compile('style.scss')
   #   sass.close
+  # @see https://sass-lang.com/documentation/js-api/classes/compiler/
   class Compiler
     def initialize
       @channel = Channel.new(Dispatcher)
