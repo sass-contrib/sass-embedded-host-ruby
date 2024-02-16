@@ -292,7 +292,6 @@ module SassConfig
          when 'linux-android'
            'android'
          when 'linux-musl'
-           repo = 'https://github.com/sass-contrib/dart-sass-musl'
            env = '-musl'
            'linux'
          when 'windows'
