@@ -282,6 +282,8 @@ module SassConfig
 
     message = "dart-sass for #{Platform::ARCH} not available at #{repo}/releases/tag/#{tag_name}"
 
+    env = ''
+
     os = case Platform::OS
          when 'darwin'
            'macos'
@@ -290,7 +292,8 @@ module SassConfig
          when 'linux-android'
            'android'
          when 'linux-musl'
-           'linux-musl'
+           env = '-musl'
+           'linux'
          when 'windows'
            'windows'
          else
@@ -312,7 +315,7 @@ module SassConfig
 
     ext = Platform::OS == 'windows' ? 'zip' : 'tar.gz'
 
-    "#{repo}/releases/download/#{tag_name}/dart-sass-#{tag_name}-#{os}-#{cpu}.#{ext}"
+    "#{repo}/releases/download/#{tag_name}/dart-sass-#{tag_name}-#{os}-#{cpu}#{env}.#{ext}"
   end
 
   def default_protoc
