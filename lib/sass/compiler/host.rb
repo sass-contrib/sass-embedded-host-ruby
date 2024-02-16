@@ -204,12 +204,12 @@ module Sass
 
       def send_message0(...)
         inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @stream.send_proto(0, inbound_message.to_proto)
+        @stream.send_proto(0, EmbeddedProtocol::InboundMessage.encode(inbound_message))
       end
 
       def send_message(...)
         inbound_message = EmbeddedProtocol::InboundMessage.new(...)
-        @stream.send_proto(id, inbound_message.to_proto)
+        @stream.send_proto(id, EmbeddedProtocol::InboundMessage.encode(inbound_message))
       end
     end
 
