@@ -21,7 +21,7 @@ describe Sass::Value::ArgumentList do
       Sass.compile_string(
         'a {b: foo(x, y, z)}',
         functions: {
-          'foo($arg...)': fn
+          'foo($arg...)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq('')
@@ -46,7 +46,7 @@ describe Sass::Value::ArgumentList do
       Sass.compile_string(
         'a {b: foo($bar: baz)}',
         functions: {
-          'foo($arg...)': fn
+          'foo($arg...)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq('')
@@ -66,7 +66,7 @@ describe Sass::Value::ArgumentList do
       Sass.compile_string(
         'a {b: foo($bar: baz)}',
         functions: {
-          'foo($arg...)': fn
+          'foo($arg...)': ->(args) { fn.call(args) }
         }
       ).css
     end.to raise_sass_compile_error.with_line(0).without_url

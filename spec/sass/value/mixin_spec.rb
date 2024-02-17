@@ -38,7 +38,7 @@ describe Sass::Value::Mixin do
         @include meta.apply(foo(meta.get-mixin('a')));
         ",
         functions: {
-          'foo($arg)': fn
+          'foo($arg)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq("a {\n  b: c;\n}")

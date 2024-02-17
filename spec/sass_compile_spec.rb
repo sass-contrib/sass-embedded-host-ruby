@@ -277,7 +277,7 @@ RSpec.describe Sass do
 
       it 'throws an error for an unrecognized style' do
         expect { described_class.compile_string('a {b: c}', style: 'unrecognized style') }
-          .to raise_error(ArgumentError)
+          .to raise_error(defined?(RBS::Test::Tester::TypeError) ? RBS::Test::Tester::TypeError : ArgumentError)
       end
 
       it "doesn't throw a Sass exception for an argument error" do

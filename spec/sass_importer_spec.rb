@@ -722,7 +722,7 @@ RSpec.describe Sass do
         "u:#{url}"
       }
       {
-        canonicalize:,
+        canonicalize: ->(*args) { canonicalize.call(*args) },
         load: ->(*) { { contents: '', syntax: 'scss' } }
       }
     end

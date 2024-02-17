@@ -16,7 +16,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         'a {b: foo(bar)}',
         functions: {
-          'foo($arg)': fn
+          'foo($arg)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq("a {\n  b: \"result\";\n}")
@@ -35,7 +35,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         'a {b: foo()}',
         functions: {
-          'foo()': fn
+          'foo()': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq('')
@@ -57,7 +57,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         'a {b: foo(x, y, z)}',
         functions: {
-          'foo($arg1, $arg2, $arg3)': fn
+          'foo($arg1, $arg2, $arg3)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq('')
@@ -77,7 +77,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         'a {b: foo()}',
         functions: {
-          'foo($arg: default)': fn
+          'foo($arg: default)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq('')
@@ -142,7 +142,7 @@ RSpec.describe Sass do
         described_class.compile_string(
           'a {b: foo_bar()}',
           functions: {
-            'foo-bar()': fn
+            'foo-bar()': ->(args) { fn.call(args) }
           }
         ).css
       ).to eq('')
@@ -158,7 +158,7 @@ RSpec.describe Sass do
         described_class.compile_string(
           'a {b: foo-bar()}',
           functions: {
-            'foo_bar()': fn
+            'foo_bar()': ->(args) { fn.call(args) }
           }
         ).css
       ).to eq('')

@@ -129,8 +129,8 @@ RSpec.describe Sass do
         described_class.compile_string(
           '$_: foo(bar());',
           functions: {
-            'foo($arg)': foo,
-            'bar()': bar
+            'foo($arg)': ->(args) { foo.call(args) },
+            'bar()': ->(args) { bar.call(args) }
           }
         ).css
       ).to eq('')

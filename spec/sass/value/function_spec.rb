@@ -33,7 +33,7 @@ describe Sass::Value::Function do
         a {b: meta.call(foo(meta.get-function('plusOne')), 2)}
         ",
         functions: {
-          'foo($arg)': fn
+          'foo($arg)': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq("a {\n  b: 3;\n}")
@@ -60,7 +60,7 @@ describe Sass::Value::Function do
         a {b: meta.call(foo(), 2)}
         ",
         functions: {
-          'foo()': fn
+          'foo()': ->(args) { fn.call(args) }
         }
       ).css
     ).to eq("a {\n  b: 3;\n}")
@@ -91,7 +91,7 @@ describe Sass::Value::Function do
           Sass.compile_string(
             'a {b: inspect(foo())}',
             functions: {
-              'foo()': fn
+              'foo()': ->(args) { fn.call(args) }
             }
           )
         end.to raise_sass_compile_error.with_line(0).without_url
