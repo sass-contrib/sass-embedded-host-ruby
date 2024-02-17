@@ -80,13 +80,13 @@ module Sass
             result.formatted == '' ? nil : result.formatted,
             result.stack_trace == '' ? nil : result.stack_trace,
             result.span.nil? ? nil : Logger::SourceSpan.new(result.span),
-            compile_response.loaded_urls
+            compile_response.loaded_urls.to_a
           )
         when :success
           CompileResult.new(
             result.css,
             result.source_map == '' ? nil : result.source_map,
-            compile_response.loaded_urls
+            compile_response.loaded_urls.to_a
           )
         else
           raise ArgumentError, "Unknown CompileResponse.result #{result}"
