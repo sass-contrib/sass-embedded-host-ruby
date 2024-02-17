@@ -4,7 +4,7 @@ module Sass
   class Compiler
     # The {Dispatcher} class.
     #
-    # It dispatches messages between mutliple instances of {Host} and a single {Connection} to the compiler.
+    # It dispatches messages between multiple instances of {Host} and a single {Connection} to the compiler.
     class Dispatcher
       def initialize
         @id = 1
