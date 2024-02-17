@@ -8,7 +8,7 @@ module Sass
     class CalculationOperation
       include CalculationValue
 
-      OPERATORS = ['+', '-', '*', '/'].freeze
+      OPERATORS = %w[+ - * /].freeze
 
       private_constant :OPERATORS
 
