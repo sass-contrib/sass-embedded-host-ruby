@@ -38,5 +38,5 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 3.1.0'
 
-  spec.add_runtime_dependency 'google-protobuf', '~> 3.25'
+  spec.add_runtime_dependency 'google-protobuf', '>= 3.25', '< 5.0'
 end
