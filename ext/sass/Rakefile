@@ -309,6 +309,8 @@ module SassConfig
             'arm64'
           when 'arm'
             'arm'
+          when 'riscv64'
+            'riscv64'
           else
             raise NotImplementedError, message
           end
