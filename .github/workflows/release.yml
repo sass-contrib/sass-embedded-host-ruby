@@ -60,6 +60,8 @@ jobs:
           - os: ubuntu-latest
             platform: arm-linux-androideabi
           - os: ubuntu-latest
+            platform: riscv64-linux-android
+          - os: ubuntu-latest
             platform: x86-linux-android
           - os: ubuntu-latest
             platform: x86_64-linux-android
@@ -68,6 +70,8 @@ jobs:
           - os: ubuntu-latest
             platform: arm-linux-gnueabihf
           - os: ubuntu-latest
+            platform: riscv64-linux-gnu
+          - os: ubuntu-latest
             platform: x86-linux-gnu
           - os: ubuntu-latest
             platform: x86_64-linux-gnu
@@ -75,6 +79,8 @@ jobs:
             platform: aarch64-linux-musl
           - os: ubuntu-latest
             platform: arm-linux-musleabihf
+          - os: ubuntu-latest
+            platform: riscv64-linux-musl
           - os: ubuntu-latest
             platform: x86-linux-musl
           - os: ubuntu-latest
