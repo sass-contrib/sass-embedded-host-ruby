@@ -80,6 +80,8 @@ jobs:
           - os: ubuntu-latest
             platform: x86_64-linux-musl
           - os: windows-latest
+            platform: aarch64-mingw-ucrt
+          - os: windows-latest
             platform: x64-mingw-ucrt
           - os: windows-latest
             platform: x64-mingw32
