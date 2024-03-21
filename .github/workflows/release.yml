@@ -92,6 +92,8 @@ jobs:
           - os: windows-latest
             platform: x64-mingw32
           - os: windows-latest
+            platform: x86-mingw-ucrt
+          - os: windows-latest
             platform: x86-mingw32
 
     steps:
