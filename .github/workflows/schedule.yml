@@ -1,0 +1,49 @@
+name: schedule
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  spec:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-14
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        ruby-version:
+          - ruby-head
+          - jruby-head
+          - truffleruby-head
+          - truffleruby+graalvm-head
+        exclude:
+          - os: windows-latest
+            ruby-version: truffleruby-head
+          - os: windows-latest
+            ruby-version: truffleruby+graalvm-head
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Compile
+        run: bundle exec rake compile
+
+      - name: Spec
+        run: bundle exec rake spec
+
+      - name: Install
+        run: rake -f -r bundler/gem_tasks install

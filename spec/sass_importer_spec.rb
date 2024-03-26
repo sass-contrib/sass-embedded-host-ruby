@@ -1086,7 +1086,7 @@ RSpec.describe Sass do
             }
           }]
         )
-      end.to raise_sass_compile_error.with_line(0).with_message("undefined method `to_str'")
+      end.to raise_sass_compile_error.with_line(0).with_message('undefined method')
     end
   end
 
