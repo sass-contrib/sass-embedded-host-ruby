@@ -42,7 +42,7 @@ module Sass
     #   browsers or other consumers. If +charset+ is +false+, these annotations are omitted.
     # @param source_map [Boolean] Whether or not Sass should generate a source map.
     # @param source_map_include_sources [Boolean] Whether Sass should include the sources in the generated source map.
-    # @param style [String, Symbol] The OutputStyle of the compiled CSS.
+    # @param style [Symbol] The OutputStyle of the compiled CSS.
     # @param functions [Hash<String, Proc>] Additional built-in Sass functions that are available in all stylesheets.
     # @param importers [Array<Object>] Custom importers that control how Sass resolves loads from rules like
     #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
@@ -105,7 +105,7 @@ module Sass
     # @param importer [Object] The importer to use to handle loads that are relative to the entrypoint stylesheet.
     # @param load_paths [Array<String>] Paths in which to look for stylesheets loaded by rules like
     #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
-    # @param syntax [String, Symbol] The Syntax to use to parse the entrypoint stylesheet.
+    # @param syntax [Symbol] The Syntax to use to parse the entrypoint stylesheet.
     # @param url [String] The canonical URL of the entrypoint stylesheet. If this is passed along with +importer+, it's
     #   used to resolve relative loads in the entrypoint stylesheet.
     # @param charset [Boolean] By default, if the CSS document contains non-ASCII characters, Sass adds a +@charset+
@@ -113,7 +113,7 @@ module Sass
     #   browsers or other consumers. If +charset+ is +false+, these annotations are omitted.
     # @param source_map [Boolean] Whether or not Sass should generate a source map.
     # @param source_map_include_sources [Boolean] Whether Sass should include the sources in the generated source map.
-    # @param style [String, Symbol] The OutputStyle of the compiled CSS.
+    # @param style [Symbol] The OutputStyle of the compiled CSS.
     # @param functions [Hash<String, Proc>] Additional built-in Sass functions that are available in all stylesheets.
     # @param importers [Array<Object>] Custom importers that control how Sass resolves loads from rules like
     #   {@use}[https://sass-lang.com/documentation/at-rules/use/] and {@import}[https://sass-lang.com/documentation/at-rules/import/].
