@@ -129,12 +129,11 @@ module Sass
       def error(message)
         case message
         when EmbeddedProtocol::ProtocolError
-          @error = Errno::EPROTO.new(message.message)
-          @stream.error(@error)
+          raise Errno::EPROTO, message.message
         else
           @error ||= message
+          @queue.close
         end
-        @queue.close
       end
 
       def log_event(message)
