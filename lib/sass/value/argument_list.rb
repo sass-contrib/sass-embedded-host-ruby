@@ -28,9 +28,9 @@ module Sass
 
       private
 
-      def initialize_copy(orig)
-        super
+      def initialize_dup(orig)
         @id = 0
+        super
       end
     end
   end
