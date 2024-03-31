@@ -33,42 +33,44 @@ module Sass
                           logger:,
                           quiet_deps:,
                           verbose:)
+        alert_color = Exception.respond_to?(:to_tty?) && Exception.to_tty? if alert_color.nil?
+
+        @function_registry = FunctionRegistry.new(functions, alert_color:)
+        @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color:)
+        @logger_registry = LoggerRegistry.new(logger)
+
+        compile_request = EmbeddedProtocol::InboundMessage::CompileRequest.new(
+          string: unless source.nil?
+                    EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
+                      source: source.to_str,
+                      url: url&.to_s,
+                      syntax: @importer_registry.syntax_to_proto(syntax),
+                      importer: (@importer_registry.register(importer) unless importer.nil?)
+                    )
+                  end,
+          path: (File.absolute_path(path) unless path.nil?),
+          style: case style&.to_sym
+                 when :expanded
+                   EmbeddedProtocol::OutputStyle::EXPANDED
+                 when :compressed
+                   EmbeddedProtocol::OutputStyle::COMPRESSED
+                 else
+                   raise ArgumentError, 'style must be one of :expanded, :compressed'
+                 end,
+          charset:,
+          source_map:,
+          source_map_include_sources:,
+          importers: @importer_registry.importers,
+          global_functions: @function_registry.global_functions,
+          alert_ascii:,
+          alert_color:,
+          quiet_deps:,
+          silent: logger == Logger.silent,
+          verbose:
+        )
+
         compile_response = await do
-          alert_color = Exception.respond_to?(:to_tty?) && Exception.to_tty? if alert_color.nil?
-
-          @function_registry = FunctionRegistry.new(functions, alert_color:)
-          @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color:)
-          @logger_registry = LoggerRegistry.new(logger)
-
-          send_message(compile_request: EmbeddedProtocol::InboundMessage::CompileRequest.new(
-            string: unless source.nil?
-                      EmbeddedProtocol::InboundMessage::CompileRequest::StringInput.new(
-                        source: source.to_str,
-                        url: url&.to_s,
-                        syntax: @importer_registry.syntax_to_proto(syntax),
-                        importer: (@importer_registry.register(importer) unless importer.nil?)
-                      )
-                    end,
-            path: (File.absolute_path(path) unless path.nil?),
-            style: case style&.to_sym
-                   when :expanded
-                     EmbeddedProtocol::OutputStyle::EXPANDED
-                   when :compressed
-                     EmbeddedProtocol::OutputStyle::COMPRESSED
-                   else
-                     raise ArgumentError, 'style must be one of :expanded, :compressed'
-                   end,
-            charset:,
-            source_map:,
-            source_map_include_sources:,
-            importers: @importer_registry.importers,
-            global_functions: @function_registry.global_functions,
-            alert_ascii:,
-            alert_color:,
-            quiet_deps:,
-            silent: logger == Logger.silent,
-            verbose:
-          ))
+          send_message(compile_request:)
         end
 
         oneof = compile_response.result
