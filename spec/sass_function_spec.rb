@@ -98,8 +98,6 @@ RSpec.describe Sass do
     end
 
     it 'not returning' do
-      skip 'RBS::Test::Tester is loaded' if defined?(RBS::Test::Tester)
-
       expect do
         described_class.compile_string(
           'a {b: foo()}',
@@ -112,8 +110,6 @@ RSpec.describe Sass do
 
     describe 'returning a non-Value' do
       it 'directly' do
-        skip 'RBS::Test::Tester is loaded' if defined?(RBS::Test::Tester)
-
         expect do
           described_class.compile_string(
             'a {b: foo()}',

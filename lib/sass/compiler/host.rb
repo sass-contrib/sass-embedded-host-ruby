@@ -139,8 +139,6 @@ module Sass
 
       def log_event(message)
         @logger_registry.log(message)
-      rescue StandardError => e
-        @stream.error(e)
       end
 
       def canonicalize_request(message)
@@ -183,6 +181,9 @@ module Sass
             message = outbound_message.public_send(oneof)
             public_send(oneof, message)
           end
+        rescue Exception => e # rubocop:disable Lint/RescueException
+          @stream.error(e)
+          raise
         end
       end
 
