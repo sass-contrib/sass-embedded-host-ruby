@@ -18,7 +18,7 @@ module Sass
   # rubocop:disable Layout/LineLength
   class << self
     # Compiles the Sass file at +path+ to CSS.
-    # @overload compile(path, load_paths: [], charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, logger: nil, quiet_deps: false, verbose: false)
+    # @overload compile(path, load_paths: [], charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, fatal_deprecations: [], future_deprecations: [], logger: nil, quiet_deps: false, silence_deprecations: [], verbose: false)
     # @param (see Compiler#compile)
     # @return (see Compiler#compile)
     # @raise (see Compiler#compile)
@@ -28,7 +28,7 @@ module Sass
     end
 
     # Compiles a stylesheet whose contents is +source+ to CSS.
-    # @overload compile_string(source, importer: nil, load_paths: [], syntax: :scss, url: nil, charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, logger: nil, quiet_deps: false, verbose: false)
+    # @overload compile_string(source, importer: nil, load_paths: [], syntax: :scss, url: nil, charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, fatal_deprecations: [], future_deprecations: [], logger: nil, quiet_deps: false, silence_deprecations: [], verbose: false)
     # @param (see Compiler#compile_string)
     # @return (see Compiler#compile_string)
     # @raise (see Compiler#compile_string)

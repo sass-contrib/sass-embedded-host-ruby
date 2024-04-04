@@ -51,10 +51,13 @@ module Sass
     # @param alert_color [Boolean] If this is +true+, the compiler will use ANSI color escape codes in its error and
     #   warning messages. If it's +false+, it won't use these. If it's +nil+, the compiler will determine whether or
     #   not to use colors depending on whether the user is using an interactive terminal.
+    # @param fatal_deprecations [Array<String>] A set of deprecations to treat as fatal.
+    # @param future_deprecations [Array<String>] A set of future deprecations to opt into early.
     # @param logger [Object] An object to use to handle warnings and/or debug messages from Sass.
     # @param quiet_deps [Boolean] If this option is set to +true+, Sass won’t print warnings that are caused by
     #   dependencies. A “dependency” is defined as any file that’s loaded through +load_paths+ or +importer+.
     #   Stylesheets that are imported relative to the entrypoint are not considered dependencies.
+    # @param silence_deprecations [Array<String>] A set of active deprecations to ignore.
     # @param verbose [Boolean] By default, Dart Sass will print only five instances of the same deprecation warning per
     #   compilation to avoid deluging users in console noise. If you set verbose to +true+, it will instead print every
     #   deprecation warning it encounters.
@@ -74,8 +77,11 @@ module Sass
 
                 alert_ascii: false,
                 alert_color: nil,
+                fatal_deprecations: [],
+                future_deprecations: [],
                 logger: nil,
                 quiet_deps: false,
+                silence_deprecations: [],
                 verbose: false)
       raise ArgumentError, 'path must be set' if path.nil?
 
@@ -94,8 +100,11 @@ module Sass
         importers:,
         alert_color:,
         alert_ascii:,
+        fatal_deprecations:,
+        future_deprecations:,
         logger:,
         quiet_deps:,
+        silence_deprecations:,
         verbose:
       )
     end
@@ -122,10 +131,13 @@ module Sass
     # @param alert_color [Boolean] If this is +true+, the compiler will use ANSI color escape codes in its error and
     #   warning messages. If it's +false+, it won't use these. If it's +nil+, the compiler will determine whether or
     #   not to use colors depending on whether the user is using an interactive terminal.
+    # @param fatal_deprecations [Array<String>] A set of deprecations to treat as fatal.
+    # @param future_deprecations [Array<String>] A set of future deprecations to opt into early.
     # @param logger [Object] An object to use to handle warnings and/or debug messages from Sass.
     # @param quiet_deps [Boolean] If this option is set to +true+, Sass won’t print warnings that are caused by
     #   dependencies. A “dependency” is defined as any file that’s loaded through +load_paths+ or +importer+.
     #   Stylesheets that are imported relative to the entrypoint are not considered dependencies.
+    # @param silence_deprecations [Array<String>] A set of active deprecations to ignore.
     # @param verbose [Boolean] By default, Dart Sass will print only five instances of the same deprecation warning per
     #   compilation to avoid deluging users in console noise. If you set verbose to +true+, it will instead print every
     #   deprecation warning it encounters.
@@ -148,8 +160,11 @@ module Sass
 
                        alert_ascii: false,
                        alert_color: nil,
+                       fatal_deprecations: [],
+                       future_deprecations: [],
                        logger: nil,
                        quiet_deps: false,
+                       silence_deprecations: [],
                        verbose: false)
       raise ArgumentError, 'source must be set' if source.nil?
 
@@ -168,8 +183,11 @@ module Sass
         importers:,
         alert_color:,
         alert_ascii:,
+        fatal_deprecations:,
+        future_deprecations:,
         logger:,
         quiet_deps:,
+        silence_deprecations:,
         verbose:
       )
     end

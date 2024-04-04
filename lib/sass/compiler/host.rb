@@ -30,8 +30,11 @@ module Sass
                           importers:,
                           alert_ascii:,
                           alert_color:,
+                          fatal_deprecations:,
+                          future_deprecations:,
                           logger:,
                           quiet_deps:,
+                          silence_deprecations:,
                           verbose:)
         alert_color = Exception.respond_to?(:to_tty?) && Exception.to_tty? if alert_color.nil?
 
@@ -64,8 +67,11 @@ module Sass
           global_functions: @function_registry.global_functions,
           alert_ascii:,
           alert_color:,
+          fatal_deprecation: fatal_deprecations,
+          future_deprecation: future_deprecations,
           quiet_deps:,
           silent: logger == Logger.silent,
+          silence_deprecation: silence_deprecations,
           verbose:
         )
 
