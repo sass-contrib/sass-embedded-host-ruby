@@ -22,11 +22,9 @@ Gem::Specification.new do |spec|
   spec.bindir      = 'exe'
   spec.executables = ['sass']
   spec.files       = Dir['exe/**/*', 'ext/**/*_pb.rb', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
+  spec.platform    = ENV.fetch('gem_platform', 'ruby')
 
-  if ENV.key?('gem_platform')
-    spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
-    spec.platform = ENV['gem_platform']
-  else
+  if spec.platform == Gem::Platform::RUBY
     spec.extensions = ['ext/sass/Rakefile']
     spec.files += [
       'ext/sass/Rakefile',
@@ -34,6 +32,8 @@ Gem::Specification.new do |spec|
       'ext/sass/package.json'
     ]
     spec.add_runtime_dependency 'rake', '>= 13.0.0'
+  else
+    spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
   end
 
   spec.required_ruby_version = '>= 3.1.0'

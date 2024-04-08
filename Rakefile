@@ -10,7 +10,7 @@ desc 'Compile all the extensions'
 task :compile do
   sh 'rake', '-C', 'ext/sass', 'clobber', 'install'
 
-  if ENV.key?('ext_platform')
+  if ENV.key?('ext_platform') && ENV['ext_platform'] != 'ruby'
     host_cpu, host_os = ENV['ext_platform'].split('-', 2)
 
     rm 'ext/sass/cli.rb'

@@ -6,55 +6,22 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  build:
 
     if: github.event.repository.fork == false
-
-    runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ruby
-          rubygems: latest
-          bundler-cache: true
-
-      - name: Compile
-        run: bundle exec rake compile
-
-      - name: Configure trusted publishing credentials
-        uses: rubygems/configure-rubygems-credentials@v1.0.0
-
-      - name: Release
-        run: rake -f -r bundler/gem_tasks release
-
-  release-pre-compiled:
-
-    if: github.event.repository.fork == false
-
-    needs: [release]
 
     runs-on: ${{ matrix.os }}
 
-    permissions:
-      id-token: write
-
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         include:
           - os: macos-latest
             platform: arm64-darwin
           - os: macos-latest
             platform: x86_64-darwin
+          - os: ubuntu-latest
+            platform: ruby
           - os: ubuntu-latest
             platform: aarch64-linux-android
           - os: ubuntu-latest
@@ -118,8 +85,40 @@ jobs:
       - name: Compile
         run: bundle exec rake compile ext_platform=${{ matrix.platform }}
 
+      - name: Build
+        run: rake -f -r bundler/gem_tasks build gem_platform=${{ matrix.platform }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-${{ matrix.platform }}
+          path: pkg/*.gem
+          if-no-files-found: error
+          compression-level: 0
+
+  release:
+
+    if: github.event.repository.fork == false
+
+    needs: [build]
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby
+          rubygems: latest
+
       - name: Configure trusted publishing credentials
         uses: rubygems/configure-rubygems-credentials@v1.0.0
 
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+
       - name: Release
-        run: rake -f -r bundler/gem_tasks release gem_platform=${{ matrix.platform }}
+        run: find . -name '*.gem' -print0 | sort -rz -t / -k 3  | xargs -0 -n 1 -- gem push
