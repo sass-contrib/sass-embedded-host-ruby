@@ -68,12 +68,14 @@ module Sass
 
         def canonicalize(canonicalize_request)
           importer = @importers_by_id[canonicalize_request.importer_id]
+          canonicalize_context = CanonicalizeContext.new(canonicalize_request)
           url = importer.canonicalize(canonicalize_request.url,
-                                      CanonicalizeContext.new(canonicalize_request))&.to_s
+                                      canonicalize_context)&.to_s
 
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
-            url:
+            url:,
+            containing_url_unused: canonicalize_context.instance_eval { @containing_url_unused }
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
@@ -103,12 +105,14 @@ module Sass
 
         def file_import(file_import_request)
           importer = @importers_by_id[file_import_request.importer_id]
+          canonicalize_context = CanonicalizeContext.new(file_import_request)
           file_url = importer.find_file_url(file_import_request.url,
-                                            CanonicalizeContext.new(file_import_request))&.to_s
+                                            canonicalize_context)&.to_s
 
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
-            file_url:
+            file_url:,
+            containing_url_unused: canonicalize_context.instance_eval { @containing_url_unused }
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
