@@ -138,6 +138,8 @@ module FileUtils
   def fetch(source_uri, dest_path = nil)
     require 'rubygems/remote_fetcher'
 
+    source_uri = "/#{source_uri}" if File.absolute_path?(source_uri) && !source_uri.start_with?('/')
+
     source_uri = begin
       Gem::Uri.parse!(source_uri)
     rescue NoMethodError
@@ -153,32 +155,19 @@ module FileUtils
       Gem::URI::DEFAULT_PARSER
     rescue NameError
       URI::DEFAULT_PARSER
-    end.unescape(source_uri.path || source_uri.opaque)
-
-    if Gem.win_platform? && scheme =~ /^[a-z]$/i && !source_path.include?(':')
-      source_path = "#{scheme}:#{source_path}"
-      scheme = nil
-    end
+    end.unescape(source_uri.path)
 
     dest_path = File.basename(source_path) if dest_path.nil?
 
-    case scheme
-    when nil, 'file'
-      if Gem.win_platform? && source_path[0].chr == '/' && source_path[1].chr =~ /[a-z]/i && source_path[2].chr == ':'
-        source_path = source_path[1..]
-      end
-      cp source_path, dest_path
-    else
-      fetcher = Gem::RemoteFetcher.fetcher
-      symbol = :"fetch_#{scheme}"
-      raise ArgumentError, "Unsupported URI scheme #{scheme}" unless fetcher.respond_to?(symbol)
+    fetcher = Gem::RemoteFetcher.fetcher
+    symbol = :"fetch_#{scheme.nil? ? 'file' : scheme}"
+    raise ArgumentError, "Unsupported URI scheme #{scheme}" unless fetcher.respond_to?(symbol)
 
-      Rake.rake_output_message "fetch #{Gem::Uri.new(source_uri).redacted}" if Rake::FileUtilsExt.verbose_flag
+    Rake.rake_output_message "fetch #{Gem::Uri.new(source_uri).redacted}" if Rake::FileUtilsExt.verbose_flag
 
-      unless Rake::FileUtilsExt.nowrite_flag
-        data = fetcher.public_send(symbol, source_uri)
-        Gem.write_binary(dest_path, data)
-      end
+    unless Rake::FileUtilsExt.nowrite_flag
+      data = fetcher.public_send(symbol, source_uri)
+      Gem.write_binary(dest_path, data)
     end
 
     dest_path
