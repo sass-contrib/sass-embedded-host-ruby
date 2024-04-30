@@ -35,7 +35,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14
           - macos-latest
           - ubuntu-latest
           - windows-latest
