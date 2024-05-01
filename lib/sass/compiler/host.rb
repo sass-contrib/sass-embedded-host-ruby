@@ -36,7 +36,7 @@ module Sass
                           quiet_deps:,
                           silence_deprecations:,
                           verbose:)
-        alert_color = Exception.respond_to?(:to_tty?) && Exception.to_tty? if alert_color.nil?
+        alert_color = Exception.to_tty? if alert_color.nil?
 
         @function_registry = FunctionRegistry.new(functions, alert_color:)
         @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color:)

@@ -26,7 +26,7 @@ module Sass
     def full_message(highlight: nil, order: nil, **)
       return super if @full_message.nil?
 
-      highlight = Exception.respond_to?(:to_tty?) && Exception.to_tty? if highlight.nil?
+      highlight = Exception.to_tty? if highlight.nil?
       if highlight
         @full_message.dup
       else
