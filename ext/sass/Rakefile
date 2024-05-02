@@ -54,7 +54,7 @@ file 'cli.rb' => %w[dart-sass] do |t|
     # frozen_string_literal: true
 
     module Sass
-      class CLI
+      module CLI
         COMMAND = [#{command}].freeze
       end
 

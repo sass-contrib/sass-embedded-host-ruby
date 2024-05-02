@@ -5,7 +5,7 @@ require_relative '../ext/sass/cli'
 
 module Sass
   # The `sass` command line interface
-  class CLI
+  module CLI
     begin
       Kernel.exec(*COMMAND, *ARGV)
     rescue Errno::ENOENT
