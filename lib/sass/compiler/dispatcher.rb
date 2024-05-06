@@ -10,7 +10,8 @@ module Sass
         @id = 1
         @observers = {}.compare_by_identity
         @mutex = Mutex.new
-        @connection = Connection.new(self)
+        @connection = Connection.new
+        @connection.listen(self)
         ForkTracker.add(self)
       end
 

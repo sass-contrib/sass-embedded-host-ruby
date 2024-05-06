@@ -10,7 +10,7 @@ module Sass
     #
     # It runs the `sass --embedded` command.
     class Connection
-      def initialize(dispatcher)
+      def initialize
         @mutex = Mutex.new
         @stdin, @stdout, @stderr, @wait_thread = begin
           Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
@@ -23,7 +23,9 @@ module Sass
         end
 
         @stdin.binmode
+      end
 
+      def listen(dispatcher)
         Thread.new do
           Thread.current.name = "sass-embedded-process-stdout-poller-#{@wait_thread.pid}"
 
