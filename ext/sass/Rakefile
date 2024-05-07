@@ -196,6 +196,8 @@ module FileUtils
   end
 
   def gem_install(name, version, platform)
+    require 'rubygems/remote_fetcher'
+
     install_dir = File.absolute_path('ruby')
 
     if Rake::FileUtilsExt.verbose_flag
@@ -212,19 +214,20 @@ module FileUtils
 
     dependency = Gem::Dependency.new(name, version)
 
-    specs_and_sources, _errors = Gem::SpecFetcher.fetcher.spec_for_dependency(dependency, false)
+    dependency_request = Gem::Resolver::DependencyRequest.new(dependency, nil)
 
-    spec, source = specs_and_sources.find do |s, _|
+    resolver_spec = Gem::Resolver::BestSet.new.find_all(dependency_request).find do |s|
       s.platform == platform
     end
 
-    raise if spec.nil? || source.nil?
+    raise if resolver_spec.nil?
 
+    options = { force: true, install_dir: }
     if Rake::FileUtilsExt.nowrite_flag
-      installer = Gem::Installer.for_spec(spec, { force: true, install_dir: })
+      installer = Gem::Installer.for_spec(resolver_spec.spec, options)
     else
-      path = source.download(spec, install_dir)
-      installer = Gem::Installer.at(path, { force: true, install_dir: })
+      path = resolver_spec.download(options)
+      installer = Gem::Installer.at(path, options)
       installer.install
     end
 
@@ -334,7 +337,9 @@ module SassConfig
 
     repo = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protoc'
 
-    spec = Gem::Dependency.new('google-protobuf').to_spec
+    dependency = Gem::Dependency.new('google-protobuf')
+
+    spec = dependency.to_spec
 
     version = spec.version
 
@@ -372,12 +377,14 @@ module SassConfig
 
     uri
   rescue Gem::RemoteFetcher::FetchError
-    tuples = Gem::SpecFetcher.fetcher.detect(:released) do |name_tuple|
-      name_tuple.name == spec.name && name_tuple.platform == 'ruby'
+    dependency_request = Gem::Resolver::DependencyRequest.new(dependency, nil)
+
+    versions = Gem::Resolver::BestSet.new.find_all(dependency_request).filter_map do |s|
+      s.version if s.platform == 'ruby'
     end
 
-    tuples.sort.reverse_each do |name_tuple, _source|
-      uri = "#{repo}/#{name_tuple.version}/protoc-#{name_tuple.version}-#{os}-#{cpu}.exe"
+    versions.sort.reverse_each do |v|
+      uri = "#{repo}/#{v}/protoc-#{v}-#{os}-#{cpu}.exe"
 
       Gem::RemoteFetcher.fetcher.fetch_https(Gem::Uri.new("#{uri}.sha1"))
 
