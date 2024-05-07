@@ -230,7 +230,7 @@ module FileUtils
 
     yield installer.dir
   ensure
-    rm_rf install_dir
+    rm_rf install_dir unless Rake::FileUtilsExt.nowrite_flag
   end
 end
 
