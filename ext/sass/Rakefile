@@ -50,8 +50,7 @@ file 'cli.rb' => %w[dart-sass] do |t|
     "
             end
 
-  File.write(t.name, <<~CLI_RB)
-    # frozen_string_literal: true
+  validate_gemspec = <<~'VALIDATE_GEMSPEC'
 
     spec = Gem.loaded_specs['sass-embedded']
     platform = spec&.platform
@@ -66,10 +65,14 @@ file 'cli.rb' => %w[dart-sass] do |t|
                 else
                   "running 'gem install sass-embedded'"
                 end
-      raise LoadError, "The gemspec for \#{spec.name} at \#{spec.loaded_from} was broken. " \\
-                       "Try \#{update}, and then try \#{install} to reinstall."
+      raise LoadError, "The gemspec for #{spec.name} at #{spec.loaded_from} was broken. " \
+                       "Try #{update}, and then try #{install} to reinstall."
     end
+  VALIDATE_GEMSPEC
 
+  File.write(t.name, <<~CLI_RB)
+    # frozen_string_literal: true
+    #{validate_gemspec if SassConfig.gem_platform.os == 'linux'}
     module Sass
       module CLI
         COMMAND = [#{command}].freeze
