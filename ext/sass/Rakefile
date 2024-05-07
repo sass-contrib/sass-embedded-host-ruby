@@ -380,7 +380,7 @@ module SassConfig
     dependency_request = Gem::Resolver::DependencyRequest.new(dependency, nil)
 
     versions = Gem::Resolver::BestSet.new.find_all(dependency_request).filter_map do |s|
-      s.version if s.platform == 'ruby'
+      s.version if s.platform == Gem::Platform::RUBY
     end
 
     versions.sort.reverse_each do |v|
