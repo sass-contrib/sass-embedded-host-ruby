@@ -36,7 +36,11 @@ Gem::Specification.new do |spec|
     spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
   end
 
-  spec.required_ruby_version = '>= 3.1.0'
+  spec.required_ruby_version = if spec.platform == Gem::Platform::RUBY || spec.platform.os != 'linux'
+                                 '>= 3.1.0'
+                               else
+                                 '>= 3.2.0'
+                               end
 
   spec.add_runtime_dependency 'google-protobuf', '>= 3.25', '< 5.0'
 end
