@@ -404,7 +404,12 @@ module SassConfig
     platform = Gem::Platform.new("#{Platform::CPU}-#{RbConfig::CONFIG['host_os']}")
     case Platform::OS
     when 'darwin'
-      Gem::Platform.new([RbConfig::CONFIG['host_cpu'], platform.os])
+      case platform.cpu
+      when 'aarch64'
+        Gem::Platform.new(['arm64', platform.os])
+      else
+        platform
+      end
     when 'linux'
       if platform.version&.start_with?('gnu')
         platform
