@@ -23,6 +23,8 @@ module Sass
         end
 
         @stdin.binmode
+
+        @wait_thread.name = "sass-embedded-process-waiter-#{@wait_thread.pid}"
       end
 
       def listen(dispatcher)
@@ -60,8 +62,6 @@ module Sass
             @stderr.close
           end
         end
-
-        @wait_thread.name = "sass-embedded-process-waiter-#{@wait_thread.pid}"
       end
 
       def close
