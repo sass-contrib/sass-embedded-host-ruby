@@ -31,15 +31,15 @@ Gem::Specification.new do |spec|
       'ext/sass/expand-archive.ps1',
       'ext/sass/package.json'
     ]
-    spec.add_runtime_dependency 'rake', '>= 13.0.0'
+    spec.add_runtime_dependency 'rake', '>= 13'
   else
     spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
   end
 
   spec.required_ruby_version = if spec.platform == Gem::Platform::RUBY || spec.platform.os != 'linux'
-                                 '>= 3.1.0'
+                                 '>= 3.1'
                                else
-                                 '>= 3.2.0'
+                                 '>= 3.2'
                                end
 
   spec.add_runtime_dependency 'google-protobuf', '>= 3.25', '< 5.0'
