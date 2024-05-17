@@ -114,11 +114,11 @@ jobs:
           ruby-version: ruby
           rubygems: latest
 
-      - name: Configure trusted publishing credentials
-        uses: rubygems/configure-rubygems-credentials@v1.0.0
-
       - name: Download Artifact
         uses: actions/download-artifact@v4
+
+      - name: Configure trusted publishing credentials
+        uses: rubygems/configure-rubygems-credentials@v1.0.0
 
       - name: Release
         run: find . -name '*.gem' -print0 | sort -rz -t / -k 3  | xargs -0 -n 1 -- gem push
