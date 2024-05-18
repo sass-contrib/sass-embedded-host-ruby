@@ -19,8 +19,10 @@ module Sass
 
           if logger.respond_to?(:warn) # rubocop:disable Style/GuardClause
             define_singleton_method(:warn) do |event|
+              deprecation = event.type == :DEPRECATION_WARNING
               logger.warn(event.message,
-                          deprecation: event.type == :DEPRECATION_WARNING,
+                          deprecation:,
+                          deprecation_type: (event.deprecation_type if deprecation),
                           span: event.span.nil? ? nil : Logger::SourceSpan.new(event.span),
                           stack: event.stack_trace)
             end

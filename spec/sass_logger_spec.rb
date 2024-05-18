@@ -39,11 +39,12 @@ RSpec.describe Sass do
         @include foo;
         ',
         logger: {
-          warn: lambda { |message, deprecation:, span:, stack:|
+          warn: lambda { |message, deprecation:, deprecation_type:, span:, stack:|
             expect(message).to eq('heck')
             expect(span).to be_nil
             expect(stack).to be_a(String)
             expect(deprecation).to be(false)
+            expect(deprecation_type).to be_nil
           }
         }
       )

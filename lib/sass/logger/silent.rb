@@ -18,7 +18,7 @@ module Sass
     module Silent
       module_function
 
-      def warn(message, deprecation: false, span: nil, stack: nil); end
+      def warn(message, deprecation: false, deprecation_type: nil, span: nil, stack: nil); end
 
       def debug(message, span: nil); end
     end
