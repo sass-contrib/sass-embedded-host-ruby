@@ -13,9 +13,7 @@ module Sass
       end
 
       # @return [Integer]
-      attr_reader :id
-
-      protected :id
+      protected attr_reader :id
 
       # @return [::Boolean]
       def ==(other)

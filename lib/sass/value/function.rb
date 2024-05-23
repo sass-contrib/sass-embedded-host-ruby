@@ -18,9 +18,7 @@ module Sass
       end
 
       # @return [Integer, nil]
-      attr_reader :id
-
-      protected :id
+      protected attr_reader :id
 
       # @return [::String, nil]
       attr_reader :signature
