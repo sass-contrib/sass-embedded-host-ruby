@@ -67,11 +67,11 @@ module Sass
           global_functions: @function_registry.global_functions,
           alert_ascii:,
           alert_color:,
-          fatal_deprecation: fatal_deprecations,
-          future_deprecation: future_deprecations,
+          fatal_deprecation: fatal_deprecations.map(&:to_s),
+          future_deprecation: future_deprecations.map(&:to_s),
           quiet_deps:,
           silent: logger == Logger.silent,
-          silence_deprecation: silence_deprecations,
+          silence_deprecation: silence_deprecations.map(&:to_s),
           verbose:
         )
 
