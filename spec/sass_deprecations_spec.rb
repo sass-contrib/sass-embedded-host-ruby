@@ -25,5 +25,14 @@ RSpec.describe Sass do
         )
       end.to raise_sass_compile_error
     end
+
+    it 'is thrown when version made fatal' do
+      expect do
+        described_class.compile_string(
+          'a { $b: c !global; }',
+          fatal_deprecations: ['1.17.2']
+        )
+      end.to raise_sass_compile_error
+    end
   end
 end
