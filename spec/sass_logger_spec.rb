@@ -19,12 +19,12 @@ RSpec.describe Sass do
       described_class.compile_string(
         '* > { --foo: bar }',
         logger: {
-          warn: lambda { |message, span:, **|
+          warn: lambda { |message, options|
             expect(message).to include('only valid for nesting')
-            expect(span.start.line).to be(0)
-            expect(span.start.column).to be(0)
-            expect(span.end.line).to be(0)
-            expect(span.end.column).to be(3)
+            expect(options.span.start.line).to be(0)
+            expect(options.span.start.column).to be(0)
+            expect(options.span.end.line).to be(0)
+            expect(options.span.end.column).to be(3)
           }
         }
       )
@@ -39,12 +39,12 @@ RSpec.describe Sass do
         @include foo;
         ',
         logger: {
-          warn: lambda { |message, deprecation:, deprecation_type:, span:, stack:|
+          warn: lambda { |message, options|
             expect(message).to eq('heck')
-            expect(span).to be_nil
-            expect(stack).to be_a(String)
-            expect(deprecation).to be(false)
-            expect(deprecation_type).to be_nil
+            expect(options.span).to be_nil
+            expect(options.stack).to be_a(String)
+            expect(options.deprecation).to be(false)
+            expect(options.deprecation_type).to be_nil
           }
         }
       )
@@ -54,7 +54,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@warn #abc',
         logger: {
-          warn: lambda { |message, **|
+          warn: lambda { |message, _options|
             expect(message).to eq('#abc')
           }
         }
@@ -65,7 +65,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@warn null',
         logger: {
-          warn: lambda { |message, **|
+          warn: lambda { |message, _options|
             expect(message).to eq('')
           }
         }
@@ -110,12 +110,12 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@debug heck',
         logger: {
-          debug: lambda { |message, span:, **|
+          debug: lambda { |message, options|
             expect(message).to eq('heck')
-            expect(span.start.line).to eq(0)
-            expect(span.start.column).to eq(0)
-            expect(span.end.line).to eq(0)
-            expect(span.end.column).to eq(11)
+            expect(options.span.start.line).to eq(0)
+            expect(options.span.start.column).to eq(0)
+            expect(options.span.end.line).to eq(0)
+            expect(options.span.end.column).to eq(11)
           }
         }
       )
@@ -125,7 +125,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@debug #abc',
         logger: {
-          debug: lambda { |message, **|
+          debug: lambda { |message, _options|
             expect(message).to eq('#abc')
           }
         }
@@ -136,7 +136,7 @@ RSpec.describe Sass do
       described_class.compile_string(
         '@debug null',
         logger: {
-          debug: lambda { |message, **|
+          debug: lambda { |message, _options|
             expect(message).to eq('null')
           }
         }
@@ -195,10 +195,10 @@ RSpec.describe Sass do
           described_class.compile(
             dir.path('style.scss'),
             logger: {
-              warn: lambda { |message, **|
+              warn: lambda { |message, _options|
                 expect(message).to eq('heck warn')
               },
-              debug: lambda { |message, **|
+              debug: lambda { |message, _options|
                 expect(message).to eq('heck debug')
               }
             }

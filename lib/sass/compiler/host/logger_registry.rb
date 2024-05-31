@@ -10,21 +10,11 @@ module Sass
         def initialize(logger)
           logger = Structifier.to_struct(logger, :debug, :warn)
 
-          if logger.respond_to?(:debug)
-            define_singleton_method(:debug) do |event|
-              logger.debug(event.message,
-                           span: event.span.nil? ? nil : Logger::SourceSpan.new(event.span))
-            end
-          end
+          { debug: DebugContext, warn: WarnContext }.each do |symbol, context_class|
+            next unless logger.respond_to?(symbol)
 
-          if logger.respond_to?(:warn) # rubocop:disable Style/GuardClause
-            define_singleton_method(:warn) do |event|
-              deprecation = event.type == :DEPRECATION_WARNING
-              logger.warn(event.message,
-                          deprecation:,
-                          deprecation_type: (event.deprecation_type if deprecation),
-                          span: event.span.nil? ? nil : Logger::SourceSpan.new(event.span),
-                          stack: event.stack_trace)
+            define_singleton_method(symbol) do |event|
+              logger.public_send(symbol, event.message, context_class.new(event))
             end
           end
         end
@@ -49,6 +39,39 @@ module Sass
         def warn(event)
           Kernel.warn(event.formatted)
         end
+
+        # Contextual information passed to `debug`.
+        class DebugContext
+          # @return [Logger::SourceSpan, nil]
+          attr_reader :span
+
+          def initialize(event)
+            @span = event.span.nil? ? nil : Logger::SourceSpan.new(event.span)
+          end
+        end
+
+        private_constant :DebugContext
+
+        # Contextual information passed to `warn`.
+        class WarnContext < DebugContext
+          # @return [Boolean]
+          attr_reader :deprecation
+
+          # @return [String, nil]
+          attr_reader :deprecation_type
+
+          # @return [String]
+          attr_reader :stack
+
+          def initialize(event)
+            super
+            @deprecation = event.type == :DEPRECATION_WARNING
+            @deprecation_type = (event.deprecation_type if @deprecation)
+            @stack = event.stack_trace
+          end
+        end
+
+        private_constant :WarnContext
       end
 
       private_constant :LoggerRegistry
