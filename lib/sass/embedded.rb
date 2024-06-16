@@ -63,7 +63,7 @@ module Sass
                 @last_accessed_time = current_time
 
                 Thread.new do
-                  Thread.current.name = "sass-embedded-process-reaper-#{@connection.id}"
+                  Thread.current.name = "sass-embedded-connection-reaper-#{@connection.id}"
                   duration = idle_timeout
                   loop do
                     sleep(duration.negative? ? idle_timeout : duration)
