@@ -24,6 +24,14 @@ module Sass
 
         @stdin.binmode
 
+        # # https://dart.dev/tools/dart-devtools
+        # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
+        #   Kernel.warn(@stdout.readline, uplevel: 0)
+        #   Kernel.warn(@stdout.readline, uplevel: 0)
+        # end
+
+        @stdout.binmode
+
         @wait_thread.name = "sass-embedded-process-waiter-#{id}"
       end
 
@@ -34,15 +42,6 @@ module Sass
       def listen(dispatcher)
         Thread.new do
           Thread.current.name = "sass-embedded-process-stdout-poller-#{id}"
-
-          # # https://dart.dev/tools/dart-devtools
-          # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
-          #   Kernel.warn(@stdout.readline, uplevel: 0)
-          #   Kernel.warn(@stdout.readline, uplevel: 0)
-          # end
-
-          @stdout.binmode
-
           loop do
             length = Varint.read(@stdout)
             id = Varint.read(@stdout)
