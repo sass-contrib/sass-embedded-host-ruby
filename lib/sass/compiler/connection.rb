@@ -24,12 +24,16 @@ module Sass
 
         @stdin.binmode
 
-        @wait_thread.name = "sass-embedded-process-waiter-#{@wait_thread.pid}"
+        @wait_thread.name = "sass-embedded-process-waiter-#{id}"
+      end
+
+      def id
+        @wait_thread.pid
       end
 
       def listen(dispatcher)
         Thread.new do
-          Thread.current.name = "sass-embedded-process-stdout-poller-#{@wait_thread.pid}"
+          Thread.current.name = "sass-embedded-process-stdout-poller-#{id}"
 
           # # https://dart.dev/tools/dart-devtools
           # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
@@ -53,7 +57,7 @@ module Sass
         end
 
         Thread.new do
-          Thread.current.name = "sass-embedded-process-stderr-poller-#{@wait_thread.pid}"
+          Thread.current.name = "sass-embedded-process-stderr-poller-#{id}"
           loop do
             Kernel.warn(@stderr.readline, uplevel: 0)
           end
