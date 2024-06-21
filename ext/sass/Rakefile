@@ -138,7 +138,7 @@ module FileUtils
   def fetch(source_uri, dest_path = nil)
     require 'rubygems/remote_fetcher'
 
-    source_uri = "/#{source_uri}" if File.absolute_path?(source_uri) && !source_uri.start_with?('/')
+    source_uri = "/#{source_uri}" if !source_uri.start_with?('/') && File.absolute_path?(source_uri)
 
     source_uri = begin
       Gem::Uri.parse!(source_uri)
