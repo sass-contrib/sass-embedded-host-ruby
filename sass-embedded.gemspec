@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
       'ext/sass/expand-archive.ps1',
       'ext/sass/package.json'
     ]
-    spec.add_runtime_dependency 'rake', '>= 13'
+    spec.add_dependency 'rake', '>= 13'
   else
     spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
   end
@@ -42,5 +42,5 @@ Gem::Specification.new do |spec|
                                  '>= 3.2'
                                end
 
-  spec.add_runtime_dependency 'google-protobuf', '~> 4.26'
+  spec.add_dependency 'google-protobuf', '~> 4.26'
 end
