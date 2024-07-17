@@ -61,8 +61,8 @@ module Sass
   end
 
   # An exception thrown by Sass Script.
-  # @!visibility private
   class ScriptError < StandardError
+    # @!visibility private
     def initialize(message, name = nil)
       super(name.nil? ? message : "$#{name}: #{message}")
     end
