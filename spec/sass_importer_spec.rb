@@ -662,7 +662,7 @@ RSpec.describe Sass do
             pathname = url.split(':')[1]
             if pathname == 'midstream'
               {
-                contents: "@import 'orange';",
+                contents: "@use 'orange';",
                 syntax: 'scss'
               }
             else
