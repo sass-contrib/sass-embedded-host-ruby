@@ -102,7 +102,9 @@ RSpec.describe Sass do
                           '_right.scss' => '@import "upstream"',
                           '_upstream.scss' => 'a {b: c}'
                         })
-              expect(described_class.compile_string('@import "left"; @import "right"', url:).loaded_urls)
+              expect(described_class.compile_string('@import "left"; @import "right"',
+                                                    url:,
+                                                    silence_deprecations: ['import']).loaded_urls)
                 .to eq([
                          url,
                          dir.url('_left.scss'),

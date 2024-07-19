@@ -45,7 +45,7 @@ RSpec.describe Sass::Compiler do
 
   describe 'compile_string' do
     it 'performs complete compilations' do
-      result = compiler.compile_string('@import "bar"; .fn {value: foo(baz)}', importers:, functions:, logger:)
+      result = compiler.compile_string('@use "bar"; .fn {value: foo(baz)}', importers:, functions:, logger:)
       expect(result.css).to eq(".import {\n  value: bar;\n}\n\n.fn {\n  value: baz;\n}")
       expect(logger_instance_double).to have_received(:call).once
     end
@@ -61,7 +61,7 @@ RSpec.describe Sass::Compiler do
         end
       }
 
-      result = compiler.compile_string('@import "nested"; a {b: c}', importers: [nested_importer])
+      result = compiler.compile_string('@use "nested"; a {b: c}', importers: [nested_importer])
       expect(result.css).to eq("x {\n  y: z;\n}\n\na {\n  b: c;\n}")
     end
 
@@ -79,7 +79,7 @@ RSpec.describe Sass::Compiler do
     it 'handles multiple concurrent compilations' do
       results = Array.new(100) do |i|
         Thread.new do
-          compiler.compile_string("@import \"#{i}\"; .fn {value: foo(#{i})}",
+          compiler.compile_string("@use \"#{i}\" as _; .fn {value: foo(#{i})}",
                                   importers:, functions:, logger: Sass::Logger.silent)
         end
       end.map(&:value)
@@ -93,7 +93,7 @@ RSpec.describe Sass::Compiler do
   describe 'compile' do
     it 'performs complete compilations' do
       sandbox do |dir|
-        dir.write({ 'input.scss' => '@import "bar"; .fn {value: foo(bar)}' })
+        dir.write({ 'input.scss' => '@use "bar"; .fn {value: foo(bar)}' })
         result = compiler.compile(dir.path('input.scss'), importers:, functions:, logger:)
         expect(result.css).to eq(".import {\n  value: bar;\n}\n\n.fn {\n  value: bar;\n}")
         expect(logger_instance_double).to have_received(:call).once
@@ -113,7 +113,7 @@ RSpec.describe Sass::Compiler do
           end
         }
 
-        dir.write({ 'input.scss' => '@import "nested"; a {b: c}' })
+        dir.write({ 'input.scss' => '@use "nested"; a {b: c}' })
         result = compiler.compile(dir.path('input.scss'), importers: [nested_importer])
         expect(result.css).to eq("x {\n  y: z;\n}\n\na {\n  b: c;\n}")
       end
@@ -132,7 +132,7 @@ RSpec.describe Sass::Compiler do
         results = Array.new(100) do |i|
           Thread.new do
             filename = "input-#{i}.scss"
-            dir.write({ filename => "@import \"#{i}\"; .fn {value: foo(#{i})}" })
+            dir.write({ filename => "@use \"#{i}\" as _; .fn {value: foo(#{i})}" })
             compiler.compile(dir.path(filename),
                              importers:, functions:, logger: Sass::Logger.silent)
           end
