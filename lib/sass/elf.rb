@@ -7,24 +7,49 @@ module Sass
   # @see https://github.com/torvalds/linux/blob/HEAD/include/uapi/linux/elf.h
   # @see https://github.com/torvalds/linux/blob/HEAD/kernel/kexec_elf.c
   class ELF
+    module PackInfo
+      PACK_MAP = {
+        U8: 'C',
+        S8: 'c',
+        u16: 'S<',
+        U16: 'S>',
+        s16: 's<',
+        S16: 's>',
+        u32: 'L<',
+        U32: 'L>',
+        s32: 'l<',
+        S32: 'l>',
+        u64: 'Q<',
+        U64: 'Q>',
+        s64: 'q<',
+        S64: 'q>'
+      }.freeze
+
+      SIZE_MAP = PACK_MAP.to_h do |type, _|
+        [type, type.to_s[1..].to_i / 8]
+      end.freeze
+    end
+
+    private_constant :PackInfo
+
     # rubocop:disable Naming/ConstantName
 
     # 32-bit ELF base types.
-    Elf32_Addr  = :__u32
-    Elf32_Half  = :__u16
-    Elf32_Off   = :__u32
-    Elf32_Sword = :__s32
-    Elf32_Word  = :__u32
+    Elf32_Addr  = :u32
+    Elf32_Half  = :u16
+    Elf32_Off   = :u32
+    Elf32_Sword = :s32
+    Elf32_Word  = :u32
 
     # 64-bit ELF base types.
-    Elf64_Addr   = :__u64
-    Elf64_Half   = :__u16
-    Elf64_SHalf  = :__s16
-    Elf64_Off    = :__u64
-    Elf64_Sword  = :__s32
-    Elf64_Word   = :__u32
-    Elf64_Xword  = :__u64
-    Elf64_Sxword = :__s64
+    Elf64_Addr   = :u64
+    Elf64_Half   = :u16
+    Elf64_SHalf  = :s16
+    Elf64_Off    = :u64
+    Elf64_Sword  = :s32
+    Elf64_Word   = :u32
+    Elf64_Xword  = :u64
+    Elf64_Sxword = :s64
 
     # rubocop:enable Naming/ConstantName
 
@@ -41,10 +66,6 @@ module Sass
     PT_HIOS         = 0x6fffffff
     PT_LOPROC       = 0x70000000
     PT_HIPROC       = 0x7fffffff
-    PT_GNU_EH_FRAME = (PT_LOOS + 0x474e550)
-    PT_GNU_STACK    = (PT_LOOS + 0x474e551)
-    PT_GNU_RELRO    = (PT_LOOS + 0x474e552)
-    PT_GNU_PROPERTY = (PT_LOOS + 0x474e553)
 
     # These constants define the different elf file types
     ET_NONE   = 0
@@ -60,37 +81,37 @@ module Sass
     # rubocop:disable Naming/ConstantName
 
     Elf32_Ehdr = [
-      [:unsigned_char, :e_ident, EI_NIDENT],
-      [Elf32_Half,     :e_type],
-      [Elf32_Half,     :e_machine],
-      [Elf32_Word,     :e_version],
-      [Elf32_Addr,     :e_entry],
-      [Elf32_Off,      :e_phoff],
-      [Elf32_Off,      :e_shoff],
-      [Elf32_Word,     :e_flags],
-      [Elf32_Half,     :e_ehsize],
-      [Elf32_Half,     :e_phentsize],
-      [Elf32_Half,     :e_phnum],
-      [Elf32_Half,     :e_shentsize],
-      [Elf32_Half,     :e_shnum],
-      [Elf32_Half,     :e_shstrndx]
+      [:U8,        :e_ident, EI_NIDENT],
+      [Elf32_Half, :e_type],
+      [Elf32_Half, :e_machine],
+      [Elf32_Word, :e_version],
+      [Elf32_Addr, :e_entry],
+      [Elf32_Off,  :e_phoff],
+      [Elf32_Off,  :e_shoff],
+      [Elf32_Word, :e_flags],
+      [Elf32_Half, :e_ehsize],
+      [Elf32_Half, :e_phentsize],
+      [Elf32_Half, :e_phnum],
+      [Elf32_Half, :e_shentsize],
+      [Elf32_Half, :e_shnum],
+      [Elf32_Half, :e_shstrndx]
     ].freeze
 
     Elf64_Ehdr = [
-      [:unsigned_char, :e_ident, EI_NIDENT],
-      [Elf64_Half,     :e_type],
-      [Elf64_Half,     :e_machine],
-      [Elf64_Word,     :e_version],
-      [Elf64_Addr,     :e_entry],
-      [Elf64_Off,      :e_phoff],
-      [Elf64_Off,      :e_shoff],
-      [Elf64_Word,     :e_flags],
-      [Elf64_Half,     :e_ehsize],
-      [Elf64_Half,     :e_phentsize],
-      [Elf64_Half,     :e_phnum],
-      [Elf64_Half,     :e_shentsize],
-      [Elf64_Half,     :e_shnum],
-      [Elf64_Half,     :e_shstrndx]
+      [:U8,        :e_ident, EI_NIDENT],
+      [Elf64_Half, :e_type],
+      [Elf64_Half, :e_machine],
+      [Elf64_Word, :e_version],
+      [Elf64_Addr, :e_entry],
+      [Elf64_Off,  :e_phoff],
+      [Elf64_Off,  :e_shoff],
+      [Elf64_Word, :e_flags],
+      [Elf64_Half, :e_ehsize],
+      [Elf64_Half, :e_phentsize],
+      [Elf64_Half, :e_phnum],
+      [Elf64_Half, :e_shentsize],
+      [Elf64_Half, :e_shnum],
+      [Elf64_Half, :e_shstrndx]
     ].freeze
 
     Elf32_Phdr = [
@@ -149,10 +170,39 @@ module Sass
 
     def initialize(buffer)
       @buffer = buffer
-      @ehdr = read_ehdr
+
+      @ehdr = { e_ident: @buffer.read(EI_NIDENT).unpack('C*') }
+      raise ArgumentError unless @ehdr[:e_ident].slice(EI_MAG0, SELFMAG).pack('C*') == ELFMAG
+
+      case @ehdr[:e_ident][EI_CLASS]
+      when ELFCLASS32
+        elf_ehdr = Elf32_Ehdr
+        elf_phdr = Elf32_Phdr
+      when ELFCLASS64
+        elf_ehdr = Elf64_Ehdr
+        elf_phdr = Elf64_Phdr
+      else
+        raise ArgumentError
+      end
+
+      case @ehdr[:e_ident][EI_DATA]
+      when ELFDATA2LSB
+        little_endian = true
+      when ELFDATA2MSB
+        little_endian = false
+      else
+        raise ArgumentError
+      end
+
+      elf_ehdr.drop(1).each do |type, name|
+        @ehdr[name] = read1(type, little_endian)
+      end
+
       @buffer.seek(@ehdr[:e_phoff], IO::SEEK_SET)
       @proghdrs = Array.new(@ehdr[:e_phnum]) do
-        read_phdr
+        elf_phdr.to_h do |type, name|
+          [name, read1(type, little_endian)]
+        end
       end
     end
 
@@ -185,75 +235,8 @@ module Sass
 
     private
 
-    def file_class
-      @ehdr[:e_ident][EI_CLASS]
-    end
-
-    def data_encoding
-      @ehdr[:e_ident][EI_DATA]
-    end
-
-    def read_ehdr
-      @ehdr = { e_ident: @buffer.read(EI_NIDENT).unpack('C*') }
-      raise ArgumentError unless @ehdr[:e_ident].slice(EI_MAG0, SELFMAG).pack('C*') == ELFMAG
-
-      case file_class
-      when ELFCLASS32
-        Elf32_Ehdr
-      when ELFCLASS64
-        Elf64_Ehdr
-      else
-        raise ArgumentError
-      end.drop(1).to_h do |field|
-        [field[1], read1(field[0])]
-      end.merge!(@ehdr)
-    end
-
-    def read_phdr
-      case file_class
-      when ELFCLASS32
-        Elf32_Phdr
-      when ELFCLASS64
-        Elf64_Phdr
-      else
-        raise ArgumentError
-      end.to_h do |field|
-        [field[1], read1(field[0])]
-      end
-    end
-
-    def explicit_endian
-      case data_encoding
-      when ELFDATA2LSB
-        '<'
-      when ELFDATA2MSB
-        '>'
-      else
-        raise ArgumentError
-      end
-    end
-
-    def read1(type)
-      case type
-      when :__u8
-        @buffer.read(1).unpack1('C')
-      when :__u16
-        @buffer.read(2).unpack1("S#{explicit_endian}")
-      when :__u32
-        @buffer.read(4).unpack1("L#{explicit_endian}")
-      when :__u64
-        @buffer.read(8).unpack1("Q#{explicit_endian}")
-      when :__s8
-        @buffer.read(1).unpack1('c')
-      when :__s16
-        @buffer.read(2).unpack1("s#{explicit_endian}")
-      when :__s32
-        @buffer.read(4).unpack1("l#{explicit_endian}")
-      when :__s64
-        @buffer.read(8).unpack1("q#{explicit_endian}")
-      else
-        raise ArgumentError
-      end
+    def read1(type, little_endian)
+      @buffer.read(PackInfo::SIZE_MAP[type]).unpack1(PackInfo::PACK_MAP[little_endian ? type : type.upcase])
     end
 
     INTERPRETER = begin
