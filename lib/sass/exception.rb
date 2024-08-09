@@ -51,8 +51,12 @@ module Sass
           font-family: monospace, monospace;
           white-space: pre;
           content: #{Serializer.serialize_quoted_string(content).gsub(/[^[:ascii:]][\h\t ]?/) do |match|
-            replacement = "\\#{match.ord.to_s(16)}"
-            replacement << " #{match[1]}" if match.length > 1
+            ordinal = match.ord
+            replacement = "\\#{ordinal.to_s(16)}"
+            if match.length > 1
+              replacement << ' ' if ordinal < 0x100000
+              replacement << match[1]
+            end
             replacement
           end};
         }
