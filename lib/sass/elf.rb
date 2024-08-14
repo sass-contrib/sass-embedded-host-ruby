@@ -9,49 +9,74 @@ module Sass
   class ELF
     module PackInfo
       PACK_MAP = {
-        U8: 'C',
-        S8: 'c',
-        u16: 'S<',
-        U16: 'S>',
-        s16: 's<',
-        S16: 's>',
-        u32: 'L<',
-        U32: 'L>',
-        s32: 'l<',
-        S32: 'l>',
-        u64: 'Q<',
-        U64: 'Q>',
-        s64: 'q<',
-        S64: 'q>'
+        Elf32_Ehdr: 'S<2L<5S<6',
+        Elf64_Ehdr: 'S<2L<Q<3L<S<6',
+        Elf32_Phdr: 'L<8',
+        Elf64_Phdr: 'L<2Q<6'
       }.freeze
 
-      SIZE_MAP = PACK_MAP.to_h do |type, _|
-        [type, type.to_s[1..].to_i / 8]
-      end.freeze
+      SIZE_MAP = {
+        Elf32_Ehdr: 36,
+        Elf64_Ehdr: 48,
+        Elf32_Phdr: 32,
+        Elf64_Phdr: 56
+      }.freeze
+
+      STRUCT_MAP = {
+        Elf32_Ehdr: %i[
+          e_type
+          e_machine
+          e_version
+          e_entry
+          e_phoff
+          e_shoff
+          e_flags
+          e_ehsize
+          e_phentsize
+          e_phnum
+          e_shentsize
+          e_shnum
+          e_shstrndx
+        ].freeze,
+        Elf64_Ehdr: %i[
+          e_type
+          e_machine
+          e_version
+          e_entry
+          e_phoff
+          e_shoff
+          e_flags
+          e_ehsize
+          e_phentsize
+          e_phnum
+          e_shentsize
+          e_shnum
+          e_shstrndx
+        ].freeze,
+        Elf32_Phdr: %i[
+          p_type
+          p_offset
+          p_vaddr
+          p_paddr
+          p_filesz
+          p_memsz
+          p_flags
+          p_align
+        ].freeze,
+        Elf64_Phdr: %i[
+          p_type
+          p_flags
+          p_offset
+          p_vaddr
+          p_paddr
+          p_filesz
+          p_memsz
+          p_align
+        ].freeze
+      }.freeze
     end
 
     private_constant :PackInfo
-
-    # rubocop:disable Naming/ConstantName
-
-    # 32-bit ELF base types.
-    Elf32_Addr  = :u32
-    Elf32_Half  = :u16
-    Elf32_Off   = :u32
-    Elf32_Sword = :s32
-    Elf32_Word  = :u32
-
-    # 64-bit ELF base types.
-    Elf64_Addr   = :u64
-    Elf64_Half   = :u16
-    Elf64_SHalf  = :s16
-    Elf64_Off    = :u64
-    Elf64_Sword  = :s32
-    Elf64_Word   = :u32
-    Elf64_Xword  = :u64
-    Elf64_Sxword = :s64
-
-    # rubocop:enable Naming/ConstantName
 
     # These constants are for the segment types stored in the image headers
     PT_NULL         = 0
@@ -78,66 +103,6 @@ module Sass
 
     EI_NIDENT = 16
 
-    # rubocop:disable Naming/ConstantName
-
-    Elf32_Ehdr = [
-      [:U8,        :e_ident, EI_NIDENT],
-      [Elf32_Half, :e_type],
-      [Elf32_Half, :e_machine],
-      [Elf32_Word, :e_version],
-      [Elf32_Addr, :e_entry],
-      [Elf32_Off,  :e_phoff],
-      [Elf32_Off,  :e_shoff],
-      [Elf32_Word, :e_flags],
-      [Elf32_Half, :e_ehsize],
-      [Elf32_Half, :e_phentsize],
-      [Elf32_Half, :e_phnum],
-      [Elf32_Half, :e_shentsize],
-      [Elf32_Half, :e_shnum],
-      [Elf32_Half, :e_shstrndx]
-    ].freeze
-
-    Elf64_Ehdr = [
-      [:U8,        :e_ident, EI_NIDENT],
-      [Elf64_Half, :e_type],
-      [Elf64_Half, :e_machine],
-      [Elf64_Word, :e_version],
-      [Elf64_Addr, :e_entry],
-      [Elf64_Off,  :e_phoff],
-      [Elf64_Off,  :e_shoff],
-      [Elf64_Word, :e_flags],
-      [Elf64_Half, :e_ehsize],
-      [Elf64_Half, :e_phentsize],
-      [Elf64_Half, :e_phnum],
-      [Elf64_Half, :e_shentsize],
-      [Elf64_Half, :e_shnum],
-      [Elf64_Half, :e_shstrndx]
-    ].freeze
-
-    Elf32_Phdr = [
-      [Elf32_Word, :p_type],
-      [Elf32_Off,  :p_offset],
-      [Elf32_Addr, :p_vaddr],
-      [Elf32_Addr, :p_paddr],
-      [Elf32_Word, :p_filesz],
-      [Elf32_Word, :p_memsz],
-      [Elf32_Word, :p_flags],
-      [Elf32_Word, :p_align]
-    ].freeze
-
-    Elf64_Phdr = [
-      [Elf64_Word,  :p_type],
-      [Elf64_Word,  :p_flags],
-      [Elf64_Off,   :p_offset],
-      [Elf64_Addr,  :p_vaddr],
-      [Elf64_Addr,  :p_paddr],
-      [Elf64_Xword, :p_filesz],
-      [Elf64_Xword, :p_memsz],
-      [Elf64_Xword, :p_align]
-    ].freeze
-
-    # rubocop:enable Naming/ConstantName
-
     # e_ident[] indexes
     EI_MAG0    = 0
     EI_MAG1    = 1
@@ -151,9 +116,9 @@ module Sass
 
     # EI_MAG
     ELFMAG0 = 0x7f
-    ELFMAG1 = 'E'.ord
-    ELFMAG2 = 'L'.ord
-    ELFMAG3 = 'F'.ord
+    ELFMAG1 = 0x45
+    ELFMAG2 = 0x4c
+    ELFMAG3 = 0x46
     ELFMAG  = [ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3].pack('C*')
     SELFMAG = 4
 
@@ -176,11 +141,11 @@ module Sass
 
       case @ehdr[:e_ident][EI_CLASS]
       when ELFCLASS32
-        elf_ehdr = Elf32_Ehdr
-        elf_phdr = Elf32_Phdr
+        elf_ehdr = :Elf32_Ehdr
+        elf_phdr = :Elf32_Phdr
       when ELFCLASS64
-        elf_ehdr = Elf64_Ehdr
-        elf_phdr = Elf64_Phdr
+        elf_ehdr = :Elf64_Ehdr
+        elf_phdr = :Elf64_Phdr
       else
         raise ArgumentError
       end
@@ -194,15 +159,11 @@ module Sass
         raise ArgumentError
       end
 
-      elf_ehdr.drop(1).each do |type, name|
-        @ehdr[name] = read1(type, little_endian)
-      end
+      @ehdr.merge!(read(elf_ehdr, little_endian))
 
       @buffer.seek(@ehdr[:e_phoff], IO::SEEK_SET)
       @proghdrs = Array.new(@ehdr[:e_phnum]) do
-        elf_phdr.to_h do |type, name|
-          [name, read1(type, little_endian)]
-        end
+        read(elf_phdr, little_endian)
       end
     end
 
@@ -235,8 +196,10 @@ module Sass
 
     private
 
-    def read1(type, little_endian)
-      @buffer.read(PackInfo::SIZE_MAP[type]).unpack1(PackInfo::PACK_MAP[little_endian ? type : type.upcase])
+    def read(type, little_endian)
+      size = PackInfo::SIZE_MAP[type]
+      format = little_endian ? PackInfo::PACK_MAP[type] : PackInfo::PACK_MAP[type].tr('<', '>')
+      [PackInfo::STRUCT_MAP[type], @buffer.read(size).unpack(format)].transpose.to_h
     end
 
     INTERPRETER = begin
