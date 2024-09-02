@@ -290,7 +290,7 @@ module Sass
 
         compatibility_error = lambda {
           unless other.nil?
-            message = +"#{self} and"
+            message = "#{self} and"
             message << " $#{other_name}:" unless other_name.nil?
             message << " #{other} have incompatible units"
             message << " (one has units and the other doesn't)" if unitless? || other_unitless
