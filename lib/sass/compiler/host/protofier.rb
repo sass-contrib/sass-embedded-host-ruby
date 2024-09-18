@@ -27,29 +27,32 @@ module Sass
           when Sass::Value::Color
             if obj.instance_eval { !defined?(@hue) }
               EmbeddedProtocol::Value.new(
-                rgb_color: EmbeddedProtocol::Value::RgbColor.new(
-                  red: obj.red,
-                  green: obj.green,
-                  blue: obj.blue,
-                  alpha: obj.alpha.to_f
+                color: EmbeddedProtocol::Value::Color.new(
+                  channel1: obj.red,
+                  channel2: obj.green,
+                  channel3: obj.blue,
+                  alpha: obj.alpha.to_f,
+                  space: 'rgb'
                 )
               )
             elsif obj.instance_eval { !defined?(@saturation) }
               EmbeddedProtocol::Value.new(
-                hwb_color: EmbeddedProtocol::Value::HwbColor.new(
-                  hue: obj.hue.to_f,
-                  whiteness: obj.whiteness.to_f,
-                  blackness: obj.blackness.to_f,
-                  alpha: obj.alpha.to_f
+                color: EmbeddedProtocol::Value::Color.new(
+                  channel1: obj.hue.to_f,
+                  channel2: obj.whiteness.to_f,
+                  channel3: obj.blackness.to_f,
+                  alpha: obj.alpha.to_f,
+                  space: 'hwb'
                 )
               )
             else
               EmbeddedProtocol::Value.new(
-                hsl_color: EmbeddedProtocol::Value::HslColor.new(
-                  hue: obj.hue.to_f,
-                  saturation: obj.saturation.to_f,
-                  lightness: obj.lightness.to_f,
-                  alpha: obj.alpha.to_f
+                color: EmbeddedProtocol::Value::Color.new(
+                  channel1: obj.hue.to_f,
+                  channel2: obj.saturation.to_f,
+                  channel3: obj.lightness.to_f,
+                  alpha: obj.alpha.to_f,
+                  space: 'hsl'
                 )
               )
             end
@@ -130,27 +133,32 @@ module Sass
             )
           when :number
             Number.from_proto(obj)
-          when :rgb_color
-            Sass::Value::Color.new(
-              red: obj.red,
-              green: obj.green,
-              blue: obj.blue,
-              alpha: obj.alpha
-            )
-          when :hsl_color
-            Sass::Value::Color.new(
-              hue: obj.hue,
-              saturation: obj.saturation,
-              lightness: obj.lightness,
-              alpha: obj.alpha
-            )
-          when :hwb_color
-            Sass::Value::Color.new(
-              hue: obj.hue,
-              whiteness: obj.whiteness,
-              blackness: obj.blackness,
-              alpha: obj.alpha
-            )
+          when :color
+            case obj.space
+            when 'rgb'
+              Sass::Value::Color.new(
+                red: obj.channel1,
+                green: obj.channel2,
+                blue: obj.channel3,
+                alpha: obj.alpha
+              )
+            when 'hsl'
+              Sass::Value::Color.new(
+                hue: obj.channel1,
+                saturation: obj.channel2,
+                lightness: obj.channel3,
+                alpha: obj.alpha
+              )
+            when 'hwb'
+              Sass::Value::Color.new(
+                hue: obj.channel1,
+                whiteness: obj.channel2,
+                blackness: obj.channel3,
+                alpha: obj.alpha
+              )
+            else
+              raise NotImplementedError, 'CSS Color Level 4 will be supported in a future release'
+            end
           when :argument_list
             Sass::Value::ArgumentList.new(
               obj.contents.map do |element|
