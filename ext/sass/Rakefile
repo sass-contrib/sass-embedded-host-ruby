@@ -30,6 +30,8 @@ rescue StandardError
 end
 
 file 'cli.rb' => %w[dart-sass] do |t|
+  require_relative '../../lib/sass/elf'
+
   exe = 'dart-sass/sass'
   exe = "#{exe}#{['', '.bat', '.exe'].find { |ext| File.exist?("#{exe}#{ext}") }}"
 
@@ -40,27 +42,58 @@ file 'cli.rb' => %w[dart-sass] do |t|
   snapshot = 'dart-sass/src/sass.snapshot'
 
   command = if File.exist?(runtime) && File.exist?(snapshot)
-              "
-      File.absolute_path('#{runtime}', __dir__).freeze,
-      File.absolute_path('#{snapshot}', __dir__).freeze
-    "
+              [runtime, snapshot]
             else
-              "
-      File.absolute_path('#{exe}', __dir__).freeze
-    "
+              [exe]
             end
 
-  File.write(t.name, <<~CLI_RB)
-    # frozen_string_literal: true
+  interpreter = File.open(command[0], 'rb') do |file|
+    Sass.const_get(:ELF).new(file).interpreter
+  rescue ArgumentError
+    nil
+  end
 
-    module Sass
-      module CLI
-        COMMAND = [#{command}].freeze
+  command_source = command.map do |argument|
+    "File.absolute_path('#{argument}', __dir__).freeze"
+  end.join(',
+      ')
+
+  if interpreter.nil?
+    File.write(t.name, <<~CLI_RB)
+      # frozen_string_literal: true
+
+      module Sass
+        module CLI
+          COMMAND = [
+            #{command_source}
+          ].freeze
+        end
+
+        private_constant :CLI
       end
+    CLI_RB
+  else
+    File.write(t.name, <<~CLI_RB)
+      # frozen_string_literal: true
 
-      private_constant :CLI
-    end
-  CLI_RB
+      require_relative '../../lib/sass/elf'
+
+      module Sass
+        module CLI
+          INTERPRETER = '#{interpreter}'
+
+          COMMAND = [
+            *(ELF::INTERPRETER unless ELF::INTERPRETER.nil? ||
+                                      ELF::INTERPRETER == INTERPRETER ||
+                                      !ELF::INTERPRETER.end_with?(INTERPRETER)),
+            #{command_source}
+          ].freeze
+        end
+
+        private_constant :CLI
+      end
+    CLI_RB
+  end
 end
 
 file 'embedded_sass.proto' => %w[cli.rb] do |t|

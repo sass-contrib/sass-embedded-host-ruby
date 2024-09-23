@@ -6,15 +6,7 @@ require_relative '../ext/sass/cli'
 module Sass
   # The `sass` command line interface
   module CLI
-    begin
-      Kernel.exec(*COMMAND, *ARGV)
-    rescue Errno::ENOENT
-      require_relative '../lib/sass/elf'
-
-      raise if ELF::INTERPRETER.nil?
-
-      Kernel.exec(ELF::INTERPRETER, *COMMAND, *ARGV)
-    end
+    Kernel.exec(*COMMAND, *ARGV)
   end
 
   private_constant :CLI

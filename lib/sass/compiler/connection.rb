@@ -12,15 +12,7 @@ module Sass
     class Connection
       def initialize
         @mutex = Mutex.new
-        @stdin, @stdout, @stderr, @wait_thread = begin
-          Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
-        rescue Errno::ENOENT
-          require_relative '../elf'
-
-          raise if ELF::INTERPRETER.nil?
-
-          Open3.popen3(ELF::INTERPRETER, *CLI::COMMAND, '--embedded', chdir: __dir__)
-        end
+        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(*CLI::COMMAND, '--embedded', chdir: __dir__)
 
         @stdin.binmode
 
