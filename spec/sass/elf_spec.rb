@@ -17,9 +17,7 @@ RSpec.describe 'Sass::ELF', skip: (File.exist?('/proc/self/exe') ? false : '/pro
 
   describe 'dart program interpreter' do
     subject(:interpreter) do
-      File.open(Sass.const_get(:CLI)::COMMAND[0], 'rb') do |file|
-        described_class.new(file).interpreter
-      end
+      Sass.const_get(:CLI)::INTERPRETER
     end
 
     it 'starts with ld-' do
