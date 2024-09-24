@@ -147,7 +147,7 @@ module Sass
         elf_ehdr = :Elf64_Ehdr
         elf_phdr = :Elf64_Phdr
       else
-        raise ArgumentError
+        raise EncodingError
       end
 
       case @ehdr[:e_ident][EI_DATA]
@@ -156,7 +156,7 @@ module Sass
       when ELFDATA2MSB
         little_endian = false
       else
-        raise ArgumentError
+        raise EncodingError
       end
 
       @ehdr.merge!(read(elf_ehdr, little_endian))
@@ -189,7 +189,7 @@ module Sass
 
       @buffer.seek(phdr[:p_offset], IO::SEEK_SET)
       interpreter = @buffer.read(phdr[:p_filesz])
-      raise ArgumentError unless interpreter.end_with?("\0")
+      raise EncodingError unless interpreter.end_with?("\0")
 
       interpreter.chomp!("\0")
     end
@@ -215,7 +215,7 @@ module Sass
           end
         end
       end
-    end
+    end.freeze
   end
 
   private_constant :ELF
