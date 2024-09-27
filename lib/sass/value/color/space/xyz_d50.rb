@@ -63,7 +63,7 @@ module Sass
 
           def _convert_component_to_lab_f(component)
             if component > Utils::LAB_EPSILON
-              (component**(1 / 3.0)) + 0.0
+              Math.cbrt(component)
             else
               ((Utils::LAB_KAPPA * component) + 16) / 116.0
             end

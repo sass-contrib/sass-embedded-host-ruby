@@ -28,9 +28,9 @@ module Sass
                       missing_b: false)
             case dest
             when OKLAB
-              long_scaled = _cube_root_preserving_sign(long.nil? ? 0 : long)
-              medium_scaled = _cube_root_preserving_sign(medium.nil? ? 0 : medium)
-              short_scaled = _cube_root_preserving_sign(short.nil? ? 0 : short)
+              long_scaled = Math.cbrt(long.nil? ? 0 : long)
+              medium_scaled = Math.cbrt(medium.nil? ? 0 : medium)
+              short_scaled = Math.cbrt(short.nil? ? 0 : short)
 
               Color.send(
                 :_for_space,
@@ -53,9 +53,9 @@ module Sass
                 alpha
               )
             when OKLCH
-              long_scaled = _cube_root_preserving_sign(long.nil? ? 0 : long)
-              medium_scaled = _cube_root_preserving_sign(medium.nil? ? 0 : medium)
-              short_scaled = _cube_root_preserving_sign(short.nil? ? 0 : short)
+              long_scaled = Math.cbrt(long.nil? ? 0 : long)
+              medium_scaled = Math.cbrt(medium.nil? ? 0 : medium)
+              short_scaled = Math.cbrt(short.nil? ? 0 : short)
 
               Utils.lab_to_lch(
                 dest,
@@ -115,10 +115,6 @@ module Sass
             else
               super
             end
-          end
-
-          def _cube_root_preserving_sign(number)
-            (number.abs**(1 / 3.0)) * FuzzyMath.sign(number)
           end
         end
 
