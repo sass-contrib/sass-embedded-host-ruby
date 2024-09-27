@@ -25,37 +25,15 @@ module Sass
               number: Number.to_proto(obj)
             )
           when Sass::Value::Color
-            if obj.instance_eval { !defined?(@hue) }
-              EmbeddedProtocol::Value.new(
-                color: EmbeddedProtocol::Value::Color.new(
-                  channel1: obj.red,
-                  channel2: obj.green,
-                  channel3: obj.blue,
-                  alpha: obj.alpha.to_f,
-                  space: 'rgb'
-                )
+            EmbeddedProtocol::Value.new(
+              color: EmbeddedProtocol::Value::Color.new(
+                channel1: obj.send(:channel0_or_nil),
+                channel2: obj.send(:channel1_or_nil),
+                channel3: obj.send(:channel2_or_nil),
+                alpha: obj.send(:alpha_or_nil),
+                space: obj.space
               )
-            elsif obj.instance_eval { !defined?(@saturation) }
-              EmbeddedProtocol::Value.new(
-                color: EmbeddedProtocol::Value::Color.new(
-                  channel1: obj.hue.to_f,
-                  channel2: obj.whiteness.to_f,
-                  channel3: obj.blackness.to_f,
-                  alpha: obj.alpha.to_f,
-                  space: 'hwb'
-                )
-              )
-            else
-              EmbeddedProtocol::Value.new(
-                color: EmbeddedProtocol::Value::Color.new(
-                  channel1: obj.hue.to_f,
-                  channel2: obj.saturation.to_f,
-                  channel3: obj.lightness.to_f,
-                  alpha: obj.alpha.to_f,
-                  space: 'hsl'
-                )
-              )
-            end
+            )
           when Sass::Value::ArgumentList
             EmbeddedProtocol::Value.new(
               argument_list: EmbeddedProtocol::Value::ArgumentList.new(
@@ -134,31 +112,14 @@ module Sass
           when :number
             Number.from_proto(obj)
           when :color
-            case obj.space
-            when 'rgb'
-              Sass::Value::Color.new(
-                red: obj.channel1,
-                green: obj.channel2,
-                blue: obj.channel3,
-                alpha: obj.alpha
-              )
-            when 'hsl'
-              Sass::Value::Color.new(
-                hue: obj.channel1,
-                saturation: obj.channel2,
-                lightness: obj.channel3,
-                alpha: obj.alpha
-              )
-            when 'hwb'
-              Sass::Value::Color.new(
-                hue: obj.channel1,
-                whiteness: obj.channel2,
-                blackness: obj.channel3,
-                alpha: obj.alpha
-              )
-            else
-              raise NotImplementedError, 'CSS Color Level 4 will be supported in a future release'
-            end
+            Sass::Value::Color.send(
+              :for_space,
+              obj.space,
+              obj.channel1,
+              obj.channel2,
+              obj.channel3,
+              obj.alpha
+            )
           when :argument_list
             Sass::Value::ArgumentList.new(
               obj.contents.map do |element|

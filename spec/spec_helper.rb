@@ -43,3 +43,33 @@ RSpec::Matchers.matcher :raise_sass_compile_error do
 
   supports_block_expectations
 end
+
+epsilon = Sass::Value.const_get(:FuzzyMath)::EPSILON
+
+RSpec::Matchers.matcher :fuzzy_eq do |expected|
+  match do |actual|
+    case expected
+    when Sass::Value::Color
+      expect { actual.assert_color }.not_to raise_error
+      expect(actual.channels_or_nil).to fuzzy_match_array(expected.channels_or_nil)
+      expect(actual.channel_missing?('alpha')).to eq(expected.channel_missing?('alpha'))
+      expect(actual.alpha).to fuzzy_eq(expected.alpha)
+    when Numeric
+      expect(actual).to be_within(epsilon).of(expected)
+    else
+      expect(actual).to eq(expected)
+    end
+  end
+end
+
+RSpec::Matchers.matcher :fuzzy_match_array do |expected|
+  match do |actual|
+    expect(actual).to match_array(expected.map do |obj|
+      if obj.is_a?(Numeric)
+        a_value_within(epsilon * 10).of(obj)
+      else
+        obj
+      end
+    end)
+  end
+end

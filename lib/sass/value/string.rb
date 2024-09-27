@@ -52,7 +52,7 @@ module Sass
         index.negative? ? text.length + index : index - 1
       end
 
-      # @return [String]
+      # @return [::String]
       def to_s
         @quoted ? Serializer.serialize_quoted_string(@text) : Serializer.serialize_unquoted_string(@text)
       end
