@@ -29,26 +29,29 @@ module Sass
           end
 
           def convert(dest, hue, saturation, lightness, alpha)
-            scaled_hue = ((hue.nil? ? 0 : hue) / 360.0) % 1
-            scaled_saturation = (saturation.nil? ? 0 : saturation) / 100.0
-            scaled_lightness = (lightness.nil? ? 0 : lightness) / 100.0
+            missing_lightness = lightness.nil?
+            missing_chroma = saturation.nil?
+            missing_hue = hue.nil?
 
-            m2 = if scaled_lightness <= 0.5
-                   scaled_lightness * (scaled_saturation + 1)
-                 else
-                   scaled_lightness + scaled_saturation - (scaled_lightness * scaled_saturation)
-                 end
-            m1 = (scaled_lightness * 2) - m2
+            hue = ((hue.nil? ? 0 : hue) % 360) / 30.0
+            saturation = (saturation.nil? ? 0 : saturation) / 100.0
+            lightness = (lightness.nil? ? 0 : lightness) / 100.0
+
+            a = saturation * [lightness, 1 - lightness].min
+            f = lambda do |n|
+              k = (n + hue) % 12
+              lightness - (a * [-1, [k - 3, 9 - k, 1].min].max)
+            end
 
             SRGB.convert(
               dest,
-              Utils.hue_to_rgb(m1, m2, scaled_hue + (1 / 3.0)),
-              Utils.hue_to_rgb(m1, m2, scaled_hue),
-              Utils.hue_to_rgb(m1, m2, scaled_hue - (1 / 3.0)),
+              f.call(0),
+              f.call(8),
+              f.call(4),
               alpha,
-              missing_lightness: lightness.nil?,
-              missing_chroma: saturation.nil?,
-              missing_hue: hue.nil?
+              missing_lightness:,
+              missing_chroma:,
+              missing_hue:
             )
           end
         end

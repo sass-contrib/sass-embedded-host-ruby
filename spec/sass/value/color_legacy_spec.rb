@@ -158,7 +158,7 @@ describe Sass::Value::Color do
 
       it 'has HWB channels' do
         expect(color.hue).to eq(120)
-        expect(color.whiteness).to eq(24.360000000000003)
+        expect(color.whiteness).to eq(24.36000000000000)
         expect(color.blackness).to eq(40.36000000000001)
       end
 

@@ -31,29 +31,6 @@ module Sass
             LinearChannel.new('z', 0, 1).freeze
           ].freeze
 
-          # Converts a legacy HSL/HWB hue to an RGB channel.
-          #
-          # The algorithm comes from from the CSS3 spec:
-          # http://www.w3.org/TR/css3-color/#hsl-color.
-          # @param m1 [Numeric]
-          # @param m2 [Numeric]
-          # @param hue [Numeric]
-          # @return [Numeric]
-          def hue_to_rgb(m1, m2, hue) # rubocop:disable Naming/MethodParameterName
-            hue += 1 if hue.negative?
-            hue -= 1 if hue > 1
-
-            if hue < 1 / 6.0
-              m1 + ((m2 - m1) * hue * 6)
-            elsif hue < 1 / 2.0
-              m2
-            elsif hue < 2 / 3.0
-              m1 + ((m2 - m1) * ((2 / 3.0) - hue) * 6)
-            else
-              m1
-            end
-          end
-
           # The algorithm for converting a single `srgb` or `display-p3` channel to
           # linear-light form.
           # @param [Numeric]

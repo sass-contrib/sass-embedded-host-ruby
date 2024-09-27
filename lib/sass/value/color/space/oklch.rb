@@ -28,6 +28,7 @@ module Sass
           def convert(dest, lightness, chroma, hue, alpha)
             missing_chroma = chroma.nil?
             missing_hue = hue.nil?
+
             chroma = 0 if missing_chroma
             hue = 0 if missing_hue
 

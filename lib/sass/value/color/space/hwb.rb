@@ -29,28 +29,35 @@ module Sass
           end
 
           def convert(dest, hue, whiteness, blackness, alpha)
-            scaled_hue = (hue.nil? ? 0 : hue) % 360 / 360.0
-            scaled_whiteness = (whiteness.nil? ? 0 : whiteness) / 100.0
-            scaled_blackness = (blackness.nil? ? 0 : blackness) / 100.0
+            missing_hue = hue.nil?
 
-            sum = scaled_whiteness + scaled_blackness
+            hue = ((hue.nil? ? 0 : hue) % 360) / 30.0
+            whiteness = (whiteness.nil? ? 0 : whiteness) / 100.0
+            blackness = (blackness.nil? ? 0 : blackness) / 100.0
+
+            sum = whiteness + blackness
             if sum > 1
-              scaled_whiteness /= sum
-              scaled_blackness /= sum
+              gray = whiteness / sum
+              SRGB.convert(dest,
+                           gray,
+                           gray,
+                           gray,
+                           alpha,
+                           missing_hue:)
+            else
+              f = lambda do |n|
+                k = (n + hue) % 12
+                0.5 - ([-1, [k - 3, 9 - k, 1].min].max / 2.0)
+              end
+
+              factor = 1 - sum
+              SRGB.convert(dest,
+                           (f.call(0) * factor) + whiteness,
+                           (f.call(8) * factor) + whiteness,
+                           (f.call(4) * factor) + whiteness,
+                           alpha,
+                           missing_hue:)
             end
-
-            factor = 1 - scaled_whiteness - scaled_blackness
-
-            to_rgb = lambda do |hue_|
-              (Utils.hue_to_rgb(0, 1, hue_) * factor) + scaled_whiteness
-            end
-
-            SRGB.convert(dest,
-                         to_rgb.call(scaled_hue + (1 / 3.0)),
-                         to_rgb.call(scaled_hue),
-                         to_rgb.call(scaled_hue - (1 / 3.0)),
-                         alpha,
-                         missing_hue: hue.nil?)
           end
         end
 

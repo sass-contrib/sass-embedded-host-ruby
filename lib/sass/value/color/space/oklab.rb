@@ -30,9 +30,11 @@ module Sass
               missing_lightness = lightness.nil?
               missing_a = a.nil?
               missing_b = b.nil?
+
               lightness = 0 if missing_lightness
               a = 0 if missing_a
               b = 0 if missing_b
+
               LMS.convert(
                 dest,
                 ((
