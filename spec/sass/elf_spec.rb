@@ -2,10 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Sass::ELF', skip: (File.exist?('/proc/self/exe') ? false : '/proc/self/exe is not available') do
+RSpec.describe 'Sass::ELF', skip: (Sass.const_defined?(:ELF) ? false : 'Sass::ELF is not available') do
   let(:described_class) do
-    require 'sass/elf'
-
     Sass.const_get(:ELF)
   end
 
