@@ -6,14 +6,27 @@ module Sass
     module FuzzyMath
       PRECISION = 10
 
-      EPSILON = 10.pow(-PRECISION - 1)
+      EPSILON = 10**(-PRECISION - 1)
 
-      INVERSE_EPSILON = 1 / EPSILON
+      INVERSE_EPSILON = 10**(PRECISION + 1)
 
       module_function
 
       def equals(number1, number2)
-        (number1 - number2).abs < EPSILON
+        return true if number1 == number2
+
+        (number1 - number2).abs <= EPSILON &&
+          (number1 * INVERSE_EPSILON).round ==
+            (number2 * INVERSE_EPSILON).round
+      end
+
+      def equals_nilable(number1, number2)
+        return true if number1 == number2
+        return false if number1.nil? || number2.nil?
+
+        (number1 - number2).abs <= EPSILON &&
+          (number1 * INVERSE_EPSILON).round ==
+            (number2 * INVERSE_EPSILON).round
       end
 
       def less_than(number1, number2)
@@ -51,6 +64,16 @@ module Sass
         end
       end
 
+      def sign(number)
+        if number.positive?
+          1
+        elsif number.negative?
+          -1
+        else
+          0
+        end
+      end
+
       def between(number, min, max)
         return min if equals(number, min)
         return max if equals(number, max)
@@ -64,6 +87,10 @@ module Sass
         return result unless result.nil?
 
         raise Sass::ScriptError.new("#{number} must be between #{min} and #{max}.", name)
+      end
+
+      def clamp_like_css(number, lower_bound, upper_bound)
+        number.to_f.nan? ? lower_bound : number.clamp(lower_bound, upper_bound)
       end
 
       def hash(number)
