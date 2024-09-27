@@ -112,13 +112,14 @@ module Sass
           when :number
             Number.from_proto(obj)
           when :color
+            obj.to_s # TODO: https://github.com/protocolbuffers/protobuf/issues/18807
             Sass::Value::Color.send(
               :for_space,
               obj.space,
-              obj.channel1,
-              obj.channel2,
-              obj.channel3,
-              obj.alpha
+              obj.has_channel1? ? obj.channel1 : nil,
+              obj.has_channel2? ? obj.channel2 : nil,
+              obj.has_channel3? ? obj.channel3 : nil,
+              obj.has_alpha? ? obj.alpha : nil
             )
           when :argument_list
             Sass::Value::ArgumentList.new(
