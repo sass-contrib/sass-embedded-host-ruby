@@ -66,7 +66,7 @@ RSpec::Matchers.matcher :fuzzy_match_array do |expected|
   match do |actual|
     expect(actual).to match_array(expected.map do |obj|
       if obj.is_a?(Numeric)
-        a_value_within(epsilon * 10).of(obj)
+        a_value_within(epsilon).of(obj)
       else
         obj
       end
