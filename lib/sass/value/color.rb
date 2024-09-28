@@ -254,12 +254,12 @@ module Sass
         changed_color._to_space(_space)
       end
 
-      # return [Numeric]
+      # @return [Numeric]
       def alpha
         @alpha_or_nil.nil? ? 0 : @alpha_or_nil
       end
 
-      # return [::Boolean]
+      # @return [::Boolean]
       def legacy?
         _space.legacy?
       end
