@@ -318,21 +318,21 @@ module Sass
 
         if legacy?
           return false unless other.legacy?
-          return false unless FuzzyMath.equals(other.alpha_or_nil, alpha_or_nil)
+          return false unless FuzzyMath.equals_nilable(other.alpha_or_nil, alpha_or_nil)
 
           if _space == other._space
-            FuzzyMath.equals(other.channel0_or_nil, channel0_or_nil) &&
-              FuzzyMath.equals(other.channel1_or_nil, channel1_or_nil) &&
-              FuzzyMath.equals(other.channel2_or_nil, channel2_or_nil)
+            FuzzyMath.equals_nilable(other.channel0_or_nil, channel0_or_nil) &&
+              FuzzyMath.equals_nilable(other.channel1_or_nil, channel1_or_nil) &&
+              FuzzyMath.equals_nilable(other.channel2_or_nil, channel2_or_nil)
           else
             _to_space(Space::RGB) == other._to_space(Space::RGB)
           end
         else
           other._space == _space &&
-            FuzzyMath.equals(other.channel0_or_nil, channel0_or_nil) &&
-            FuzzyMath.equals(other.channel1_or_nil, channel1_or_nil) &&
-            FuzzyMath.equals(other.channel2_or_nil, channel2_or_nil) &&
-            FuzzyMath.equals(other.alpha_or_nil, alpha_or_nil)
+            FuzzyMath.equals_nilable(other.channel0_or_nil, channel0_or_nil) &&
+            FuzzyMath.equals_nilable(other.channel1_or_nil, channel1_or_nil) &&
+            FuzzyMath.equals_nilable(other.channel2_or_nil, channel2_or_nil) &&
+            FuzzyMath.equals_nilable(other.alpha_or_nil, alpha_or_nil)
         end
       end
 

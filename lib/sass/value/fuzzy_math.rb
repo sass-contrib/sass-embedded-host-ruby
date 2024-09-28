@@ -6,10 +6,27 @@ module Sass
     module FuzzyMath
       PRECISION = 11
 
+      EPSILON = 10**-PRECISION
+
+      INVERSE_EPSILON = 10**PRECISION
+
       module_function
 
       def equals(number1, number2)
-        number1 == number2 || number1.round(PRECISION) == number2.round(PRECISION)
+        return true if number1 == number2
+
+        (number1 - number2).abs <= EPSILON &&
+          (number1 * INVERSE_EPSILON).round ==
+            (number2 * INVERSE_EPSILON).round
+      end
+
+      def equals_nilable(number1, number2)
+        return true if number1 == number2
+        return false if number1.nil? || number2.nil?
+
+        (number1 - number2).abs <= EPSILON &&
+          (number1 * INVERSE_EPSILON).round ==
+            (number2 * INVERSE_EPSILON).round
       end
 
       def less_than(number1, number2)
@@ -32,7 +49,7 @@ module Sass
         return false unless number.finite?
         return true if number.integer?
 
-        number.round == number.round(PRECISION)
+        (number.round - number.round(PRECISION)).abs < EPSILON
       end
 
       def to_i(number)
@@ -59,7 +76,7 @@ module Sass
       end
 
       def _round(number)
-        number&.finite? ? number.round(PRECISION).to_f : number
+        number&.finite? ? (number * INVERSE_EPSILON).round : number
       end
     end
 
