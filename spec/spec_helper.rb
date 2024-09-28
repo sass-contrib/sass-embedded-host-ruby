@@ -51,6 +51,7 @@ RSpec::Matchers.matcher :fuzzy_eq do |expected|
     case expected
     when Sass::Value::Color
       expect { actual.assert_color }.not_to raise_error
+      expect(actual.space).to eq(expected.space)
       expect(actual.channels_or_nil).to fuzzy_match_array(expected.channels_or_nil)
       expect(actual.channel_missing?('alpha')).to eq(expected.channel_missing?('alpha'))
       expect(actual.alpha).to fuzzy_eq(expected.alpha)
