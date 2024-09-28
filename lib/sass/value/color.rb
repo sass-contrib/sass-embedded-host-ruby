@@ -340,10 +340,10 @@ module Sass
       def hash
         @hash ||= [
           _space.name,
-          FuzzyMath._round(channel0_or_nil),
-          FuzzyMath._round(channel1_or_nil),
-          FuzzyMath._round(channel2_or_nil),
-          FuzzyMath._round(alpha_or_nil)
+          FuzzyMath._hash(channel0_or_nil),
+          FuzzyMath._hash(channel1_or_nil),
+          FuzzyMath._hash(channel2_or_nil),
+          FuzzyMath._hash(alpha_or_nil)
         ].hash
       end
 

@@ -74,7 +74,7 @@ module Sass
         number.to_f.nan? ? lower_bound : number.clamp(lower_bound, upper_bound)
       end
 
-      def _round(number)
+      def _hash(number)
         number&.finite? ? (number * INVERSE_EPSILON).round : number
       end
     end

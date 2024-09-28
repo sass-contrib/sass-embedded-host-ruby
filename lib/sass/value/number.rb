@@ -99,7 +99,7 @@ module Sass
 
       # @return [Integer]
       def hash
-        @hash ||= FuzzyMath._round(canonical_units_value).hash
+        @hash ||= FuzzyMath._hash(canonical_units_value).hash
       end
 
       # @return [::Boolean]
