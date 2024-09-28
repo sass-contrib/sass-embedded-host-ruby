@@ -17,11 +17,11 @@ module Sass
           end
 
           def to_linear(channel)
-            FuzzyMath.sign(channel) * (channel.abs**(563 / 256.0))
+            (channel <=> 0) * (channel.abs**(563 / 256.0))
           end
 
           def from_linear(channel)
-            FuzzyMath.sign(channel) * (channel.abs**(256 / 563.0))
+            (channel <=> 0) * (channel.abs**(256 / 563.0))
           end
 
           private

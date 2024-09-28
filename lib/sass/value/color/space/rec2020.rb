@@ -28,12 +28,12 @@ module Sass
 
           def to_linear(channel)
             abs = channel.abs
-            abs < BETA * 4.5 ? channel / 4.5 : FuzzyMath.sign(channel) * (((abs + ALPHA - 1) / ALPHA)**(1 / 0.45))
+            abs < BETA * 4.5 ? channel / 4.5 : (channel <=> 0) * (((abs + ALPHA - 1) / ALPHA)**(1 / 0.45))
           end
 
           def from_linear(channel)
             abs = channel.abs
-            abs > BETA ? FuzzyMath.sign(channel) * ((ALPHA * (abs**0.45)) - (ALPHA - 1)) : 4.5 * channel
+            abs > BETA ? (channel <=> 0) * ((ALPHA * (abs**0.45)) - (ALPHA - 1)) : 4.5 * channel
           end
 
           private

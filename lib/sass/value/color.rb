@@ -318,32 +318,32 @@ module Sass
 
         if legacy?
           return false unless other.legacy?
-          return false unless FuzzyMath.equals_nilable(other.alpha_or_nil, alpha_or_nil)
+          return false unless FuzzyMath.equals(other.alpha_or_nil, alpha_or_nil)
 
           if _space == other._space
-            FuzzyMath.equals_nilable(other.channel0_or_nil, channel0_or_nil) &&
-              FuzzyMath.equals_nilable(other.channel1_or_nil, channel1_or_nil) &&
-              FuzzyMath.equals_nilable(other.channel2_or_nil, channel2_or_nil)
+            FuzzyMath.equals(other.channel0_or_nil, channel0_or_nil) &&
+              FuzzyMath.equals(other.channel1_or_nil, channel1_or_nil) &&
+              FuzzyMath.equals(other.channel2_or_nil, channel2_or_nil)
           else
             _to_space(Space::RGB) == other._to_space(Space::RGB)
           end
         else
           other._space == _space &&
-            FuzzyMath.equals_nilable(other.channel0_or_nil, channel0_or_nil) &&
-            FuzzyMath.equals_nilable(other.channel1_or_nil, channel1_or_nil) &&
-            FuzzyMath.equals_nilable(other.channel2_or_nil, channel2_or_nil) &&
-            FuzzyMath.equals_nilable(other.alpha_or_nil, alpha_or_nil)
+            FuzzyMath.equals(other.channel0_or_nil, channel0_or_nil) &&
+            FuzzyMath.equals(other.channel1_or_nil, channel1_or_nil) &&
+            FuzzyMath.equals(other.channel2_or_nil, channel2_or_nil) &&
+            FuzzyMath.equals(other.alpha_or_nil, alpha_or_nil)
         end
       end
 
       # @return [Integer]
       def hash
         @hash ||= [
-          _space,
-          channel0_or_nil&.finite? ? (channel0_or_nil * FuzzyMath::INVERSE_EPSILON).round : channel0_or_nil, # rubocop:disable Security/CompoundHash
-          channel1_or_nil&.finite? ? (channel1_or_nil * FuzzyMath::INVERSE_EPSILON).round : channel1_or_nil, # rubocop:disable Security/CompoundHash
-          channel2_or_nil&.finite? ? (channel2_or_nil * FuzzyMath::INVERSE_EPSILON).round : channel2_or_nil, # rubocop:disable Security/CompoundHash
-          alpha_or_nil&.finite? ? (alpha_or_nil * FuzzyMath::INVERSE_EPSILON).round : alpha_or_nil # rubocop:disable Security/CompoundHash
+          _space.name,
+          FuzzyMath._round(channel0_or_nil),
+          FuzzyMath._round(channel1_or_nil),
+          FuzzyMath._round(channel2_or_nil),
+          FuzzyMath._round(alpha_or_nil)
         ].hash
       end
 
