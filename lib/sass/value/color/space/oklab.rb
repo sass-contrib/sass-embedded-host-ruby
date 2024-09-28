@@ -37,21 +37,15 @@ module Sass
 
               LMS.convert(
                 dest,
-                ((
-                  (Conversions::OKLAB_TO_LMS[0] * lightness) +
-                  (Conversions::OKLAB_TO_LMS[1] * a) +
-                  (Conversions::OKLAB_TO_LMS[2] * b)
-                )**3) + 0.0,
-                ((
-                  (Conversions::OKLAB_TO_LMS[3] * lightness) +
-                  (Conversions::OKLAB_TO_LMS[4] * a) +
-                  (Conversions::OKLAB_TO_LMS[5] * b)
-                )**3) + 0.0,
-                ((
-                  (Conversions::OKLAB_TO_LMS[6] * lightness) +
-                  (Conversions::OKLAB_TO_LMS[7] * a) +
-                  (Conversions::OKLAB_TO_LMS[8] * b)
-                )**3) + 0.0,
+                ((Conversions::OKLAB_TO_LMS[0] * lightness) +
+                 (Conversions::OKLAB_TO_LMS[1] * a) +
+                 (Conversions::OKLAB_TO_LMS[2] * b))**3,
+                ((Conversions::OKLAB_TO_LMS[3] * lightness) +
+                 (Conversions::OKLAB_TO_LMS[4] * a) +
+                 (Conversions::OKLAB_TO_LMS[5] * b))**3,
+                ((Conversions::OKLAB_TO_LMS[6] * lightness) +
+                 (Conversions::OKLAB_TO_LMS[7] * a) +
+                 (Conversions::OKLAB_TO_LMS[8] * b))**3,
                 alpha,
                 missing_lightness:,
                 missing_chroma:,

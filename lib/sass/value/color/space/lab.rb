@@ -63,7 +63,7 @@ module Sass
           private
 
           def _convert_f_to_x_or_z(component)
-            cubed = (component**3) + 0.0
+            cubed = component**3
             cubed > Utils::LAB_EPSILON ? cubed : ((116 * component) - 16) / Utils::LAB_KAPPA
           end
         end
