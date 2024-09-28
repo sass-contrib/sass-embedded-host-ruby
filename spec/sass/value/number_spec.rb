@@ -5,7 +5,7 @@ require 'spec_helper'
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/number.test.ts
 describe Sass::Value::Number do
   let(:precision) do
-    10
+    Sass::Value.const_get(:FuzzyMath)::PRECISION
   end
 
   describe 'unitless' do
@@ -74,15 +74,15 @@ describe Sass::Value::Number do
         end
 
         it 'equals the same number within precision tolerance' do
-          expect(number).to eq(described_class.new(123 + 10.pow(-precision - 2)))
-          expect(number).to eq(described_class.new(123 - 10.pow(-precision - 2)))
+          expect(number).to eq(described_class.new(123 + 10.pow(-precision - 1)))
+          expect(number).to eq(described_class.new(123 - 10.pow(-precision - 1)))
         end
 
         it "doesn't equal a different number" do
           expect(number).not_to eq(described_class.new(122))
           expect(number).not_to eq(described_class.new(124))
-          expect(number).not_to eq(described_class.new(123 + 10.pow(-precision - 1)))
-          expect(number).not_to eq(described_class.new(123 - 10.pow(-precision - 1)))
+          expect(number).not_to eq(described_class.new(123 + 10.pow(-precision)))
+          expect(number).not_to eq(described_class.new(123 - 10.pow(-precision)))
         end
 
         it "doesn't equal a number with units" do

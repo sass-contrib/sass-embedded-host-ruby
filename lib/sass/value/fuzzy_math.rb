@@ -4,7 +4,7 @@ module Sass
   module Value
     # Sass's {FuzzyMath} module.
     module FuzzyMath
-      PRECISION = 11
+      PRECISION = 10
 
       EPSILON = 10**-PRECISION
 
