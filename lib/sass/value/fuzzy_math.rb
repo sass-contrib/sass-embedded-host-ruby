@@ -47,9 +47,8 @@ module Sass
 
       def integer?(number)
         return false unless number.finite?
-        return true if number.integer?
 
-        (number.round - number.round(PRECISION)).abs < EPSILON
+        equals(number.round, number.round(PRECISION))
       end
 
       def to_i(number)
