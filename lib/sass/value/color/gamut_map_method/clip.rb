@@ -29,7 +29,7 @@ module Sass
 
             case channel
             when LinearChannel
-              FuzzyMath.clamp_like_css(value, channel.min, channel.max)
+              FuzzyMath._clamp_like_css(value, channel.min, channel.max)
             else
               value
             end

@@ -44,7 +44,7 @@ RSpec::Matchers.matcher :raise_sass_compile_error do
   supports_block_expectations
 end
 
-epsilon = Sass::Value.const_get(:FuzzyMath)::EPSILON
+precision = Sass::Value.const_get(:FuzzyMath)::PRECISION - 1
 
 RSpec::Matchers.matcher :fuzzy_eq do |expected|
   match do |actual|
@@ -56,7 +56,7 @@ RSpec::Matchers.matcher :fuzzy_eq do |expected|
       expect(actual.channel_missing?('alpha')).to eq(expected.channel_missing?('alpha'))
       expect(actual.alpha).to fuzzy_eq(expected.alpha)
     when Numeric
-      expect(actual).to be_within(epsilon).of(expected)
+      expect(actual).to be_within(((10**-precision) / 2)).of(expected.round(precision))
     else
       expect(actual).to eq(expected)
     end
@@ -67,7 +67,7 @@ RSpec::Matchers.matcher :fuzzy_match_array do |expected|
   match do |actual|
     expect(actual).to match_array(expected.map do |obj|
       if obj.is_a?(Numeric)
-        a_value_within(epsilon).of(obj)
+        a_value_within((10**-precision) / 2).of(obj.round(precision))
       else
         obj
       end

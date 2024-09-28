@@ -18,12 +18,12 @@ module Sass
 
           def to_linear(channel)
             abs = channel.abs
-            abs <= 16 / 512.0 ? channel / 16.0 : FuzzyMath.sign(channel) * (abs**1.8)
+            abs <= 16 / 512.0 ? channel / 16.0 : (channel <=> 0) * (abs**1.8)
           end
 
           def from_linear(channel)
             abs = channel.abs
-            abs >= 1 / 512.0 ? FuzzyMath.sign(channel) * (abs**(1 / 1.8)) : 16 * channel
+            abs >= 1 / 512.0 ? (channel <=> 0) * (abs**(1 / 1.8)) : 16 * channel
           end
 
           private
