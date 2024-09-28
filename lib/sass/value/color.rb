@@ -101,7 +101,7 @@ module Sass
         _to_gamut(GamutMapMethod.from_name(method, 'method'))
       end
 
-      # @return [Array<Numeric>]
+      # @return [Array<Numeric, nil>]
       def channels_or_nil
         [channel0_or_nil, channel1_or_nil, channel2_or_nil].freeze
       end
