@@ -26,8 +26,7 @@ module Sass
               green = 0 if green.nil?
               blue = 0 if blue.nil?
 
-              max = [red, green, blue].max
-              min = [red, green, blue].min
+              min, max = [red, green, blue].minmax
               delta = max - min
 
               hue = if max == min
