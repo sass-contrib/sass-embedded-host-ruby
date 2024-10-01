@@ -37,7 +37,7 @@ module Sass
           # @return [Numeric]
           def srgb_and_display_p3_to_linear(channel)
             abs = channel.abs
-            abs < 0.04045 ? channel / 12.92 : (channel <=> 0) * (((abs + 0.055) / 1.055)**2.4)
+            abs <= 0.04045 ? channel / 12.92 : (channel <=> 0) * (((abs + 0.055) / 1.055)**2.4)
           end
 
           # The algorithm for converting a single `srgb` or `display-p3` channel to
