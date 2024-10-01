@@ -6,9 +6,9 @@ module Sass
     module FuzzyMath
       PRECISION = 10
 
-      EPSILON = 10**-PRECISION
+      EPSILON = 10**(-PRECISION - 1)
 
-      INVERSE_EPSILON = 10**PRECISION
+      INVERSE_EPSILON = 10**(PRECISION + 1)
 
       module_function
 

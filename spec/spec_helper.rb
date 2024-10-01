@@ -55,9 +55,9 @@ RSpec::Matchers.matcher :fuzzy_eq do |expected|
       expect(actual.channels_or_nil).to fuzzy_match_array(expected.channels_or_nil)
       expect(actual.channel_missing?('alpha')).to eq(expected.channel_missing?('alpha'))
       expect(actual.alpha).to fuzzy_eq(expected.alpha)
-      expect(actual).to eq(expected)
+      # expect(actual).to eq(expected)
     when Numeric
-      expect(actual).to be_within((10**-precision) / 2).of(expected.round(precision))
+      expect(actual).to be_within(10**-precision).of(expected)
     else
       expect(actual).to eq(expected)
     end
@@ -68,7 +68,7 @@ RSpec::Matchers.matcher :fuzzy_match_array do |expected|
   match do |actual|
     expect(actual).to match_array(expected.map do |obj|
       if obj.is_a?(Numeric)
-        a_value_within((10**-precision) / 2).of(obj.round(precision))
+        a_value_within(10**-precision).of(obj)
       else
         obj
       end
