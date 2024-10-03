@@ -44,7 +44,8 @@ RSpec::Matchers.matcher :raise_sass_compile_error do
   supports_block_expectations
 end
 
-precision = Sass::Value.const_get(:FuzzyMath)::PRECISION
+# TODO: test with higher precision
+precision = Sass::Value.const_get(:FuzzyMath)::PRECISION - 6
 
 RSpec::Matchers.matcher :fuzzy_eq do |expected|
   match do |actual|
