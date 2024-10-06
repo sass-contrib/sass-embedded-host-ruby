@@ -82,8 +82,10 @@ file 'cli.rb' => %w[dart-sass] do |t|
         module CLI
           INTERPRETER = '#{interpreter}'
 
+          INTERPRETER_SUFFIX = '/#{File.basename(interpreter)}'
+
           COMMAND = [
-            *(ELF::INTERPRETER if ELF::INTERPRETER != INTERPRETER && ELF::INTERPRETER&.end_with?(INTERPRETER)),
+            *(ELF::INTERPRETER if ELF::INTERPRETER != INTERPRETER && ELF::INTERPRETER&.end_with?(INTERPRETER_SUFFIX)),
             #{command_source}
           ].freeze
         end
