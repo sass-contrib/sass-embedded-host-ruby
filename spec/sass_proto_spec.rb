@@ -63,9 +63,9 @@ RSpec.describe Sass do
                                                                             ])
                                              ]),
     __LINE__ => Sass::Value::Calculation.clamp(Sass::Value::String.new('var(--clamp)', quoted: false)),
-    __LINE__ => Sass::Value::Color.new(red: 0, green: 0, blue: 0, alpha: 1),
-    __LINE__ => Sass::Value::Color.new(hue: 0, saturation: 0, lightness: 0, alpha: 1),
-    __LINE__ => Sass::Value::Color.new(hue: 0, whiteness: 0, blackness: 0, alpha: 1),
+    __LINE__ => Sass::Value::Color.new(red: 0.1, green: 0.2, blue: nil, alpha: 1, space: 'rgb'),
+    __LINE__ => Sass::Value::Color.new(hue: 0.4, saturation: nil, lightness: 0.6, alpha: 1, space: 'hsl'),
+    __LINE__ => Sass::Value::Color.new(hue: nil, whiteness: 0.8, blackness: 0.9, alpha: 1, space: 'hwb'),
     __LINE__ => Sass::Value::List.new,
     __LINE__ => Sass::Value::List.new([Sass::Value::String.new('a')]),
     __LINE__ => Sass::Value::List.new([Sass::Value::String.new('a')], separator: ','),
