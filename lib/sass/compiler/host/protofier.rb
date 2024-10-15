@@ -112,7 +112,7 @@ module Sass
           when :number
             Number.from_proto(obj)
           when :color
-            obj.to_s # TODO: https://github.com/protocolbuffers/protobuf/issues/18807
+            obj.to_s if RUBY_ENGINE == 'jruby' # TODO: https://github.com/protocolbuffers/protobuf/issues/18807
             Sass::Value::Color.send(
               :for_space,
               obj.space,
