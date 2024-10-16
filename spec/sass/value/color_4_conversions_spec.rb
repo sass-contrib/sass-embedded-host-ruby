@@ -155,5 +155,21 @@ describe Sass::Value::Color do
         end
       end
     end
+
+    describe 'interpolate()' do
+      it 'interpolates a rectangular space without options' do
+        expect(
+          described_class.new(red: 100, green: 200, blue: 50)
+            .interpolate(described_class.new(red: 255, green: 255, blue: 255))
+        ).to eq(described_class.new(red: 177.5, green: 227.5, blue: 152.5))
+      end
+
+      it 'interpolates a polar space without options' do
+        expect(
+          described_class.new(hue: 180, saturation: 100, lightness: 50)
+            .interpolate(described_class.new(red: 100, green: 200, blue: 50))
+        ).to eq(described_class.new(hue: 140, saturation: 80, lightness: 49.509803921568626))
+      end
+    end
   end
 end

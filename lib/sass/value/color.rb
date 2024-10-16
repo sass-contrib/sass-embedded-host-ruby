@@ -569,8 +569,8 @@ module Sass
 
         return false if original.equal?(output)
 
-        output_channel = output.space.channels[output_channel_index]
-        original_channel = original.space.channels.find do |channel|
+        output_channel = output._space.channels[output_channel_index]
+        original_channel = original._space.channels.find do |channel|
           output_channel.analogous?(channel)
         end
 

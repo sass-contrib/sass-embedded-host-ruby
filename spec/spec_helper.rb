@@ -44,8 +44,7 @@ RSpec::Matchers.matcher :raise_sass_compile_error do
   supports_block_expectations
 end
 
-# TODO: test with higher precision
-precision = Sass::Value.const_get(:FuzzyMath)::PRECISION - 6
+precision = Sass::Value.const_get(:FuzzyMath)::PRECISION + 1
 
 RSpec::Matchers.matcher :fuzzy_eq do |expected|
   match do |actual|
@@ -56,7 +55,7 @@ RSpec::Matchers.matcher :fuzzy_eq do |expected|
       expect(actual.channels_or_nil).to fuzzy_match_array(expected.channels_or_nil)
       expect(actual.channel_missing?('alpha')).to eq(expected.channel_missing?('alpha'))
       expect(actual.alpha).to fuzzy_eq(expected.alpha)
-      # expect(actual).to eq(expected)
+      expect(actual).to eq(expected)
     when Numeric
       expect(actual).to be_within(10**-precision).of(expected)
     else
