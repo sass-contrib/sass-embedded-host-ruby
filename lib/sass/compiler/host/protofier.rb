@@ -39,7 +39,7 @@ module Sass
               argument_list: EmbeddedProtocol::Value::ArgumentList.new(
                 id: obj.instance_eval { @id },
                 contents: obj.to_a.map { |element| to_proto(element) },
-                keywords: obj.keywords.to_h { |key, value| [key.to_s, to_proto(value)] },
+                keywords: obj.keywords.each.with_object({}) { |(key, value), hash| hash[key.to_s] = to_proto(value) },
                 separator: ListSeparator.to_proto(obj.separator)
               )
             )
@@ -126,8 +126,8 @@ module Sass
               obj.contents.map do |element|
                 from_proto(element)
               end,
-              obj.keywords.entries.to_h do |key, value|
-                [key.to_sym, from_proto(value)]
+              obj.keywords.to_enum.with_object({}) do |(key, value), hash|
+                hash[key.to_sym] = from_proto(value)
               end,
               ListSeparator.from_proto(obj.separator)
             ).instance_eval do
@@ -144,8 +144,8 @@ module Sass
             )
           when :map
             Sass::Value::Map.new(
-              obj.entries.to_h do |entry|
-                [from_proto(entry.key), from_proto(entry.value)]
+              obj.entries.to_enum.with_object({}) do |entry, hash|
+                hash[from_proto(entry.key)] = from_proto(entry.value)
               end
             )
           when :compiler_function

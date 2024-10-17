@@ -141,10 +141,11 @@ module Sass
           'pixel density': %w[dpi dpcm dppx]
         }.freeze
 
-        TYPES_BY_UNIT = UNITS_BY_TYPE.invert
-                                     .to_a
-                                     .flat_map { |pair| pair[0].map { |key| [key, pair[1]] } }
-                                     .to_h
+        TYPES_BY_UNIT = UNITS_BY_TYPE.each.with_object({}) do |(key, values), hash|
+          values.each do |value|
+            hash[value] = key
+          end
+        end
 
         module_function
 

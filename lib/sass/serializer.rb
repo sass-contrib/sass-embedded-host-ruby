@@ -5,17 +5,11 @@ module Sass
   module Serializer
     module_function
 
-    CSS_ESCAPE = {
-      "\0" => "\uFFFD",
-      '\\' => '\\\\',
-      '"' => '\\"',
-      "'" => "\\'",
-      **[*"\x01".."\x08", *"\x0A".."\x1F", "\x7F"].product(
-        [*'0'..'9', *'a'..'f', *'A'..'F', "\t", ' ', nil]
-      ).to_h do |c, x|
-        ["#{c}#{x}".freeze, "\\#{c.ord.to_s(16)}#{" #{x}" if x}".freeze]
-      end
-    }.freeze
+    CSS_ESCAPE = [*"\x01".."\x08", *"\x0A".."\x1F", "\x7F"]
+                 .product([*'0'..'9', *'a'..'f', *'A'..'F', "\t", ' ', nil])
+                 .each.with_object({ "\0" => "\uFFFD", '\\' => '\\\\', '"' => '\\"', "'" => "\\'" }) do |(c, x), h|
+                   h["#{c}#{x}".freeze] = "\\#{c.ord.to_s(16)}#{" #{x}" if x}".freeze
+                 end.freeze
 
     private_constant :CSS_ESCAPE
 
