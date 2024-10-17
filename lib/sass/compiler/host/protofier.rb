@@ -39,7 +39,7 @@ module Sass
               argument_list: EmbeddedProtocol::Value::ArgumentList.new(
                 id: obj.instance_eval { @id },
                 contents: obj.to_a.map { |element| to_proto(element) },
-                keywords: obj.keywords.each.with_object({}) { |(key, value), hash| hash[key.to_s] = to_proto(value) },
+                keywords: obj.keywords.each_with_object({}) { |(key, value), hash| hash[key.to_s] = to_proto(value) },
                 separator: ListSeparator.to_proto(obj.separator)
               )
             )

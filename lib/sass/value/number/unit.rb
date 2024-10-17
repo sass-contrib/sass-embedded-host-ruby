@@ -141,7 +141,7 @@ module Sass
           'pixel density': %w[dpi dpcm dppx]
         }.freeze
 
-        TYPES_BY_UNIT = UNITS_BY_TYPE.each.with_object({}) do |(key, values), hash|
+        TYPES_BY_UNIT = UNITS_BY_TYPE.each_with_object({}) do |(key, values), hash|
           values.each do |value|
             hash[value] = key
           end
