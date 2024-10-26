@@ -231,7 +231,7 @@ module FileUtils
       s.platform == platform
     end
 
-    raise if resolver_spec.nil?
+    raise Gem::UnsatisfiableDependencyError, dependency_request if resolver_spec.nil?
 
     options = { force: true, install_dir: }
     if Rake::FileUtilsExt.nowrite_flag
