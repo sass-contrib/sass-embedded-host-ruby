@@ -10,14 +10,14 @@ end
 
 CLEAN.include %w[protoc.exe ruby *.proto *.tar.gz *.zip]
 
-CLOBBER.include %w[dart-sass cli.rb embedded_sass_pb.rb]
+CLOBBER.include %w[dart-sass cli.rb embedded_sass_pb.rb node_modules package-lock.json]
 
 file 'protoc.exe' do |t|
   fetch(ENV.fetch('PROTOC_BIN') { SassConfig.default_protoc }, t.name)
   chmod 'a+x', t.name
 end
 
-file 'dart-sass' do |t|
+file 'dart-sass/sass' do |t|
   raise if ENV.key?('DART_SASS')
 
   gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
@@ -29,34 +29,58 @@ rescue StandardError
   rm archive
 end
 
+file 'node_modules/sass' do
+  sh 'npm', 'install'
+end
+
+task 'dart-sass' do
+  Rake::Task['dart-sass/sass'].invoke
+rescue NotImplementedError
+  Rake::Task['node_modules/sass'].invoke
+end
+
 file 'cli.rb' => %w[dart-sass] do |t|
   require_relative '../../lib/sass/elf'
 
-  exe = 'dart-sass/sass'
-  exe = "#{exe}#{['', '.bat', '.exe'].find { |ext| File.exist?("#{exe}#{ext}") }}"
+  begin
+    exe = 'dart-sass/sass'
+    exe = "#{exe}#{['', '.bat', '.exe'].find { |ext| File.exist?("#{exe}#{ext}") }}"
 
-  raise "#{exe} not found" unless File.exist?(exe)
+    raise Errno::ENOENT, exe unless File.exist?(exe)
 
-  runtime = 'dart-sass/src/dart'
-  runtime = "#{runtime}#{['', '.exe'].find { |ext| File.exist?("#{runtime}#{ext}") }}"
-  snapshot = 'dart-sass/src/sass.snapshot'
+    runtime = 'dart-sass/src/dart'
+    runtime = "#{runtime}#{['', '.exe'].find { |ext| File.exist?("#{runtime}#{ext}") }}"
+    snapshot = 'dart-sass/src/sass.snapshot'
 
-  command = if File.exist?(runtime) && File.exist?(snapshot)
-              [runtime, snapshot]
-            else
-              [exe]
-            end
+    command = if File.exist?(runtime) && File.exist?(snapshot)
+                [runtime, snapshot]
+              else
+                [exe]
+              end
 
-  interpreter = File.open(command[0], 'rb') do |file|
-    Sass.const_get(:ELF).new(file).interpreter
-  rescue ArgumentError
-    nil
-  end
+    interpreter = File.open(command[0], 'rb') do |file|
+      Sass.const_get(:ELF).new(file).interpreter
+    rescue ArgumentError
+      nil
+    end
 
-  command_source = command.map do |argument|
-    "File.absolute_path('#{argument}', __dir__).freeze"
-  end.join(',
+    command_source = command.map do |argument|
+      "File.absolute_path('#{argument}', __dir__).freeze"
+    end.join(',
       ')
+  rescue Errno::ENOENT
+    package = 'node_modules/sass'
+
+    script = File.join(package, SassConfig.package_json(package)['bin']['sass'])
+
+    interpreter = nil
+
+    command_source = [
+      "'node'",
+      "File.absolute_path('#{script}', __dir__).freeze"
+    ].join(',
+      ')
+  end
 
   if interpreter.nil?
     File.write(t.name, <<~CLI_RB)
@@ -290,12 +314,14 @@ module SassConfig
 
   module_function
 
-  def dart_sass_version
+  def package_json(path = '.')
     require 'json'
 
-    spec = JSON.parse(File.read(File.absolute_path('package.json', __dir__)))
+    JSON.parse(File.read(File.absolute_path('package.json', path)))
+  end
 
-    spec['dependencies']['sass']
+  def dart_sass_version
+    package_json['dependencies']['sass']
   end
 
   def default_dart_sass
