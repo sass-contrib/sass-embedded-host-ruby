@@ -8,9 +8,24 @@ task install: %w[cli.rb] do
   Rake::Task['embedded_sass_pb.rb'].invoke unless File.exist?('embedded_sass_pb.rb')
 end
 
-CLEAN.include %w[protoc.exe ruby *.proto *.tar.gz *.zip]
+CLEAN.include %w[
+  protoc.exe
+  ruby
+  *.proto
+  *.tar.gz
+  *.zip
+]
 
-CLOBBER.include %w[dart-sass cli.rb embedded_sass_pb.rb node_modules package-lock.json]
+CLOBBER.include %w[
+  dart-sass
+  cli.rb
+  embedded_sass_pb.rb
+  node_modules
+  bun.lockb
+  package-lock.json
+  pnpm-lock.yaml
+  yarn.lock
+]
 
 file 'protoc.exe' do |t|
   fetch(ENV.fetch('PROTOC_BIN') { SassConfig.default_protoc }, t.name)
@@ -31,6 +46,16 @@ end
 
 file 'node_modules/sass' do
   sh 'npm', 'install'
+rescue StandardError
+  begin
+    sh 'yarn', 'install'
+  rescue StandardError
+    begin
+      sh 'pnpm', 'install'
+    rescue StandardError
+      sh 'bun', 'install'
+    end
+  end
 end
 
 task 'dart-sass' do
