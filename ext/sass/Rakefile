@@ -33,7 +33,7 @@ file 'protoc.exe' do |t|
 end
 
 file 'dart-sass/sass' do |t|
-  raise if ENV.key?('DART_SASS')
+  raise RuntimeError if ENV.key?('DART_SASS')
 
   gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
     mv File.absolute_path("ext/sass/#{t.name}", dir), t.name
@@ -184,7 +184,7 @@ module FileUtils
       entry = entries.nextElement
       name = entry.getName
       path = dest_path.resolve(name).normalize
-      raise unless path.startsWith(dest_path)
+      raise SecurityError unless path.startsWith(dest_path)
 
       Rake.rake_output_message "  inflating: #{name}" if Rake::FileUtilsExt.verbose_flag
 
