@@ -70,7 +70,7 @@ jobs:
       - name: Install
         run: rake -f -r bundler/gem_tasks install
 
-  spec-musl:
+  spec-container:
 
     name: spec (alpine-latest, ${{ matrix.ruby-version }})
 
@@ -106,11 +106,72 @@ jobs:
       - name: Spec
         run: bundle exec rake spec
 
+  spec-vm:
+
+    name: spec (${{ matrix.vm }}-latest)
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - vm: freebsd
+            install-dependencies: |
+              pkg install -y node npm protobuf ruby rubygem-bundler rubygem-rake
+          - vm: openbsd
+            install-dependencies: |
+              ruby=$(pkg_info -Q ruby | grep '^ruby-[0-9]' | sort -rV | head -n 1)
+              pkg_add node protobuf $ruby
+              pkg_info $ruby | grep 'ln -sf' | $SHELL
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup vm
+        if: matrix.vm == 'freebsd'
+        uses: vmactions/freebsd-vm@v1
+
+      - name: Setup vm
+        if: matrix.vm == 'openbsd'
+        uses: vmactions/openbsd-vm@v1
+
+      - name: Setup vmshell
+        run: |
+          _osname=${{ matrix.vm }}
+          tee /home/runner/.local/bin/vmshell <<EOF
+          #!/usr/bin/env bash
+          ssh $_osname "cd \$(printf %q "\$PWD") && exec \\\$SHELL -e"<\$1
+          EOF
+          chmod a+x /home/runner/.local/bin/vmshell
+
+      - name: Install dependencies
+        run: ${{ matrix.install-dependencies }}
+        shell: vmshell {0}
+
+      - name: Bundle
+        run: bundle install
+        shell: vmshell {0}
+
+      - name: Compile
+        run: EMBEDDED_SASS_PROTOCOL=https://github.com/sass/sass/raw/HEAD/spec/embedded_sass.proto PROTOC_BIN=$(which protoc) bundle exec rake compile
+        shell: vmshell {0}
+
+      - name: Install
+        run: rake -f -r bundler/gem_tasks install
+        shell: vmshell {0}
+
+      # TODO: https://github.com/sass/dart-sass/pull/2413
+      # - name: Spec
+      #   run: bundle exec rake spec
+      #   shell: freebsd {0}
+
   release:
 
     if: github.event.repository.fork == false && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
-    needs: [lint, spec, spec-musl]
+    needs: [lint, spec, spec-container, spec-vm]
 
     runs-on: ubuntu-latest
 
