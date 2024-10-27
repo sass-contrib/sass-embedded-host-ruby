@@ -410,7 +410,7 @@ module SassConfig
     os = case Platform::OS
          when 'darwin'
            'osx'
-         when 'linux'
+         when 'linux', 'linux-android', 'linux-musl', 'linux-uclibc'
            'linux'
          when 'windows'
            'windows'

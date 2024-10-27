@@ -79,9 +79,6 @@ jobs:
     container:
       image: docker.io/library/ruby:${{ matrix.ruby-version }}-alpine
 
-    env:
-      PROTOC_BIN: /usr/bin/protoc
-
     strategy:
       fail-fast: false
       matrix:
@@ -95,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: apk add alpine-sdk protoc
+        run: apk add build-base
 
       - name: Bundle
         run: bundle install
