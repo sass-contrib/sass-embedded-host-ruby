@@ -70,7 +70,7 @@ jobs:
       - name: Install
         run: rake -f -r bundler/gem_tasks install
 
-  spec-container:
+  spec-musl:
 
     name: spec (alpine-latest, ${{ matrix.ruby-version }})
 
@@ -106,7 +106,43 @@ jobs:
       - name: Spec
         run: bundle exec rake spec
 
-  spec-vm:
+  spec-nix:
+
+    name: spec (nix-latest)
+
+    runs-on: ubuntu-latest
+
+    services:
+      nix:
+        image: docker.io/nixos/nix:latest
+        options: --tty
+        volumes:
+          - ${{ github.workspace }}:${{ github.workspace }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup shell
+        run: |
+          mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
+          #!/bin/bash --
+          exec docker exec -i -w "$PWD" ${{ job.services.nix.id }} nix-shell --packages ruby --run "exec \"\$SHELL\"$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
+          EOF
+
+      - name: Bundle
+        run: bundle install
+
+      - name: Compile
+        run: bundle exec rake compile
+
+      - name: Install
+        run: rake -f -r bundler/gem_tasks install
+
+      - name: Spec
+        run: bundle exec rake spec
+
+  spec-bsd:
 
     name: spec (${{ matrix.vm }}-latest)
 
@@ -137,41 +173,34 @@ jobs:
         if: matrix.vm == 'openbsd'
         uses: vmactions/openbsd-vm@v1
 
-      - name: Setup vmshell
+      - name: Setup shell
         run: |
-          _osname=${{ matrix.vm }}
-          tee /home/runner/.local/bin/vmshell <<EOF
-          #!/usr/bin/env bash
-          ssh $_osname "cd \$(printf %q "\$PWD") && exec \\\$SHELL -e"<\$1
+          mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
+          #!/bin/bash --
+          exec ssh ${{ matrix.vm }} "cd $(printf %q "$PWD") && exec \"\$SHELL\"$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
           EOF
-          chmod a+x /home/runner/.local/bin/vmshell
 
       - name: Install dependencies
         run: ${{ matrix.install-dependencies }}
-        shell: vmshell {0}
 
       - name: Bundle
         run: bundle install
-        shell: vmshell {0}
 
       - name: Compile
         run: EMBEDDED_SASS_PROTOCOL=https://github.com/sass/sass/raw/HEAD/spec/embedded_sass.proto PROTOC_BIN=$(which protoc) bundle exec rake compile
-        shell: vmshell {0}
 
       - name: Install
         run: rake -f -r bundler/gem_tasks install
-        shell: vmshell {0}
 
       # TODO: https://github.com/sass/dart-sass/pull/2413
       # - name: Spec
       #   run: bundle exec rake spec
-      #   shell: freebsd {0}
 
   release:
 
     if: github.event.repository.fork == false && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
-    needs: [lint, spec, spec-container, spec-vm]
+    needs: [lint, spec, spec-musl, spec-nix, spec-bsd]
 
     runs-on: ubuntu-latest
 
