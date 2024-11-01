@@ -1,0 +1,39 @@
+name: Setup Nix
+description: Initialize nixos/nix container
+inputs:
+  image:
+    description: 'Set up an environment with specified nix container image'
+    required: false
+    default: 'docker.io/nixos/nix:latest'
+  packages:
+    description: 'Set up an environment in which the specified packages are present'
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - run: /usr/bin/docker pull ${{ inputs.image }}
+      shell: bash
+
+    - id: container
+      run: echo "id=$(/usr/bin/docker create --workdir "$GITHUB_WORKSPACE" -e GITHUB_ACTIONS=true -e CI=true -v /var/run/docker.sock:/var/run/docker.sock -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" --entrypoint sleep ${{ inputs.image }} infinity)" | tee -a "$GITHUB_OUTPUT"
+      shell: bash
+
+    - run: /usr/bin/docker start ${{ steps.container.outputs.id }}
+      shell: bash
+
+    - run: /usr/bin/docker ps --all --filter id=${{ steps.container.outputs.id }} --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+      shell: bash
+
+    - run: /usr/bin/docker inspect --format "{{range .Config.Env}}{{println .}}{{end}}" ${{ steps.container.outputs.id }}
+      shell: bash
+
+    - run: |
+        mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
+        #!/bin/bash --
+        exec /usr/bin/docker exec -i -w "$PWD" ${{ steps.container.outputs.id }} nix-shell --packages ${{ inputs.packages }} --run "exec bash$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
+        EOF
+      shell: bash
+
+    - run: env
+      shell: bash

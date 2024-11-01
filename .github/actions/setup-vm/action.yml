@@ -1,0 +1,38 @@
+name: Setup vm
+description: Initialize virtual machine
+inputs:
+  os:
+    description: 'Set up an environment with specified os'
+    required: true
+  run:
+    description: 'Set up an environment with specified run command'
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - uses: vmactions/freebsd-vm@v1
+      if: inputs.os == 'freebsd'
+      with:
+        copyback: false
+        usesh: true
+        prepare: pkg install -y bash
+        run: set -e; ${{ inputs.run }}
+
+    - uses: vmactions/openbsd-vm@v1
+      if: inputs.os == 'openbsd'
+      with:
+        copyback: false
+        usesh: true
+        prepare: pkg_add bash
+        run: set -e; ${{ inputs.run }}
+
+    - run: |
+        mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
+        #!/bin/bash --
+        exec ssh ${{ inputs.os }} "cd $(printf %q "$PWD") && exec bash$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
+        EOF
+      shell: bash
+
+    - run: env
+      shell: bash

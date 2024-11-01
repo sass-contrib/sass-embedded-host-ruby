@@ -70,51 +70,36 @@ jobs:
             container:
               image: docker.io/nixos/nix:latest
           - os: ubuntu-latest
-            vm: freebsd
+            vm:
+              os: freebsd
+              run: pkg install -y node npm protobuf ruby rubygem-bundler rubygem-rake
           - os: ubuntu-latest
-            vm: openbsd
+            vm:
+              os: openbsd
+              run: |
+                ruby=$(pkg_info -Q ruby | grep '^ruby-[0-9]' | sort -rV | head -n 1)
+                pkg_add node protobuf "$ruby"
+                pkg_info "$ruby" | grep 'ln -sf' | $SHELL
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup vm (freebsd)
-        if: matrix.vm == 'freebsd'
-        uses: vmactions/freebsd-vm@v1
-
-      - name: Setup vm (openbsd)
-        if: matrix.vm == 'openbsd'
-        uses: vmactions/openbsd-vm@v1
-
-      - name: Setup vm shell
+      - name: Initialize vm
         if: matrix.vm
-        run: |
-          mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
-          #!/bin/bash --
-          exec ssh ${{ matrix.vm }} "cd $(printf %q "$PWD") && exec \"\$SHELL\"$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
-          EOF
+        uses: ./.github/actions/setup-vm
+        with:
+          os: ${{ matrix.vm.os }}
+          run: ${{ matrix.vm.run }}
 
-      - name: Setup nix-shell
+      - name: Initialize nix
         if: matrix.container.image == 'docker.io/nixos/nix:latest'
-        run: |
-          docker run --rm -d --name nix --volume "$PWD:$PWD" --entrypoint sleep ${{ matrix.container.image }} infinity
-          mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
-          #!/bin/bash --
-          exec docker exec -i -w "$PWD" nix nix-shell --packages ruby --run "exec \"\$SHELL\"$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
-          EOF
+        uses: ./.github/actions/setup-nix
+        with:
+          image: ${{ matrix.container.image }}
+          packages: ruby
 
-      - name: Install dependencies (freebsd)
-        if: matrix.vm == 'freebsd'
-        run: pkg install -y node npm protobuf ruby rubygem-bundler rubygem-rake
-
-      - name: Install dependencies (openbsd)
-        if: matrix.vm == 'openbsd'
-        run: |
-          ruby=$(pkg_info -Q ruby | grep '^ruby-[0-9]' | sort -rV | head -n 1)
-          pkg_add node protobuf "$ruby"
-          pkg_info "$ruby" | grep 'ln -sf' | $SHELL
-
-      - name: Install dependencies (alpine)
+      - name: Install dependencies
         if: endsWith(matrix.container.image, ':alpine') || endsWith(matrix.container.image, '-alpine')
         run: apk add build-base
 
