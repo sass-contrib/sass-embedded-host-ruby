@@ -77,9 +77,22 @@ jobs:
             vm:
               os: openbsd
               run: |
-                ruby=$(pkg_info -Q ruby | grep '^ruby-[0-9]' | sort -rV | head -n 1)
-                pkg_add node protobuf "$ruby"
-                pkg_info "$ruby" | grep 'ln -sf' | $SHELL
+                pkg_add node protobuf ruby%3.3 ruby-shims
+                echo 3.3 | tee /etc/ruby-version
+          - os: ubuntu-latest
+            vm:
+              os: netbsd
+              run: /usr/sbin/pkg_add nodejs protobuf ruby
+          - os: ubuntu-latest
+            vm:
+              os: dragonflybsd
+              run: pkg install -y libnghttp2 libuv node npm protobuf ruby rubygem-bundler rubygem-rake
+          - os: ubuntu-latest
+            vm:
+              os: omnios
+              run: |
+                pkg install build-essential node-22 protobuf ruby-33
+                pkg install "$(pkg search -HI -o pkg.name "$(ruby -e 'puts RbConfig::CONFIG["CC"]')")"
 
     steps:
       - name: Checkout

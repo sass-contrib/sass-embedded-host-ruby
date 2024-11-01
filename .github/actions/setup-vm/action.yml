@@ -27,6 +27,35 @@ runs:
         prepare: pkg_add bash
         run: set -e; ${{ inputs.run }}
 
+    - uses: vmactions/netbsd-vm@v1
+      if: inputs.os == 'netbsd'
+      with:
+        copyback: false
+        usesh: true
+        run: set -e; ${{ inputs.run }}
+
+    - uses: vmactions/dragonflybsd-vm@v1
+      if: inputs.os == 'dragonflybsd'
+      with:
+        copyback: false
+        usesh: true
+        prepare: pkg install -y bash
+        run: set -e; ${{ inputs.run }}
+
+    - uses: vmactions/solaris-vm@v1
+      if: inputs.os == 'solaris'
+      with:
+        copyback: false
+        usesh: true
+        run: set -e; ${{ inputs.run }}
+
+    - uses: vmactions/omnios-vm@v1
+      if: inputs.os == 'omnios'
+      with:
+        copyback: false
+        usesh: true
+        run: set -e; ${{ inputs.run }}
+
     - run: |
         mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
         #!/bin/bash --
