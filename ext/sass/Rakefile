@@ -28,18 +28,23 @@ CLOBBER.include %w[
 ]
 
 file 'protoc.exe' do |t|
-  fetch(ENV.fetch('PROTOC_BIN') { SassConfig.default_protoc }, t.name)
+  fetch(SassConfig.protoc, t.name)
+  chmod 'a+x', t.name
+rescue NotImplementedError
+  File.write(t.name, <<~PROTOC_EXE)
+    #!#{RbConfig.ruby}
+    # frozen_string_literal: true
+    Kernel.exec('protoc', *ARGV)
+  PROTOC_EXE
   chmod 'a+x', t.name
 end
 
 file 'dart-sass/sass' do |t|
-  raise RuntimeError if ENV.key?('DART_SASS')
-
   gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
     mv File.absolute_path("ext/sass/#{t.name}", dir), t.name
   end
 rescue StandardError
-  archive = fetch(ENV.fetch('DART_SASS') { SassConfig.default_dart_sass })
+  archive = fetch(SassConfig.dart_sass)
   unarchive archive
   rm archive
 end
@@ -146,7 +151,7 @@ file 'cli.rb' => %w[dart-sass] do |t|
 end
 
 file 'embedded_sass.proto' => %w[cli.rb] do |t|
-  fetch(ENV.fetch('EMBEDDED_SASS_PROTOCOL') { SassConfig.default_embedded_sass_protocol }, t.name)
+  fetch(SassConfig.embedded_sass_protocol, t.name)
 end
 
 rule '_pb.rb' => %w[.proto protoc.exe] do |t|
@@ -349,7 +354,7 @@ module SassConfig
     package_json['dependencies']['sass']
   end
 
-  def default_dart_sass
+  def dart_sass
     repo = 'https://github.com/sass/dart-sass'
 
     tag_name = dart_sass_version
@@ -394,7 +399,7 @@ module SassConfig
     "#{repo}/releases/download/#{tag_name}/dart-sass-#{tag_name}-#{os}-#{cpu}#{env}.#{ext}"
   end
 
-  def default_protoc
+  def protoc
     require 'rubygems/remote_fetcher'
 
     repo = 'https://repo.maven.apache.org/maven2/com/google/protobuf/protoc'
@@ -458,7 +463,7 @@ module SassConfig
     raise NotImplementedError, message
   end
 
-  def default_embedded_sass_protocol
+  def embedded_sass_protocol
     require 'json'
     require 'open3'
 
@@ -472,6 +477,8 @@ module SassConfig
     tag_name = JSON.parse(stdout)['protocolVersion']
 
     "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
+  rescue StandardError # TODO: remove after https://github.com/sass/dart-sass/pull/2413
+    'https://github.com/sass/sass/raw/HEAD/spec/embedded_sass.proto'
   end
 
   def development?

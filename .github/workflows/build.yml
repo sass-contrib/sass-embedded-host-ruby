@@ -128,15 +128,10 @@ jobs:
         run: bundle install
 
       - name: Compile
-        if: "!matrix.vm"
         run: bundle exec rake compile
 
-      - name: Compile
-        if: matrix.vm
-        run: EMBEDDED_SASS_PROTOCOL=https://github.com/sass/sass/raw/HEAD/spec/embedded_sass.proto PROTOC_BIN=$(which protoc) bundle exec rake compile
-
       - name: Spec
-        if: "!matrix.vm" # TODO: https://github.com/sass/dart-sass/pull/2413
+        if: "!matrix.vm" # TODO: remove after https://github.com/sass/dart-sass/pull/2413
         run: bundle exec rake spec
 
       - name: Install
