@@ -16,7 +16,7 @@ runs:
       shell: bash
 
     - id: container
-      run: echo "id=$(/usr/bin/docker create --workdir "$GITHUB_WORKSPACE" -e GITHUB_ACTIONS=true -e CI=true -v /var/run/docker.sock:/var/run/docker.sock -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" --entrypoint sleep ${{ inputs.image }} infinity)" | tee -a "$GITHUB_OUTPUT"
+      run: echo "id=$(/usr/bin/docker create -v /var/run/docker.sock:/var/run/docker.sock -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -v "$RUNNER_TEMP:$RUNNER_TEMP" --entrypoint sleep ${{ inputs.image }} infinity)" | tee -a "$GITHUB_OUTPUT"
       shell: bash
 
     - run: /usr/bin/docker start ${{ steps.container.outputs.id }}
@@ -28,10 +28,14 @@ runs:
     - run: /usr/bin/docker inspect --format "{{range .Config.Env}}{{println .}}{{end}}" ${{ steps.container.outputs.id }}
       shell: bash
 
+    - id: env
+      run: echo "env=$(env -0 | grep -z -v '^CI=\|^GITHUB_\|^RUNNER_' | sort -z | base64 -w 0)" | tee -a "$GITHUB_OUTPUT"
+      shell: bash
+
     - run: |
         mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
         #!/bin/bash --
-        exec /usr/bin/docker exec -i -w "$PWD" ${{ steps.container.outputs.id }} nix-shell --packages ${{ inputs.packages }} --run "exec bash$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
+        exec /usr/bin/docker exec -i ${{ steps.container.outputs.id }} nix-shell --packages ${{ inputs.packages }} --run "$(comm -23z <(env -0 -u PATH | sort -z) <(base64 -d <<< ${{ steps.env.outputs.env }}) | xargs -0 /bin/bash -c 'printf "export %q; " "$@"' --)cd $(printf %q "$PWD") && exec bash$(printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
         EOF
       shell: bash
 

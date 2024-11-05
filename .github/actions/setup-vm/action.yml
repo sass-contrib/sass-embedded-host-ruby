@@ -15,51 +15,58 @@ runs:
       if: inputs.os == 'freebsd'
       with:
         copyback: false
-        usesh: true
-        prepare: pkg install -y bash
+        prepare: pkg install -y bash && chsh -s `which bash` root
         run: set -e; ${{ inputs.run }}
 
     - uses: vmactions/openbsd-vm@v1
       if: inputs.os == 'openbsd'
       with:
         copyback: false
-        usesh: true
-        prepare: pkg_add bash
+        prepare: pkg_add bash && chsh -s `which bash` root
         run: set -e; ${{ inputs.run }}
 
     - uses: vmactions/netbsd-vm@v1
       if: inputs.os == 'netbsd'
       with:
         copyback: false
-        usesh: true
+        prepare: chsh -s `which bash` root
         run: set -e; ${{ inputs.run }}
 
     - uses: vmactions/dragonflybsd-vm@v1
       if: inputs.os == 'dragonflybsd'
       with:
         copyback: false
-        usesh: true
-        prepare: pkg install -y bash
+        prepare: pkg install -y bash && chsh -s `which bash` root
         run: set -e; ${{ inputs.run }}
 
     - uses: vmactions/solaris-vm@v1
       if: inputs.os == 'solaris'
       with:
         copyback: false
-        usesh: true
         run: set -e; ${{ inputs.run }}
 
     - uses: vmactions/omnios-vm@v1
       if: inputs.os == 'omnios'
       with:
         copyback: false
-        usesh: true
         run: set -e; ${{ inputs.run }}
+
+    - run: |
+        sudo apt-get update
+        sudo apt-get install -y sshfs
+      shell: bash
+
+    - run: /bin/bash -c 'set -e; while test $# -gt 0; do rm -rf "$1"; mkdir -p "$1"; sshfs -o idmap=user,reconnect,cache=no,dir_cache=no,direct_io,default_permissions "${{ inputs.os }}:$1" "$1"; shift; done' -- "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+      shell: bash
+
+    - id: env
+      run: echo "env=$(env -0 | grep -z -v '^CI=\|^GITHUB_\|^RUNNER_' | sort -z | base64 -w 0)" | tee -a "$GITHUB_OUTPUT"
+      shell: bash
 
     - run: |
         mkdir -p "$HOME/.local/bin" && tee "$HOME/.local/bin/bash" <<'EOF' && chmod a+x "$HOME/.local/bin/bash"
         #!/bin/bash --
-        exec ssh ${{ inputs.os }} "cd $(printf %q "$PWD") && exec bash$(test $# -gt 0 && printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
+        exec ssh ${{ inputs.os }} "$(comm -23z <(env -0 -u PATH | sort -z) <(base64 -d <<< ${{ steps.env.outputs.env }}) | xargs -0 /bin/bash -c 'printf "export %q; " "$@"' --)cd $(printf %q "$PWD") && exec bash$(printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
         EOF
       shell: bash
 
