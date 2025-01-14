@@ -39,9 +39,9 @@ rescue NotImplementedError
   chmod 'a+x', t.name
 end
 
-file 'dart-sass/sass' do |t|
+file 'dart-sass/sass' do
   gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |dir|
-    mv File.absolute_path("ext/sass/#{t.name}", dir), t.name
+    mv File.absolute_path('ext/sass/dart-sass', dir), 'dart-sass'
   end
 rescue StandardError
   archive = fetch(SassConfig.dart_sass)
