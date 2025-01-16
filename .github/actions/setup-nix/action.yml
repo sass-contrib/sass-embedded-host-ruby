@@ -37,6 +37,7 @@ runs:
         #!/bin/bash --
         exec /usr/bin/docker exec -i ${{ steps.container.outputs.id }} nix-shell --packages ${{ inputs.packages }} --run "$(comm -23z <(env -0 -u PATH | sort -z) <(base64 -d <<< ${{ steps.env.outputs.env }}) | xargs -0 /bin/bash -c 'printf "export %q; " "$@"' --)cd $(printf %q "$PWD") && exec bash$(printf ' %q' "${@:1:$#-1}")" <"${@:$#}"
         EOF
+        echo "$HOME/.local/bin" | tee -a "$GITHUB_PATH"
       shell: bash
 
     - run: env
