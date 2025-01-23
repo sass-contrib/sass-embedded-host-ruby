@@ -46,7 +46,7 @@ describe Sass::Value::Calculation do
   describe 'calc' do
     it 'correctly stores name and arguments' do
       result = described_class.calc(Sass::Value::Number.new(1))
-      expect(result.name).to be('calc')
+      expect(result.name).to eq('calc')
       expect(result.arguments).to eq([Sass::Value::Number.new(1)])
     end
 
@@ -69,7 +69,7 @@ describe Sass::Value::Calculation do
                                      Sass::Value::Number.new(1),
                                      Sass::Value::Number.new(2)
                                    ])
-      expect(result.name).to be('min')
+      expect(result.name).to eq('min')
       expect(result.arguments).to eq([
                                        Sass::Value::Number.new(1),
                                        Sass::Value::Number.new(2)
@@ -97,7 +97,7 @@ describe Sass::Value::Calculation do
                                      Sass::Value::Number.new(1),
                                      Sass::Value::Number.new(2)
                                    ])
-      expect(result.name).to be('max')
+      expect(result.name).to eq('max')
       expect(result.arguments).to eq([
                                        Sass::Value::Number.new(1),
                                        Sass::Value::Number.new(2)
@@ -126,7 +126,7 @@ describe Sass::Value::Calculation do
         Sass::Value::Number.new(2),
         Sass::Value::Number.new(3)
       )
-      expect(result.name).to be('clamp')
+      expect(result.name).to eq('clamp')
       expect(result.arguments).to eq([
                                        Sass::Value::Number.new(1),
                                        Sass::Value::Number.new(2),
