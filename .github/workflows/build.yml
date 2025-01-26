@@ -80,7 +80,46 @@ jobs:
           - os: ubuntu-latest
             vm:
               os: freebsd
-              run: pkg install -y node npm protobuf ruby rubygem-bundler rubygem-rake
+              run: |
+                pkg install -y node npm protobuf ruby rubygem-bundler rubygem-rake
+          - os: ubuntu-latest
+            vm:
+              os: freebsd
+              run: |
+                pkg install -y node npm ruby rubygem-bundler rubygem-rake
+                sysrc linux_enable="YES"
+                service linux start
+          - os: ubuntu-latest
+            vm:
+              os: freebsd
+              run: |
+                pkg install -y ruby rubygem-bundler rubygem-rake
+                sysrc linux_enable="YES"
+                service linux start
+                pkg install -y linux_base-rl9
+          - os: ubuntu-latest
+            vm:
+              os: freebsd
+              run: |
+                pkg install -y node npm ruby rubygem-bundler rubygem-rake
+                sysrc linux_enable="YES"
+                service linux start
+                pkg install -y debootstrap
+                debootstrap jammy /compat/ubuntu
+                ln -sf ../lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /compat/ubuntu/lib64/ld-linux-x86-64.so.2
+                sysctl compat.linux.emul_path=/compat/ubuntu
+          - os: ubuntu-latest
+            vm:
+              os: freebsd
+              run: |
+                pkg install -y ruby rubygem-bundler rubygem-rake
+                sysrc linux_enable="YES"
+                service linux start
+                pkg install -y debootstrap
+                debootstrap jammy /compat/ubuntu
+                ln -sf ../lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /compat/ubuntu/lib64/ld-linux-x86-64.so.2
+                sysctl compat.linux.emul_path=/compat/ubuntu
+                mount -t linprocfs linproc /compat/ubuntu/proc
           - os: ubuntu-latest
             vm:
               os: openbsd
@@ -90,11 +129,13 @@ jobs:
           - os: ubuntu-latest
             vm:
               os: netbsd
-              run: /usr/sbin/pkg_add nodejs protobuf ruby
+              run: |
+                /usr/sbin/pkg_add nodejs protobuf ruby
           - os: ubuntu-latest
             vm:
               os: dragonflybsd
-              run: pkg install -y libnghttp2 libuv node npm protobuf ruby rubygem-bundler rubygem-rake
+              run: |
+                pkg install -y libnghttp2 libuv node npm protobuf ruby rubygem-bundler rubygem-rake
           - os: ubuntu-latest
             vm:
               os: omnios
@@ -139,7 +180,7 @@ jobs:
         run: bundle exec rake compile
 
       - name: Spec
-        if: "!matrix.vm" # TODO: remove after https://github.com/sass/dart-sass/pull/2413
+        if: "!matrix.vm || contains(matrix.vm.run, 'linux_base') || contains(matrix.vm.run, '/proc')" # TODO: remove after https://github.com/sass/dart-sass/pull/2413
         run: bundle exec rake spec
 
       - name: Install
