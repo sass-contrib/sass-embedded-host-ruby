@@ -27,4 +27,12 @@ RSpec.describe 'Sass::ELF', skip: (Sass.const_defined?(:ELF) ? false : 'Sass::EL
         .to eq(File.basename(described_class::INTERPRETER))
     end
   end
+
+  it 'dumps elf headers' do
+    input = StringIO.new(File.binread('/proc/self/exe'))
+    output = StringIO.new.binmode
+
+    described_class.new(input).dump(output)
+    expect(output.string).to eq(input.string.slice(0, output.length))
+  end
 end
