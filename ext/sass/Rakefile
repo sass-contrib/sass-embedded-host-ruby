@@ -326,13 +326,13 @@ module SassConfig
           when /amd64|x86_64|x64/
             'x86_64'
           when /i\d86|x86|i86pc/
-            'x86'
+            'i386'
           when /arm64|aarch64/
             'aarch64'
           when /arm/
             'arm'
           when /ppc64le|powerpc64le/
-            'powerpc64le'
+            'ppc64le'
           else
             RbConfig::CONFIG['host_cpu']
           end
@@ -380,7 +380,7 @@ module SassConfig
          end
 
     cpu = case Platform::CPU
-          when 'x86'
+          when 'i386'
             'ia32'
           when 'x86_64'
             'x64'
@@ -424,13 +424,13 @@ module SassConfig
          end
 
     cpu = case Platform::CPU
-          when 'x86'
+          when 'i386'
             'x86_32'
           when 'x86_64'
             'x86_64'
           when 'aarch64'
             'aarch_64'
-          when 'powerpc64le'
+          when 'ppc64le'
             'ppcle_64'
           when 's390x'
             's390_64'
