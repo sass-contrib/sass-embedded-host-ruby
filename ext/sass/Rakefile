@@ -173,7 +173,7 @@ file 'true' do |t|
     #   400078: d2800ba8     	mov	x8, #0x5d               // =93
     #   40007c: d2800000     	mov	x0, #0x0                // =0
     #   400080: d4000001     	svc	#0
-    entry_point = ['a80b80d2000080d2010000d4'].pack('H*')
+    entry_point = [0xd2800ba8, 0xd2800000, 0xd4000001].pack('L<3')
   when 'arm'
     ei_class  = ELF::ELFCLASS32
     ei_data   = ELF::ELFDATA2LSB
@@ -184,7 +184,7 @@ file 'true' do |t|
     #   400054: e3a00000     	mov	r0, #0
     #   400058: e3a07001     	mov	r7, #1
     #   40005c: ef000000     	svc	#0x0
-    entry_point = ['0000a0e30170a0e3000000ef'].pack('H*')
+    entry_point = [0xe3a00000, 0xe3a07001, 0xef000000].pack('L<3')
   when 'riscv64'
     ei_class  = ELF::ELFCLASS64
     ei_data   = ELF::ELFDATA2LSB
@@ -195,7 +195,7 @@ file 'true' do |t|
     #   400078: 05d00893     	li	a7, 0x5d
     #   40007c: 4501         	li	a0, 0x0
     #   40007e: 00000073     	ecall
-    entry_point = ['9308d005014573000000'].pack('H*')
+    entry_point = [0x05d00893, 0x4501, 0x00000073].pack('L<S<L<')
   when 'x86_64'
     ei_class  = ELF::ELFCLASS64
     ei_data   = ELF::ELFDATA2LSB
@@ -206,7 +206,7 @@ file 'true' do |t|
     #   400078: 31 ff                        	xorl	%edi, %edi
     #   40007a: b8 3c 00 00 00               	movl	$0x3c, %eax
     #   40007f: 0f 05                        	syscall
-    entry_point = ['31ffb83c0000000f05'].pack('H*')
+    entry_point = %w[31ff b83c000000 0f05].pack('H*H*H*')
   when 'i386'
     ei_class  = ELF::ELFCLASS32
     ei_data   = ELF::ELFDATA2LSB
@@ -217,7 +217,7 @@ file 'true' do |t|
     #   400054: 31 db                        	xorl	%ebx, %ebx
     #   400056: b8 01 00 00 00               	movl	$0x1, %eax
     #   40005b: cd 80                        	int	$0x80
-    entry_point = ['31dbb801000000cd80'].pack('H*')
+    entry_point = %w[31db b801000000 cd80].pack('H*H*H*')
   else
     raise NotImplementedError
   end
