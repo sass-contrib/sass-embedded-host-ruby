@@ -169,9 +169,10 @@ file 'true' do |t|
     e_machine = 0xb7
     e_flags   = 0
 
-    # 0x0000000000000078:  A8 0B 80 D2    mov x8, #0x5d
-    # 0x000000000000007c:  00 00 80 D2    mov x0, #0
-    # 0x0000000000000080:  01 00 00 D4    svc #0
+    # 0000000000400078 <PT_LOAD#0>:
+    #   400078: d2800ba8     	mov	x8, #0x5d               // =93
+    #   40007c: d2800000     	mov	x0, #0x0                // =0
+    #   400080: d4000001     	svc	#0
     entry_point = ['a80b80d2000080d2010000d4'].pack('H*')
   when 'arm'
     ei_class  = ELF::ELFCLASS32
@@ -179,9 +180,10 @@ file 'true' do |t|
     e_machine = 0x28
     e_flags   = 0x5000400
 
-    # 0x0000000000000054:  00 00 A0 E3    mov r0, #0
-    # 0x0000000000000058:  01 70 A0 E3    mov r7, #1
-    # 0x000000000000005c:  00 00 00 EF    svc #0
+    # 00400054 <PT_LOAD#0>:
+    #   400054: e3a00000     	mov	r0, #0
+    #   400058: e3a07001     	mov	r7, #1
+    #   40005c: ef000000     	svc	#0x0
     entry_point = ['0000a0e30170a0e3000000ef'].pack('H*')
   when 'riscv64'
     ei_class  = ELF::ELFCLASS64
@@ -189,9 +191,10 @@ file 'true' do |t|
     e_machine = 0xf3
     e_flags   = 0x5
 
-    # 0x0000000000000078:  93 08 D0 05    addi  a7, x0, 93
-    # 0x000000000000007c:  01 45          c.li  a0, 0
-    # 0x000000000000007e:  73 00 00 00    ecall
+    # 0000000000400078 <PT_LOAD#0>:
+    #   400078: 05d00893     	li	a7, 0x5d
+    #   40007c: 4501         	li	a0, 0x0
+    #   40007e: 00000073     	ecall
     entry_point = ['9308d005014573000000'].pack('H*')
   when 'x86_64'
     ei_class  = ELF::ELFCLASS64
@@ -199,9 +202,10 @@ file 'true' do |t|
     e_machine = 0x3e
     e_flags   = 0
 
-    # 0x0000000000000078:  31 FF             xor     edi, edi
-    # 0x000000000000007a:  B8 3C 00 00 00    mov     eax, 0x3c
-    # 0x000000000000007f:  0F 05             syscall
+    # 0000000000400078 <PT_LOAD#0>:
+    #   400078: 31 ff                        	xorl	%edi, %edi
+    #   40007a: b8 3c 00 00 00               	movl	$0x3c, %eax
+    #   40007f: 0f 05                        	syscall
     entry_point = ['31ffb83c0000000f05'].pack('H*')
   when 'i386'
     ei_class  = ELF::ELFCLASS32
@@ -209,9 +213,10 @@ file 'true' do |t|
     e_machine = 0x03
     e_flags   = 0
 
-    # 0x0000000000000054:  31 DB             xor ebx, ebx
-    # 0x0000000000000056:  B8 01 00 00 00    mov eax, 1
-    # 0x000000000000005b:  CD 80             int 0x80
+    # 00400054 <PT_LOAD#0>:
+    #   400054: 31 db                        	xorl	%ebx, %ebx
+    #   400056: b8 01 00 00 00               	movl	$0x1, %eax
+    #   40005b: cd 80                        	int	$0x80
     entry_point = ['31dbb801000000cd80'].pack('H*')
   else
     raise NotImplementedError
