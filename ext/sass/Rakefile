@@ -2,6 +2,10 @@
 
 require 'rake/clean'
 
+require_relative '../../lib/sass/elf'
+
+ELF = Sass.const_get(:ELF)
+
 task default: %i[install clean]
 
 task install: %w[cli.rb] do
@@ -11,6 +15,7 @@ end
 CLEAN.include %w[
   protoc.exe
   ruby
+  true
   *.proto
   *.tar.gz
   *.zip
@@ -70,8 +75,6 @@ rescue NotImplementedError
 end
 
 file 'cli.rb' => %w[dart-sass] do |t|
-  require_relative '../../lib/sass/elf'
-
   begin
     exe = 'dart-sass/sass'
     exe = "#{exe}#{['', '.bat', '.exe'].find { |ext| File.exist?("#{exe}#{ext}") }}"
@@ -89,7 +92,7 @@ file 'cli.rb' => %w[dart-sass] do |t|
               end
 
     interpreter = File.open(command[0], 'rb') do |file|
-      Sass.const_get(:ELF).new(file).interpreter
+      ELF.new(file).interpreter
     rescue ArgumentError
       nil
     end
@@ -156,6 +159,119 @@ end
 
 rule '_pb.rb' => %w[.proto protoc.exe] do |t|
   sh './protoc.exe', '--proto_path=.', '--ruby_out=.', t.source
+end
+
+file 'true' do |t|
+  case Platform::CPU
+  when 'aarch64'
+    ei_class  = ELF::ELFCLASS64
+    ei_data   = ELF::ELFDATA2LSB
+    e_machine = 0xb7
+    e_flags   = 0
+
+    # 0x0000000000000078:  A8 0B 80 D2    mov x8, #0x5d
+    # 0x000000000000007c:  00 00 80 D2    mov x0, #0
+    # 0x0000000000000080:  01 00 00 D4    svc #0
+    entry_point = ['a80b80d2000080d2010000d4'].pack('H*')
+  when 'arm'
+    ei_class  = ELF::ELFCLASS32
+    ei_data   = ELF::ELFDATA2LSB
+    e_machine = 0x28
+    e_flags   = 0x5000400
+
+    # 0x0000000000000054:  00 00 A0 E3    mov r0, #0
+    # 0x0000000000000058:  01 70 A0 E3    mov r7, #1
+    # 0x000000000000005c:  00 00 00 EF    svc #0
+    entry_point = ['0000a0e30170a0e3000000ef'].pack('H*')
+  when 'riscv64'
+    ei_class  = ELF::ELFCLASS64
+    ei_data   = ELF::ELFDATA2LSB
+    e_machine = 0xf3
+    e_flags   = 0x5
+
+    # 0x0000000000000078:  93 08 D0 05    addi  a7, x0, 93
+    # 0x000000000000007c:  01 45          c.li  a0, 0
+    # 0x000000000000007e:  73 00 00 00    ecall
+    entry_point = ['9308d005014573000000'].pack('H*')
+  when 'x86_64'
+    ei_class  = ELF::ELFCLASS64
+    ei_data   = ELF::ELFDATA2LSB
+    e_machine = 0x3e
+    e_flags   = 0
+
+    # 0x0000000000000078:  31 FF             xor     edi, edi
+    # 0x000000000000007a:  B8 3C 00 00 00    mov     eax, 0x3c
+    # 0x000000000000007f:  0F 05             syscall
+    entry_point = ['31ffb83c0000000f05'].pack('H*')
+  when 'i386'
+    ei_class  = ELF::ELFCLASS32
+    ei_data   = ELF::ELFDATA2LSB
+    e_machine = 0x03
+    e_flags   = 0
+
+    # 0x0000000000000054:  31 DB             xor ebx, ebx
+    # 0x0000000000000056:  B8 01 00 00 00    mov eax, 1
+    # 0x000000000000005b:  CD 80             int 0x80
+    entry_point = ['31dbb801000000cd80'].pack('H*')
+  else
+    raise NotImplementedError
+  end
+
+  File.open(t.name, 'wb', 0o755) do |file|
+    ELF.allocate.instance_eval do
+      case ei_class
+      when ELF::ELFCLASS32
+        e_ehsize    = ELF::Elf32_Ehdr.sizeof
+        e_phentsize = ELF::Elf32_Phdr.sizeof
+        e_shentsize = ELF::Elf32_Shdr.sizeof
+      when ELF::ELFCLASS64
+        e_ehsize    = ELF::Elf64_Ehdr.sizeof
+        e_phentsize = ELF::Elf64_Phdr.sizeof
+        e_shentsize = ELF::Elf64_Shdr.sizeof
+      else
+        raise EncodingError
+      end
+      e_phoff  = e_ehsize
+      p_offset = e_phoff + e_phentsize
+      e_entry  = (2**22) + p_offset
+      p_vaddr  = e_entry
+      p_filesz = entry_point.length
+      p_memsz  = p_filesz
+
+      @ehdr = {
+        e_ident: [127, 69, 76, 70, ei_class, ei_data, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        e_type: ELF::ET_EXEC,
+        e_machine:,
+        e_version: 1,
+        e_entry:,
+        e_phoff:,
+        e_shoff: 0,
+        e_flags:,
+        e_ehsize:,
+        e_phentsize:,
+        e_phnum: 1,
+        e_shentsize:,
+        e_shnum: 0,
+        e_shstrndx: 0
+      }
+      @phdrs = [
+        {
+          p_type: ELF::PT_LOAD,
+          p_flags: ELF::PF_R | ELF::PF_X,
+          p_offset:,
+          p_vaddr:,
+          p_paddr: 0,
+          p_filesz:,
+          p_memsz:,
+          p_align: 4096
+        }
+      ]
+      @shdrs = []
+
+      dump(file)
+    end
+    file.write(entry_point)
+  end
 end
 
 # This is a FileUtils extension that defines several additional commands to be
@@ -302,46 +418,140 @@ module FileUtils
   end
 end
 
-# The {SassConfig} module.
-module SassConfig
-  module Platform
-    OS = case RbConfig::CONFIG['host_os'].downcase
-         when /darwin/
-           'darwin'
-         when /linux-android/
-           'linux-android'
-         when /linux-musl/
-           'linux-musl'
-         when /linux-uclibc/
-           'linux-uclibc'
-         when /linux/
-           'linux'
-         when *Gem::WIN_PATTERNS
-           'windows'
-         else
-           RbConfig::CONFIG['host_os'].downcase
-         end
+# The {Platform} module.
+module Platform
+  # @see https://docs.freebsd.org/en/articles/linux-emulation/
+  # @see https://docs.freebsd.org/en/books/handbook/linuxemu/
+  module Linuxulator
+    module_function
 
-    CPU = case RbConfig::CONFIG['host_cpu'].downcase
-          when /amd64|x86_64|x64/
-            'x86_64'
-          when /i\d86|x86|i86pc/
-            'i386'
-          when /arm64|aarch64/
-            'aarch64'
-          when /arm/
-            'arm'
-          when /ppc64le|powerpc64le/
-            'ppc64le'
-          else
-            RbConfig::CONFIG['host_cpu']
-          end
+    def enabled?
+      return false unless RbConfig::CONFIG['host_os'].include?('freebsd')
 
-    ARCH = "#{CPU}-#{OS}".freeze
+      return true if defined?(Platform::OS) && Platform::OS.include?('linux')
+
+      begin
+        Rake::Task['true'].invoke unless File.exist?('true')
+      rescue NotImplementedError
+        # do nothing
+      end
+
+      system('./true') == true
+    end
+
+    def host_os(root = compat_linux_emul_path)
+      return 'linux-none' unless File.exist?(File.absolute_path('proc/self/exe', root))
+
+      if (Platform::CPU == 'aarch64' &&
+          File.exist?(File.absolute_path('lib/ld-linux-aarch64.so.1', root))) ||
+         (Platform::CPU == 'riscv64' &&
+          File.exist?(File.absolute_path('lib/ld-linux-riscv64-lp64d.so.1', root))) ||
+         (Platform::CPU == 'x86_64' &&
+          File.exist?(File.absolute_path('lib64/ld-linux-x86-64.so.2', root))) ||
+         (Platform::CPU == 'i386' &&
+          File.exist?(File.absolute_path('lib/ld-linux.so.2', root)))
+        return 'linux-gnu'
+      end
+
+      if Platform::CPU == 'arm' &&
+         File.exist?(File.absolute_path('lib/ld-linux-armhf.so.3', root))
+        return 'linux-gnueabihf'
+      end
+
+      if %w[aarch64 riscv64 x86_64 i386].include?(Platform::CPU) &&
+         File.exist?(File.absolute_path("lib/ld-musl-#{Platform::CPU}.so.1", root))
+        return 'linux-musl'
+      end
+
+      if Platform::CPU == 'arm' &&
+         File.exist?(File.absolute_path('lib/ld-musl-armhf.so.1', root))
+        return 'linux-musleabihf'
+      end
+
+      if (%w[aarch64 riscv64 x86_64].include?(Platform::CPU) &&
+          File.exist?(File.absolute_path('system/bin/linker64', root))) ||
+         (Platform::CPU == 'i386' &&
+          File.exist?(File.absolute_path('system/bin/linker', root)))
+        return 'linux-android'
+      end
+
+      if Platform::CPU == 'arm' &&
+         File.exist?(File.absolute_path('system/bin/linker', root))
+        return 'linux-androideabi'
+      end
+
+      'linux-none'
+    end
+
+    def compat_linux_emul_path
+      require 'fiddle'
+
+      lib = Fiddle.dlopen(nil)
+      sysctlbyname = Fiddle::Function.new(
+        lib['sysctlbyname'],
+        [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_SIZE_T],
+        Fiddle::TYPE_INT
+      )
+
+      name = Fiddle::Pointer.to_ptr('compat.linux.emul_path')
+      oldp = Fiddle::NULL
+      oldlenp = Fiddle::Pointer.malloc(Fiddle::SIZEOF_SIZE_T, Fiddle::RUBY_FREE)
+      newp = Fiddle::NULL
+      newlen = 0
+      raise SystemCallError.new(nil, Fiddle.last_error) if sysctlbyname.call(name, oldp, oldlenp, newp, newlen) == -1
+
+      oldp = Fiddle::Pointer.malloc(oldlenp.ptr.to_i, Fiddle::RUBY_FREE)
+      raise SystemCallError.new(nil, Fiddle.last_error) if sysctlbyname.call(name, oldp, oldlenp, newp, newlen) == -1
+
+      oldp.to_s
+    rescue SystemCallError
+      nil
+    end
   end
 
-  private_constant :Platform
+  HOST_CPU = RbConfig::CONFIG['host_cpu'].downcase
 
+  CPU = case HOST_CPU
+        when /amd64|x86_64|x64/
+          'x86_64'
+        when /i\d86|x86|i86pc/
+          'i386'
+        when /arm64|aarch64/
+          'aarch64'
+        when /arm/
+          'arm'
+        when /ppc64le|powerpc64le/
+          'ppc64le'
+        else
+          HOST_CPU
+        end
+
+  HOST_OS = (Linuxulator.enabled? ? Linuxulator.host_os : RbConfig::CONFIG['host_os']).downcase
+
+  OS = case HOST_OS
+       when /darwin/
+         'darwin'
+       when /linux-android/
+         'linux-android'
+       when /linux-musl/
+         'linux-musl'
+       when /linux-none/
+         'linux-none'
+       when /linux-uclibc/
+         'linux-uclibc'
+       when /linux/
+         'linux'
+       when *Gem::WIN_PATTERNS
+         'windows'
+       else
+         HOST_OS
+       end
+
+  ARCH = "#{CPU}-#{OS}".freeze
+end
+
+# The {SassConfig} module.
+module SassConfig
   module_function
 
   def package_json(path = '.')
@@ -415,7 +625,7 @@ module SassConfig
     os = case Platform::OS
          when 'darwin'
            'osx'
-         when 'linux', 'linux-android', 'linux-musl', 'linux-uclibc'
+         when 'linux', 'linux-android', 'linux-musl', 'linux-none', 'linux-uclibc'
            'linux'
          when 'windows'
            'windows'
@@ -492,7 +702,7 @@ module SassConfig
   end
 
   def gem_platform
-    platform = Gem::Platform.new("#{Platform::CPU}-#{RbConfig::CONFIG['host_os']}")
+    platform = Gem::Platform.new("#{Platform::CPU}-#{Platform::HOST_OS}")
     case Platform::OS
     when 'darwin'
       case platform.cpu
