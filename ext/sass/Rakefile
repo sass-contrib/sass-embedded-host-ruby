@@ -206,7 +206,7 @@ file 'true' do |t|
     #   400078: 31 ff                        	xorl	%edi, %edi
     #   40007a: b8 3c 00 00 00               	movl	$0x3c, %eax
     #   40007f: 0f 05                        	syscall
-    entry_point = %w[31ff b83c000000 0f05].pack('H*H*H*')
+    entry_point = %w[31ffb83c0000000f05].pack('H*')
   when 'i386'
     ei_class  = ELF::ELFCLASS32
     ei_data   = ELF::ELFDATA2LSB
@@ -217,68 +217,69 @@ file 'true' do |t|
     #   400054: 31 db                        	xorl	%ebx, %ebx
     #   400056: b8 01 00 00 00               	movl	$0x1, %eax
     #   40005b: cd 80                        	int	$0x80
-    entry_point = %w[31db b801000000 cd80].pack('H*H*H*')
+    entry_point = %w[31dbb801000000cd80].pack('H*')
   else
     raise NotImplementedError
   end
 
-  File.open(t.name, 'wb', 0o755) do |file|
-    ELF.allocate.instance_eval do
-      case ei_class
-      when ELF::ELFCLASS32
-        e_ehsize    = ELF::Elf32_Ehdr.sizeof
-        e_phentsize = ELF::Elf32_Phdr.sizeof
-        e_shentsize = ELF::Elf32_Shdr.sizeof
-      when ELF::ELFCLASS64
-        e_ehsize    = ELF::Elf64_Ehdr.sizeof
-        e_phentsize = ELF::Elf64_Phdr.sizeof
-        e_shentsize = ELF::Elf64_Shdr.sizeof
-      else
-        raise EncodingError
-      end
+  case ei_class
+  when ELF::ELFCLASS32
+    e_ehsize    = ELF::Elf32_Ehdr.sizeof
+    e_phentsize = ELF::Elf32_Phdr.sizeof
+    e_shentsize = ELF::Elf32_Shdr.sizeof
+  when ELF::ELFCLASS64
+    e_ehsize    = ELF::Elf64_Ehdr.sizeof
+    e_phentsize = ELF::Elf64_Phdr.sizeof
+    e_shentsize = ELF::Elf64_Shdr.sizeof
+  else
+    raise EncodingError
+  end
 
-      p_offset = e_ehsize + e_phentsize
-      p_vaddr  = (2**22) + p_offset
-      p_filesz = entry_point.length
-      p_memsz  = p_filesz
-      e_phoff  = e_ehsize
+  e_phoff  = e_ehsize
 
-      e_entry  = p_vaddr
-      e_entry += 1 if Platform::CPU == 'arm'
+  p_offset = e_phoff + e_phentsize
+  p_vaddr  = (2**22) + p_offset
+  p_filesz = entry_point.length
+  p_memsz  = p_filesz
 
-      @ehdr = {
-        e_ident: [127, 69, 76, 70, ei_class, ei_data, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        e_type: ELF::ET_EXEC,
-        e_machine:,
-        e_version: 1,
-        e_entry:,
-        e_phoff:,
-        e_shoff: 0,
-        e_flags:,
-        e_ehsize:,
-        e_phentsize:,
-        e_phnum: 1,
-        e_shentsize:,
-        e_shnum: 0,
-        e_shstrndx: 0
+  e_entry  = p_vaddr
+  e_entry += 1 if Platform::CPU == 'arm'
+
+  ELF.allocate.instance_eval do
+    @ehdr = {
+      e_ident: [127, 69, 76, 70, ei_class, ei_data, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      e_type: ELF::ET_EXEC,
+      e_machine:,
+      e_version: 1,
+      e_entry:,
+      e_phoff:,
+      e_shoff: 0,
+      e_flags:,
+      e_ehsize:,
+      e_phentsize:,
+      e_phnum: 1,
+      e_shentsize:,
+      e_shnum: 0,
+      e_shstrndx: 0
+    }
+    @phdrs = [
+      {
+        p_type: ELF::PT_LOAD,
+        p_flags: ELF::PF_R | ELF::PF_X,
+        p_offset:,
+        p_vaddr:,
+        p_paddr: 0,
+        p_filesz:,
+        p_memsz:,
+        p_align: 4096
       }
-      @phdrs = [
-        {
-          p_type: ELF::PT_LOAD,
-          p_flags: ELF::PF_R | ELF::PF_X,
-          p_offset:,
-          p_vaddr:,
-          p_paddr: 0,
-          p_filesz:,
-          p_memsz:,
-          p_align: 4096
-        }
-      ]
-      @shdrs = []
+    ]
+    @shdrs = []
 
+    File.open(t.name, 'wb', 0o755) do |file|
       dump(file)
+      file.write(entry_point)
     end
-    file.write(entry_point)
   end
 end
 
