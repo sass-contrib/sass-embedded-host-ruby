@@ -181,10 +181,10 @@ file 'true' do |t|
     e_flags   = 0x5000400
 
     # 00400054 <PT_LOAD#0>:
-    #   400054: e3a00000     	mov	r0, #0
-    #   400058: e3a07001     	mov	r7, #1
-    #   40005c: ef000000     	svc	#0x0
-    entry_point = [0xe3a00000, 0xe3a07001, 0xef000000].pack('L<3')
+    #   400054: 2701         	movs	r7, #0x1
+    #   400056: 2000         	movs	r0, #0x0
+    #   400058: df00         	svc	#0x0
+    entry_point = [0x2701, 0x2000, 0xdf00].pack('S<3')
   when 'riscv64'
     ei_class  = ELF::ELFCLASS64
     ei_data   = ELF::ELFDATA2LSB
@@ -236,12 +236,15 @@ file 'true' do |t|
       else
         raise EncodingError
       end
-      e_phoff  = e_ehsize
-      p_offset = e_phoff + e_phentsize
-      e_entry  = (2**22) + p_offset
-      p_vaddr  = e_entry
+
+      p_offset = e_ehsize + e_phentsize
+      p_vaddr  = (2**22) + p_offset
       p_filesz = entry_point.length
       p_memsz  = p_filesz
+      e_phoff  = e_ehsize
+
+      e_entry  = p_vaddr
+      e_entry += 1 if Platform::CPU == 'arm'
 
       @ehdr = {
         e_ident: [127, 69, 76, 70, ei_class, ei_data, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
