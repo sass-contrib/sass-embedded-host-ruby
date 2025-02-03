@@ -449,7 +449,7 @@ module Platform
     end
 
     def host_os(root = compat_linux_emul_path)
-      return 'linux-none' unless File.exist?(File.absolute_path('proc/self/exe', root))
+      return 'linux-none' unless File.symlink?(File.absolute_path('proc/self/exe', root))
 
       if (Platform::CPU == 'aarch64' &&
           File.exist?(File.absolute_path('lib/ld-linux-aarch64.so.1', root))) ||
