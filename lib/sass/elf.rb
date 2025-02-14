@@ -329,12 +329,12 @@ module Sass
       io.rewind
       elf_ehdr.pack(io, ehdr, little_endian)
 
-      io.seek(ehdr[:e_phoff], IO::SEEK_SET) if (ehdr[:e_phnum]).positive?
+      io.seek(ehdr[:e_phoff], IO::SEEK_SET) if ehdr[:e_phnum].positive?
       phdrs.each do |phdr|
         elf_phdr.pack(io, phdr, little_endian)
       end
 
-      io.seek(ehdr[:e_shoff], IO::SEEK_SET) if (ehdr[:e_shnum]).positive?
+      io.seek(ehdr[:e_shoff], IO::SEEK_SET) if ehdr[:e_shnum].positive?
       shdrs.each do |shdr|
         elf_shdr.pack(io, shdr, little_endian)
       end
