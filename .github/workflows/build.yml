@@ -174,7 +174,10 @@ jobs:
 
       - name: Bundle
         if: "!matrix.ruby-version"
-        run: bundle install
+        run: |
+          bundle config --local path vendor/bundle
+          bundle lock
+          bundle install --jobs 4
 
       - name: Compile
         run: bundle exec rake compile
