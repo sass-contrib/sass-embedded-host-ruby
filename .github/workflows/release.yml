@@ -12,6 +12,10 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      id-token: write
+      attestations: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -67,6 +71,11 @@ jobs:
 
       - name: Build
         run: rake -f -r bundler/gem_tasks build gem_platform=${{ matrix.platform }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: pkg/*.gem
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
