@@ -49,12 +49,7 @@ module Sass
               EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
                 importer_id: id,
                 non_canonical_scheme: if importer.respond_to?(:non_canonical_scheme)
-                                        non_canonical_scheme = importer.non_canonical_scheme
-                                        if non_canonical_scheme.is_a?(String)
-                                          [non_canonical_scheme]
-                                        else
-                                          non_canonical_scheme || []
-                                        end
+                                        Array(importer.non_canonical_scheme)
                                       else
                                         []
                                       end
