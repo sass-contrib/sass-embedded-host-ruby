@@ -9,18 +9,20 @@ module Sass
       class LoggerRegistry
         def initialize(logger)
           @logger = Struct.from_hash(logger, methods: %i[debug warn])
+          @respond_to_debug = @logger.respond_to?(:debug)
+          @respond_to_warn = @logger.respond_to?(:warn)
         end
 
         def log(event)
           case event.type
           when :DEBUG
-            if @logger.respond_to?(:debug)
+            if @respond_to_debug
               @logger.debug(event.message, DebugContext.new(event))
             else
               Kernel.warn(event.formatted)
             end
           when :DEPRECATION_WARNING, :WARNING
-            if @logger.respond_to?(:warn)
+            if @respond_to_warn
               @logger.warn(event.message, WarnContext.new(event))
             else
               Kernel.warn(event.formatted)
