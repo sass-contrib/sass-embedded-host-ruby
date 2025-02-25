@@ -25,6 +25,12 @@ module Sass
           @highlight = alert_color
         end
 
+        IMPORTER_ATTRS = %i[non_canonical_scheme].freeze
+
+        IMPORTER_METHODS = %i[canonicalize load find_file_url].freeze
+
+        private_constant :IMPORTER_ATTRS, :IMPORTER_METHODS
+
         def register(importer)
           if importer.is_a?(Sass::NodePackageImporter)
             EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
@@ -33,8 +39,7 @@ module Sass
               )
             )
           else
-            importer = Struct.from_hash(importer, attrs: %i[non_canonical_scheme],
-                                                  methods: %i[canonicalize load find_file_url])
+            importer = Struct.new(importer, attrs: IMPORTER_ATTRS, methods: IMPORTER_METHODS) if importer.is_a?(::Hash)
 
             is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
             is_file_importer = importer.respond_to?(:find_file_url)
@@ -80,10 +85,14 @@ module Sass
           )
         end
 
+        IMPORTER_RESULT_ATTRS = %i[contents syntax source_map_url].freeze
+
+        private_constant :IMPORTER_RESULT_ATTRS
+
         def import(import_request)
           importer = @importers_by_id[import_request.importer_id]
-          importer_result = Struct.from_hash(importer.load(import_request.url),
-                                             attrs: %i[contents syntax source_map_url])
+          importer_result = importer.load(import_request.url)
+          importer_result = Struct.new(importer_result, attrs: IMPORTER_RESULT_ATTRS) if importer_result.is_a?(::Hash)
 
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,

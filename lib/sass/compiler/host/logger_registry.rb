@@ -7,22 +7,27 @@ module Sass
       #
       # It stores logger and handles log events.
       class LoggerRegistry
+        LOGGER_METHODS = %i[debug warn].freeze
+
+        private_constant :LOGGER_METHODS
+
         def initialize(logger)
-          @logger = Struct.from_hash(logger, methods: %i[debug warn])
-          @respond_to_debug = @logger.respond_to?(:debug)
-          @respond_to_warn = @logger.respond_to?(:warn)
+          logger = Struct.new(logger, methods: LOGGER_METHODS) if logger.is_a?(::Hash)
+          @logger = logger
+          @logger_respond_to_debug = logger.respond_to?(:debug)
+          @logger_respond_to_warn = logger.respond_to?(:warn)
         end
 
         def log(event)
           case event.type
           when :DEBUG
-            if @respond_to_debug
+            if @logger_respond_to_debug
               @logger.debug(event.message, DebugContext.new(event))
             else
               Kernel.warn(event.formatted)
             end
           when :DEPRECATION_WARNING, :WARNING
-            if @respond_to_warn
+            if @logger_respond_to_warn
               @logger.warn(event.message, WarnContext.new(event))
             else
               Kernel.warn(event.formatted)
