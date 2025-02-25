@@ -33,7 +33,8 @@ module Sass
               )
             )
           else
-            importer = Structifier.to_struct(importer, :canonicalize, :load, :non_canonical_scheme, :find_file_url)
+            importer = Struct.from_hash(importer, attrs: %i[non_canonical_scheme],
+                                                  methods: %i[canonicalize load find_file_url])
 
             is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
             is_file_importer = importer.respond_to?(:find_file_url)
@@ -86,7 +87,8 @@ module Sass
 
         def import(import_request)
           importer = @importers_by_id[import_request.importer_id]
-          importer_result = Structifier.to_struct importer.load(import_request.url), :contents, :syntax, :source_map_url
+          importer_result = Struct.from_hash(importer.load(import_request.url),
+                                             attrs: %i[contents syntax source_map_url])
 
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,

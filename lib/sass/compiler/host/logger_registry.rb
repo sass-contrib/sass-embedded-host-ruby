@@ -8,7 +8,7 @@ module Sass
       # It stores logger and handles log events.
       class LoggerRegistry
         def initialize(logger)
-          logger = Structifier.to_struct(logger, :debug, :warn)
+          logger = Struct.from_hash(logger, methods: %i[debug warn])
 
           { debug: DebugContext, warn: WarnContext }.each do |symbol, context_class|
             next unless logger.respond_to?(symbol)
