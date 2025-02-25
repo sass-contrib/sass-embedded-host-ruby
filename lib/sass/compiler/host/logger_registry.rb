@@ -8,36 +8,26 @@ module Sass
       # It stores logger and handles log events.
       class LoggerRegistry
         def initialize(logger)
-          logger = Struct.from_hash(logger, methods: %i[debug warn])
-
-          { debug: DebugContext, warn: WarnContext }.each do |symbol, context_class|
-            next unless logger.respond_to?(symbol)
-
-            define_singleton_method(symbol) do |event|
-              logger.public_send(symbol, event.message, context_class.new(event))
-            end
-          end
+          @logger = Struct.from_hash(logger, methods: %i[debug warn])
         end
 
         def log(event)
           case event.type
           when :DEBUG
-            debug(event)
+            if @logger.respond_to?(:debug)
+              @logger.debug(event.message, DebugContext.new(event))
+            else
+              Kernel.warn(event.formatted)
+            end
           when :DEPRECATION_WARNING, :WARNING
-            warn(event)
+            if @logger.respond_to?(:warn)
+              @logger.warn(event.message, WarnContext.new(event))
+            else
+              Kernel.warn(event.formatted)
+            end
           else
             raise ArgumentError, "Unknown LogEvent.type #{event.type}"
           end
-        end
-
-        private
-
-        def debug(event)
-          Kernel.warn(event.formatted)
-        end
-
-        def warn(event)
-          Kernel.warn(event.formatted)
         end
 
         # Contextual information passed to `debug`.
