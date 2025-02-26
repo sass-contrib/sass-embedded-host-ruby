@@ -2,6 +2,26 @@
 
 require_relative 'constructors'
 
+class ColorSpace
+  def initialize(hash)
+    @hash = hash
+  end
+
+  def method_missing(symbol, ...)
+    return super unless @hash.key?(symbol)
+
+    if symbol == :constructor
+      ColorConstructors.send(@hash[symbol], ...)
+    else
+      @hash[symbol]
+    end
+  end
+
+  def respond_to_missing?(symbol, _include_all)
+    @hash.key?(symbol)
+  end
+end
+
 # @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/color/spaces.ts
 COLOR_SPACES = {
   lab: {
@@ -332,18 +352,4 @@ COLOR_SPACES = {
       ]
     ]
   }
-}.freeze
-
-COLOR_SPACES.each_value do |value|
-  value.each_key do |key|
-    if key == :constructor
-      value.define_singleton_method(key) do |*args|
-        ColorConstructors.send(value[key], *args)
-      end
-    else
-      value.define_singleton_method(key) do
-        value[key]
-      end
-    end
-  end
-end
+}.transform_values! { |value| ColorSpace.new(value) }.freeze
