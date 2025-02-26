@@ -30,7 +30,7 @@ module Sass
   # @see https://sass-lang.com/documentation/js-api/classes/compiler/
   class Compiler
     def initialize
-      @channel = Channel.new(Dispatcher)
+      @channel = Channel.new
     end
 
     # Compiles the Sass file at +path+ to CSS.

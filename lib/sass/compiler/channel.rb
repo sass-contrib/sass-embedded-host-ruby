@@ -6,9 +6,11 @@ module Sass
     #
     # It manages the lifecycle of {Dispatcher}.
     class Channel
-      def initialize(dispatcher_class)
-        @dispatcher_class = dispatcher_class
-        @dispatcher = @dispatcher_class.new
+      def initialize(*args, **kwargs, &block)
+        @args = args
+        @kwargs = kwargs
+        @block = block
+        @dispatcher = Dispatcher.new(*@args, **@kwargs, &@block)
         @mutex = Mutex.new
       end
 
@@ -33,7 +35,7 @@ module Sass
 
           Stream.new(@dispatcher, host)
         rescue Errno::EBUSY
-          @dispatcher = @dispatcher_class.new
+          @dispatcher = Dispatcher.new(*@args, **@kwargs, &@block)
           Stream.new(@dispatcher, host)
         end
       end

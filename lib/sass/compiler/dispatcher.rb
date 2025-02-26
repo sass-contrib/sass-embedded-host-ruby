@@ -6,13 +6,33 @@ module Sass
     #
     # It dispatches messages between multiple instances of {Host} and a single {Connection} to the compiler.
     class Dispatcher
-      def initialize
+      def initialize(idle_timeout: 0)
         @id = 1
+        @last_accessed_time = current_time
         @observers = {}.compare_by_identity
         @mutex = Mutex.new
         @connection = Connection.new
         @connection.listen(self)
         ForkTracker.add(self)
+
+        return unless idle_timeout.positive?
+
+        Thread.new do
+          Thread.current.name = "sass-embedded-connection-reaper-#{@connection.id}"
+          duration = idle_timeout
+          loop do
+            sleep(duration.negative? ? idle_timeout : duration)
+            break if @mutex.synchronize do
+              raise Errno::EBUSY if _closed?
+
+              duration = idle_timeout - (current_time - @last_accessed_time)
+              duration.negative? && _idle? && _close
+            end
+          end
+          close
+        rescue Errno::EBUSY
+          # do nothing
+        end
       end
 
       def subscribe(observer)
@@ -94,6 +114,10 @@ module Sass
 
       private
 
+      def current_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      end
+
       def _close
         @id = 0xffffffff
       end
@@ -104,6 +128,7 @@ module Sass
 
       def _idle
         @id = 1
+        @last_accessed_time = current_time
       end
 
       def _idle?

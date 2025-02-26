@@ -53,47 +53,10 @@ module Sass
       @mutex.synchronize do
         return @compiler if @compiler
 
-        compiler = Class.new(Compiler) do
-          def initialize
-            @channel = Compiler.const_get(:Channel).new(Class.new(Compiler.const_get(:Dispatcher)) do
-              def initialize
-                super
-
-                idle_timeout = 10
-                @last_accessed_time = current_time
-
-                Thread.new do
-                  Thread.current.name = "sass-embedded-connection-reaper-#{@connection.id}"
-                  duration = idle_timeout
-                  loop do
-                    sleep(duration.negative? ? idle_timeout : duration)
-                    break if @mutex.synchronize do
-                      raise Errno::EBUSY if _closed?
-
-                      duration = idle_timeout - (current_time - @last_accessed_time)
-                      duration.negative? && _idle? && _close
-                    end
-                  end
-                  close
-                rescue Errno::EBUSY
-                  # do nothing
-                end
-              end
-
-              private
-
-              def _idle
-                super
-
-                @last_accessed_time = current_time
-              end
-
-              def current_time
-                Process.clock_gettime(Process::CLOCK_MONOTONIC)
-              end
-            end)
-          end
-        end.new
+        compiler = Compiler.allocate
+        compiler.instance_eval do
+          @channel = Compiler.const_get(:Channel).new(idle_timeout: 10)
+        end
 
         at_exit do
           compiler.close
