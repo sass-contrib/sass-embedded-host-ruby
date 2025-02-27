@@ -8,7 +8,6 @@ module Sass
     class Dispatcher
       def initialize(idle_timeout: 0)
         @id = 1
-        @last_accessed_time = current_time
         @observers = {}.compare_by_identity
         @mutex = Mutex.new
         @connection = Connection.new
@@ -17,6 +16,7 @@ module Sass
 
         return unless idle_timeout.positive?
 
+        @last_accessed_time = current_time
         Thread.new do
           Thread.current.name = "sass-embedded-connection-reaper-#{@connection.id}"
           duration = idle_timeout
@@ -127,8 +127,9 @@ module Sass
       end
 
       def _idle
+        @last_accessed_time = current_time if defined?(@last_accessed_time)
+
         @id = 1
-        @last_accessed_time = current_time
       end
 
       def _idle?
