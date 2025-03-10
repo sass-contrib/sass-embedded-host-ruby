@@ -40,7 +40,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - ubuntu-24.04-arm
-          - windows-latest
+          - windows-2025
         container:
           -
         vm:
@@ -54,9 +54,9 @@ jobs:
           - truffleruby
           - truffleruby+graalvm
         exclude:
-          - os: windows-latest
+          - os: windows-2025
             ruby-version: truffleruby
-          - os: windows-latest
+          - os: windows-2025
             ruby-version: truffleruby+graalvm
         include:
           - os: ubuntu-latest

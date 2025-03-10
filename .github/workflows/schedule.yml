@@ -16,16 +16,16 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-latest
+          - windows-2025
         ruby-version:
           - ruby-head
           - jruby-head
           - truffleruby-head
           - truffleruby+graalvm-head
         exclude:
-          - os: windows-latest
+          - os: windows-2025
             ruby-version: truffleruby-head
-          - os: windows-latest
+          - os: windows-2025
             ruby-version: truffleruby+graalvm-head
 
     steps:
