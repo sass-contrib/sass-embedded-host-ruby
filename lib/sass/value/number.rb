@@ -276,8 +276,8 @@ module Sass
                                   other: nil,
                                   other_name: nil)
         if other && (other.numerator_units != new_denominator_units && other.denominator_units != new_denominator_units)
-          raise Sass::ScriptError, "Expect #{other} to have units #{unit_string(new_numerator_units,
-                                                                                new_denominator_units).inspect}"
+          raise Sass::ScriptError, "Expected #{other} to have units #{unit_string(new_numerator_units,
+                                                                                  new_denominator_units).inspect}"
         end
 
         return value if numerator_units == new_numerator_units && denominator_units == new_denominator_units
