@@ -12,12 +12,15 @@ module Sass
         private :new
       end
 
+      # @return [Object]
+      protected attr_reader :environment
+
       # @return [Integer]
       protected attr_reader :id
 
       # @return [::Boolean]
       def ==(other)
-        other.is_a?(Sass::Value::Mixin) && other.id == id
+        other.is_a?(Sass::Value::Mixin) && other.environment == environment && other.id == id
       end
 
       # @return [Integer]

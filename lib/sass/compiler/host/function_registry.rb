@@ -7,11 +7,12 @@ module Sass
       #
       # It stores sass custom functions and handles function calls.
       class FunctionRegistry
-        attr_reader :global_functions
+        attr_reader :environment, :global_functions
 
         def initialize(functions, alert_color:)
           functions = functions.transform_keys(&:to_s)
 
+          @environment = BasicObject.new
           @global_functions = functions.keys
           @functions_by_name = functions.transform_keys do |signature|
             index = signature.index('(')

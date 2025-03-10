@@ -15,6 +15,9 @@ module Sass
         @callback = callback.freeze
       end
 
+      # @return [Object, nil]
+      protected attr_reader :environment
+
       # @return [Integer, nil]
       protected attr_reader :id
 
@@ -26,10 +29,10 @@ module Sass
 
       # @return [::Boolean]
       def ==(other)
-        if id.nil?
-          other.equal?(self)
+        if defined?(@id)
+          other.is_a?(Sass::Value::Function) && other.environment == environment && other.id == id
         else
-          other.is_a?(Sass::Value::Function) && other.id == id
+          other.equal?(self)
         end
       end
 
