@@ -128,16 +128,6 @@ jobs:
                 echo 3.3 | tee /etc/ruby-version
           - os: ubuntu-latest
             vm:
-              os: netbsd
-              run: |
-                /usr/sbin/pkg_add nodejs protobuf ruby
-          - os: ubuntu-latest
-            vm:
-              os: dragonflybsd
-              run: |
-                pkg install -y libnghttp2 libuv node npm protobuf ruby rubygem-bundler rubygem-rake
-          - os: ubuntu-latest
-            vm:
               os: omnios
               run: |
                 pkg install build-essential node-22 protobuf ruby-33
