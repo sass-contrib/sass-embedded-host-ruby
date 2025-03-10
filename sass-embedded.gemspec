@@ -42,5 +42,5 @@ Gem::Specification.new do |spec|
                                  '>= 3.2'
                                end
 
-  spec.add_dependency 'google-protobuf', '~> 4.29'
+  spec.add_dependency 'google-protobuf', '~> 4.30'
 end
