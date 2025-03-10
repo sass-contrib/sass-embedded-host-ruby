@@ -64,6 +64,8 @@ module Sass
             )
           when Sass::Value::Function
             if obj.instance_variable_defined?(:@id)
+              assert_compiler_value(obj)
+
               EmbeddedProtocol::Value.new(
                 compiler_function: EmbeddedProtocol::Value::CompilerFunction.new(
                   id: obj.instance_variable_get(:@id)
@@ -78,6 +80,8 @@ module Sass
               )
             end
           when Sass::Value::Mixin
+            assert_compiler_value(obj)
+
             EmbeddedProtocol::Value.new(
               compiler_mixin: EmbeddedProtocol::Value::CompilerMixin.new(
                 id: obj.instance_variable_get(:@id)
@@ -148,17 +152,11 @@ module Sass
               end
             )
           when :compiler_function
-            Sass::Value::Function.allocate.instance_eval do
-              @id = obj.id
-              self
-            end
+            compiler_value(Sass::Value::Function, obj.id)
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :compiler_mixin
-            Sass::Value::Mixin.allocate.instance_eval do
-              @id = obj.id
-              self
-            end
+            compiler_value(Sass::Value::Mixin, obj.id)
           when :calculation
             Calculation.from_proto(obj)
           when :singleton
@@ -175,6 +173,23 @@ module Sass
           else
             raise Sass::ScriptError, "Unknown Value.value #{obj}"
           end
+        end
+
+        private
+
+        def assert_compiler_value(value)
+          unless value.instance_variable_get(:@environment) == @function_registry.environment
+            raise Sass::ScriptError, "Returned #{value} does not belong to this compilation"
+          end
+
+          value
+        end
+
+        def compiler_value(klass, id)
+          value = klass.allocate
+          value.instance_variable_set(:@environment, @function_registry.environment)
+          value.instance_variable_set(:@id, id)
+          value
         end
 
         # The {Number} Protofier.
