@@ -57,8 +57,8 @@ module Sass
 
           success = protofier.to_proto(function.call(arguments))
           accessed_argument_lists = arguments.filter_map do |argument|
-            if argument.is_a?(Sass::Value::ArgumentList) && argument.instance_eval { @keywords_accessed }
-              argument.instance_eval { @id }
+            if argument.is_a?(Sass::Value::ArgumentList) && argument.instance_variable_get(:@keywords_accessed)
+              argument.instance_variable_get(:@id)
             end
           end
 

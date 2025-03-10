@@ -37,7 +37,7 @@ module Sass
           when Sass::Value::ArgumentList
             EmbeddedProtocol::Value.new(
               argument_list: EmbeddedProtocol::Value::ArgumentList.new(
-                id: obj.instance_eval { @id },
+                id: obj.instance_variable_get(:@id),
                 contents: obj.to_a.map { |element| to_proto(element) },
                 keywords: obj.keywords.each_with_object({}) { |(key, value), hash| hash[key.to_s] = to_proto(value) },
                 separator: ListSeparator.to_proto(obj.separator)
@@ -63,10 +63,10 @@ module Sass
               )
             )
           when Sass::Value::Function
-            if obj.instance_eval { @id }
+            if obj.instance_variable_defined?(:@id)
               EmbeddedProtocol::Value.new(
                 compiler_function: EmbeddedProtocol::Value::CompilerFunction.new(
-                  id: obj.instance_eval { @id }
+                  id: obj.instance_variable_get(:@id)
                 )
               )
             else
@@ -80,7 +80,7 @@ module Sass
           when Sass::Value::Mixin
             EmbeddedProtocol::Value.new(
               compiler_mixin: EmbeddedProtocol::Value::CompilerMixin.new(
-                id: obj.instance_eval { @id }
+                id: obj.instance_variable_get(:@id)
               )
             )
           when Sass::Value::Calculation
@@ -148,14 +148,14 @@ module Sass
               end
             )
           when :compiler_function
-            Sass::Value::Function.new(nil).instance_eval do
+            Sass::Value::Function.allocate.instance_eval do
               @id = obj.id
               self
             end
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :compiler_mixin
-            Sass::Value::Mixin.send(:new).instance_eval do
+            Sass::Value::Mixin.allocate.instance_eval do
               @id = obj.id
               self
             end

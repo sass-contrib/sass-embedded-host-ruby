@@ -11,8 +11,6 @@ module Sass
       # @param signature [::String]
       # @param callback [Proc]
       def initialize(signature, &callback)
-        raise Sass::ScriptError, 'no block given' unless signature.nil? || callback
-
         @signature = signature.freeze
         @callback = callback.freeze
       end

@@ -54,9 +54,7 @@ module Sass
         return @compiler if @compiler
 
         compiler = Compiler.allocate
-        compiler.instance_eval do
-          @channel = Compiler.const_get(:Channel).new(idle_timeout: 10)
-        end
+        compiler.instance_variable_set(:@channel, Compiler.const_get(:Channel).new(idle_timeout: 10))
 
         at_exit do
           compiler.close

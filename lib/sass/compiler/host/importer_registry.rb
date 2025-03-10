@@ -35,7 +35,7 @@ module Sass
           if importer.is_a?(Sass::NodePackageImporter)
             EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
               node_package_importer: EmbeddedProtocol::NodePackageImporter.new(
-                entry_point_directory: importer.instance_eval { @entry_point_directory }
+                entry_point_directory: importer.instance_variable_get(:@entry_point_directory)
               )
             )
           else
@@ -76,7 +76,7 @@ module Sass
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
             url:,
-            containing_url_unused: canonicalize_context.instance_eval { @containing_url_unused }
+            containing_url_unused: canonicalize_context.instance_variable_get(:@containing_url_unused)
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
@@ -118,7 +118,7 @@ module Sass
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
             file_url:,
-            containing_url_unused: canonicalize_context.instance_eval { @containing_url_unused }
+            containing_url_unused: canonicalize_context.instance_variable_get(:@containing_url_unused)
           )
         rescue StandardError => e
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
