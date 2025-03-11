@@ -25,7 +25,7 @@ module Sass
 
       # @return [Integer]
       def hash
-        @hash ||= id.hash
+        @hash ||= [environment, id].hash
       end
 
       # @return [Mixin]

@@ -29,16 +29,18 @@ module Sass
 
       # @return [::Boolean]
       def ==(other)
+        return false unless other.is_a?(Sass::Value::Function)
+
         if defined?(@id)
-          other.is_a?(Sass::Value::Function) && other.environment == environment && other.id == id
+          other.environment == environment && other.id == id
         else
-          other.equal?(self)
+          other.signature == signature && other.callback == callback
         end
       end
 
       # @return [Integer]
       def hash
-        @hash ||= id.nil? ? signature.hash : id.hash
+        @hash ||= defined?(@id) ? [environment, id].hash : [signature, callback].hash
       end
 
       # @return [Function]

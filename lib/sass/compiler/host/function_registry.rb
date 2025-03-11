@@ -12,7 +12,7 @@ module Sass
         def initialize(functions, alert_color:)
           functions = functions.transform_keys(&:to_s)
 
-          @environment = BasicObject.new
+          @environment = Object.new
           @global_functions = functions.keys
           @functions_by_name = functions.transform_keys do |signature|
             index = signature.index('(')
