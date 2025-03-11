@@ -71,11 +71,9 @@ module Sass
             )
           when Sass::Value::Function
             if obj.instance_variable_defined?(:@id)
-              assert_compiler_value(obj)
-
               EmbeddedProtocol::Value.new(
                 compiler_function: EmbeddedProtocol::Value::CompilerFunction.new(
-                  id: obj.instance_variable_get(:@id)
+                  id: assert_compiler_value(obj).instance_variable_get(:@id)
                 )
               )
             else
@@ -87,11 +85,9 @@ module Sass
               )
             end
           when Sass::Value::Mixin
-            assert_compiler_value(obj)
-
             EmbeddedProtocol::Value.new(
               compiler_mixin: EmbeddedProtocol::Value::CompilerMixin.new(
-                id: obj.instance_variable_get(:@id)
+                id: assert_compiler_value(obj).instance_variable_get(:@id)
               )
             )
           when Sass::Value::Calculation
