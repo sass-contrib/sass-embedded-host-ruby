@@ -35,7 +35,7 @@ module Sass
               )
             )
           when Sass::Value::ArgumentList
-            if obj.instance_variable_get(:@environment) == @function_registry.environment
+            if obj.instance_variable_get(:@compile_context) == @function_registry.compile_context
               EmbeddedProtocol::Value.new(
                 argument_list: EmbeddedProtocol::Value::ArgumentList.new(
                   id: obj.instance_variable_get(:@id)
@@ -181,7 +181,7 @@ module Sass
         private
 
         def assert_compiler_value(value)
-          unless value.instance_variable_get(:@environment) == @function_registry.environment
+          unless value.instance_variable_get(:@compile_context) == @function_registry.compile_context
             raise Sass::ScriptError, "Value #{value} does not belong to this compilation"
           end
 
@@ -189,7 +189,7 @@ module Sass
         end
 
         def compiler_value(value, id)
-          value.instance_variable_set(:@environment, @function_registry.environment)
+          value.instance_variable_set(:@compile_context, @function_registry.compile_context)
           value.instance_variable_set(:@id, id)
           value
         end

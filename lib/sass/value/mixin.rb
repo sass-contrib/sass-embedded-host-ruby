@@ -13,19 +13,19 @@ module Sass
       end
 
       # @return [Object]
-      protected attr_reader :environment
+      protected attr_reader :compile_context
 
       # @return [Integer]
       protected attr_reader :id
 
       # @return [::Boolean]
       def ==(other)
-        other.is_a?(Sass::Value::Mixin) && other.environment == environment && other.id == id
+        other.is_a?(Sass::Value::Mixin) && other.compile_context == compile_context && other.id == id
       end
 
       # @return [Integer]
       def hash
-        @hash ||= [environment, id].hash
+        @hash ||= [compile_context, id].hash
       end
 
       # @return [Mixin]

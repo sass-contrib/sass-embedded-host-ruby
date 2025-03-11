@@ -16,7 +16,7 @@ module Sass
       end
 
       # @return [Object, nil]
-      protected attr_reader :environment
+      protected attr_reader :compile_context
 
       # @return [Integer, nil]
       protected attr_reader :id
@@ -32,7 +32,7 @@ module Sass
         return false unless other.is_a?(Sass::Value::Function)
 
         if defined?(@id)
-          other.environment == environment && other.id == id
+          other.compile_context == compile_context && other.id == id
         else
           other.signature == signature && other.callback == callback
         end
@@ -40,7 +40,7 @@ module Sass
 
       # @return [Integer]
       def hash
-        @hash ||= defined?(@id) ? [environment, id].hash : [signature, callback].hash
+        @hash ||= defined?(@id) ? [compile_context, id].hash : [signature, callback].hash
       end
 
       # @return [Function]
