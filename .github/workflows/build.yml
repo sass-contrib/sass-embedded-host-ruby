@@ -40,7 +40,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - ubuntu-24.04-arm
-          - windows-2025
+          - windows-latest
         container:
           -
         vm:
@@ -54,9 +54,9 @@ jobs:
           - truffleruby
           - truffleruby+graalvm
         exclude:
-          - os: windows-2025
+          - os: windows-latest
             ruby-version: truffleruby
-          - os: windows-2025
+          - os: windows-latest
             ruby-version: truffleruby+graalvm
         include:
           - os: ubuntu-latest
@@ -155,6 +155,13 @@ jobs:
       - name: Install dependencies
         if: endsWith(matrix.container.image, ':alpine') || endsWith(matrix.container.image, '-alpine')
         run: apk add build-base
+
+      - name: Setup java
+        if: matrix.ruby-version == 'jruby'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
       - name: Setup ruby
         if: matrix.ruby-version

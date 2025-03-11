@@ -16,21 +16,28 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-2025
+          - windows-latest
         ruby-version:
           - ruby-head
           - jruby-head
           - truffleruby-head
           - truffleruby+graalvm-head
         exclude:
-          - os: windows-2025
+          - os: windows-latest
             ruby-version: truffleruby-head
-          - os: windows-2025
+          - os: windows-latest
             ruby-version: truffleruby+graalvm-head
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup java
+        if: matrix.ruby-version == 'jruby-head'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
