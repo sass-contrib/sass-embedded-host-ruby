@@ -186,7 +186,7 @@ module Sass
 
         def assert_compiler_value(value)
           unless value.instance_variable_get(:@environment) == @function_registry.environment
-            raise Sass::ScriptError, "Returned #{value} does not belong to this compilation"
+            raise Sass::ScriptError, "Value #{value} does not belong to this compilation"
           end
 
           value
