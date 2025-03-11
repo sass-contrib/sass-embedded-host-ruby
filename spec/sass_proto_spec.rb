@@ -4,14 +4,6 @@ require 'spec_helper'
 
 RSpec.describe Sass do
   def remote_eq(lhs, rhs)
-    to_host_value = lambda { |value|
-      if value.is_a?(Sass::Value::ArgumentList)
-        value.dup
-      else
-        value
-      end
-    }
-
     result = nil
     Sass.compile_string(
       '$_: yield(lhs()==rhs());',
@@ -21,10 +13,10 @@ RSpec.describe Sass do
           Sass::Value::Null::NULL
         },
         'lhs()' => lambda { |*|
-          to_host_value.call lhs
+          lhs
         },
         'rhs()' => lambda { |*|
-          to_host_value.call rhs
+          rhs
         }
       }
     )

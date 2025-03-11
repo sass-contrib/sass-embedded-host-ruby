@@ -35,14 +35,21 @@ module Sass
               )
             )
           when Sass::Value::ArgumentList
-            EmbeddedProtocol::Value.new(
-              argument_list: EmbeddedProtocol::Value::ArgumentList.new(
-                id: obj.instance_variable_get(:@id),
-                contents: obj.to_a.map { |element| to_proto(element) },
-                keywords: obj.keywords.each_with_object({}) { |(key, value), hash| hash[key.to_s] = to_proto(value) },
-                separator: ListSeparator.to_proto(obj.separator)
+            if obj.instance_variable_get(:@environment) == @function_registry.environment
+              EmbeddedProtocol::Value.new(
+                argument_list: EmbeddedProtocol::Value::ArgumentList.new(
+                  id: obj.instance_variable_get(:@id)
+                )
               )
-            )
+            else
+              EmbeddedProtocol::Value.new(
+                argument_list: EmbeddedProtocol::Value::ArgumentList.new(
+                  contents: obj.to_a.map { |element| to_proto(element) },
+                  keywords: obj.keywords.each_with_object({}) { |(key, value), hash| hash[key.to_s] = to_proto(value) },
+                  separator: ListSeparator.to_proto(obj.separator)
+                )
+              )
+            end
           when Sass::Value::List
             EmbeddedProtocol::Value.new(
               list: EmbeddedProtocol::Value::List.new(
@@ -125,18 +132,18 @@ module Sass
               obj.has_alpha? ? obj.alpha : nil
             )
           when :argument_list
-            Sass::Value::ArgumentList.new(
-              obj.contents.map do |element|
-                from_proto(element)
-              end,
-              obj.keywords.to_enum.with_object({}) do |(key, value), hash|
-                hash[key.to_sym] = from_proto(value)
-              end,
-              ListSeparator.from_proto(obj.separator)
-            ).instance_eval do
-              @id = obj.id
-              self
-            end
+            compiler_value(
+              Sass::Value::ArgumentList.new(
+                obj.contents.map do |element|
+                  from_proto(element)
+                end,
+                obj.keywords.to_enum.with_object({}) do |(key, value), hash|
+                  hash[key.to_sym] = from_proto(value)
+                end,
+                ListSeparator.from_proto(obj.separator)
+              ),
+              obj.id
+            )
           when :list
             Sass::Value::List.new(
               obj.contents.map do |element|
@@ -152,11 +159,11 @@ module Sass
               end
             )
           when :compiler_function
-            compiler_value(Sass::Value::Function, obj.id)
+            compiler_value(Sass::Value::Function.allocate, obj.id)
           when :host_function
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :compiler_mixin
-            compiler_value(Sass::Value::Mixin, obj.id)
+            compiler_value(Sass::Value::Mixin.allocate, obj.id)
           when :calculation
             Calculation.from_proto(obj)
           when :singleton
@@ -185,8 +192,7 @@ module Sass
           value
         end
 
-        def compiler_value(klass, id)
-          value = klass.allocate
+        def compiler_value(value, id)
           value.instance_variable_set(:@environment, @function_registry.environment)
           value.instance_variable_set(:@id, id)
           value

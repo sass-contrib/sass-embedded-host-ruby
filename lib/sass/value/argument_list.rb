@@ -15,7 +15,6 @@ module Sass
       def initialize(contents = [], keywords = {}, separator = ',')
         super(contents, separator:)
 
-        @id = 0
         @keywords_accessed = false
         @keywords = keywords.freeze
       end
@@ -24,13 +23,6 @@ module Sass
       def keywords
         @keywords_accessed = true
         @keywords
-      end
-
-      private
-
-      def initialize_dup(orig)
-        @id = 0
-        super
       end
     end
   end
