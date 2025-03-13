@@ -10,11 +10,10 @@ module Sass
         attr_reader :compile_context, :global_functions
 
         def initialize(functions, alert_color:)
-          functions = functions.transform_keys(&:to_s)
-
           @compile_context = Object.new
-          @global_functions = functions.keys
+          @global_functions = functions.keys.map!(&:to_s)
           @functions_by_name = functions.transform_keys do |signature|
+            signature = signature.to_s
             index = signature.index('(')
             if index
               signature.slice(0, index)
