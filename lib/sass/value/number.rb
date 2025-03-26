@@ -275,17 +275,15 @@ module Sass
                                   name: nil,
                                   other: nil,
                                   other_name: nil)
-        if other && (other.numerator_units != new_denominator_units && other.denominator_units != new_denominator_units)
-          raise Sass::ScriptError, "Expected #{other} to have units #{unit_string(new_numerator_units,
-                                                                                  new_denominator_units).inspect}"
+        unless other.nil? ||
+               (other.numerator_units == new_numerator_units && other.denominator_units == new_denominator_units)
+          raise Sass::ScriptError,
+                "Expected #{other} to have units #{unit_string(new_numerator_units, new_denominator_units).inspect}"
         end
 
         return value if numerator_units == new_numerator_units && denominator_units == new_denominator_units
 
-        return value if numerator_units == new_numerator_units && denominator_units == new_denominator_units
-
         other_unitless = new_numerator_units.empty? && new_denominator_units.empty?
-
         return value if coerce_unitless && (unitless? || other_unitless)
 
         compatibility_error = lambda {
