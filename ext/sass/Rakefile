@@ -445,10 +445,10 @@ module Platform
       begin
         Rake::Task['true'].invoke unless File.exist?('true')
       rescue NotImplementedError
-        # do nothing
+        return false
       end
 
-      system('./true') == true
+      system('./true', %i[out err] => File::NULL) == true
     end
 
     def host_os(root = compat_linux_emul_path)
