@@ -68,6 +68,8 @@ jobs:
 
       - name: Compile
         run: bundle exec rake compile ext_platform=${{ matrix.platform }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Build
         run: rake -f -r bundler/gem_tasks build gem_platform=${{ matrix.platform }}

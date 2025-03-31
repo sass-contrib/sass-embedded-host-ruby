@@ -50,6 +50,9 @@ file 'dart-sass/sass' do
   end
 rescue StandardError
   archive = fetch(SassConfig.dart_sass)
+  if SassConfig.development? && system('gh', 'auth', 'status', '--hostname', 'github.com', %i[out err] => File::NULL)
+    sh 'gh', 'attestation', 'verify', archive, '--hostname', 'github.com', '--repo', 'sass/dart-sass'
+  end
   unarchive archive
   rm archive
 end

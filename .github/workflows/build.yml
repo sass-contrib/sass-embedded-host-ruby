@@ -179,6 +179,8 @@ jobs:
 
       - name: Compile
         run: bundle exec rake compile
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Spec
         if: "!matrix.vm || contains(matrix.vm.run, 'linux_base') || contains(matrix.vm.run, '/proc')" # TODO: remove after https://github.com/sass/dart-sass/pull/2413
