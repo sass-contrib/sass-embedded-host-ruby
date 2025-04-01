@@ -46,12 +46,12 @@ end
 
 file 'dart-sass/sass' do
   gem_install 'sass-embedded', SassConfig.gem_version, SassConfig.gem_platform do |installer|
-    gh_attestation_verify(installer.gem, 'sass-contrib/sass-embedded-host-ruby')
+    gh_attestation_verify(installer.gem, repo: 'sass-contrib/sass-embedded-host-ruby')
     mv File.absolute_path('ext/sass/dart-sass', installer.gem_dir), 'dart-sass'
   end
 rescue StandardError
   archive = fetch(SassConfig.dart_sass)
-  gh_attestation_verify(archive, 'sass/dart-sass')
+  gh_attestation_verify(archive, repo: 'sass/dart-sass')
   unarchive archive
   rm archive
 end
@@ -428,9 +428,9 @@ module FileUtils
     rm_rf install_dir unless Rake::FileUtilsExt.nowrite_flag
   end
 
-  def gh_attestation_verify(path, repo)
-    if SassConfig.development? && system('gh', 'auth', 'status', '--hostname', 'github.com', %i[out err] => File::NULL)
-      sh 'gh', 'attestation', 'verify', path, '--hostname', 'github.com', '--repo', repo
+  def gh_attestation_verify(path, repo:, hostname: 'github.com')
+    if SassConfig.development? && system('gh', 'auth', 'status', '--hostname', hostname, %i[out err] => File::NULL)
+      sh 'gh', 'attestation', 'verify', path, '--hostname', hostname, '--repo', repo
     end
   end
 end
