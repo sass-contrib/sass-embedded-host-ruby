@@ -7,7 +7,7 @@ require_relative 'console'
 require_relative 'sandbox'
 
 RSpec.configure do |config|
-  config.color_mode = :on if ENV.key?('GITHUB_ACTIONS')
+  config.color_mode = :on if ENV['GITHUB_ACTIONS'] == 'true'
   config.formatter = :documentation
 
   config.include Console
