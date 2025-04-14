@@ -363,10 +363,7 @@ module Sass
       return if phdr.nil?
 
       @io.seek(phdr[:p_offset], IO::SEEK_SET)
-      interpreter = @io.read(phdr[:p_filesz])
-      raise EncodingError unless interpreter.end_with?("\0")
-
-      interpreter.chomp!("\0")
+      @io.read(phdr[:p_filesz]).unpack1('Z*')
     end
 
     INTERPRETER = begin
