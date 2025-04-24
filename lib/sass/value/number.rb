@@ -88,12 +88,12 @@ module Sass
         end
 
         FuzzyMath.equals(
-          (value *
+          value *
           Unit.canonical_multiplier(numerator_units) /
-          Unit.canonical_multiplier(denominator_units)),
-          (other.value *
+          Unit.canonical_multiplier(denominator_units),
+          other.value *
           Unit.canonical_multiplier(other.numerator_units) /
-          Unit.canonical_multiplier(other.denominator_units))
+          Unit.canonical_multiplier(other.denominator_units)
         )
       end
 
