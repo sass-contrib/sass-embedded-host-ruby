@@ -656,7 +656,7 @@ module SassConfig
           when 'x86_64'
             'x86_64'
           when 'aarch64'
-            'aarch_64'
+            Platform::OS == 'windows' ? 'x86_64' : 'aarch_64'
           when 'ppc64le'
             'ppcle_64'
           when 's390x'

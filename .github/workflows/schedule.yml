@@ -16,7 +16,9 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - windows-latest
+          - windows-11-arm
         ruby-version:
           - ruby-head
           - jruby-head
@@ -26,6 +28,12 @@ jobs:
           - os: windows-latest
             ruby-version: truffleruby-head
           - os: windows-latest
+            ruby-version: truffleruby+graalvm-head
+          - os: windows-11-arm
+            ruby-version: jruby-head
+          - os: windows-11-arm
+            ruby-version: truffleruby-head
+          - os: windows-11-arm
             ruby-version: truffleruby+graalvm-head
 
     steps:
