@@ -51,11 +51,11 @@ module Sass
       def initialize(**options)
         unless options.key?(:space)
           options[:space] = case options
-                            in {red: _, green: _, blue: _}
+                            in { red: _, green: _, blue: _ }
                               'rgb'
-                            in {hue: _, saturation: _, lightness: _}
+                            in { hue: _, saturation: _, lightness: _ }
                               'hsl'
-                            in {hue: _, whiteness: _, blackness: _}
+                            in { hue: _, whiteness: _, blackness: _ }
                               'hwb'
                             else
                               raise Sass::ScriptError.new('No color space found', 'space')
@@ -207,17 +207,17 @@ module Sass
 
         if legacy? && !space_set_explictly
           case options
-          in {whiteness: _} | {blackness: _}
+          in { whiteness: _ } | { blackness: _ }
             space = Space::HWB
-          in {saturation: _} | {lightness: _}
+          in { saturation: _ } | { lightness: _ }
             space = Space::HSL
-          in {hue: _}
+          in { hue: _ }
             space = if _space == Space::HWB
                       Space::HWB
                     else
                       Space::HSL
                     end
-          in {red: _} | {blue: _} | {green: _}
+          in { red: _ } | { blue: _ } | { green: _ }
             space = Space::RGB
           else
           end
