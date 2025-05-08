@@ -100,4 +100,39 @@ describe Sass::Value::Function do
       end
     end
   end
+
+  it 'rejects a compiler function from a different compilation' do
+    plus_one = nil
+    Sass.compile_string(
+      "
+      @use 'sass:meta';
+
+      @function plusOne($n) {@return $n + 1}
+      a {b: meta.call(foo(meta.get-function('plusOne')), 2)}
+      ",
+      functions: {
+        'foo($arg)': ->(args) { plus_one = args[0] }
+      }
+    )
+
+    plus_two = nil
+    expect do
+      Sass.compile_string(
+        "
+        @use 'sass:meta';
+
+        @function plusTwo($n) {@return $n + 2}
+        a {b: meta.call(foo(meta.get-function('plusTwo')), 2)}
+        ",
+        functions: {
+          'foo($arg)': lambda { |args|
+            plus_two = args[0]
+            plus_one
+          }
+        }
+      )
+    end.to raise_sass_compile_error.with_line(4)
+
+    expect(plus_one).not_to eq(plus_two)
+  end
 end

@@ -45,4 +45,49 @@ describe Sass::Value::Mixin do
 
     expect(fn).to have_received(:call)
   end
+
+  it 'rejects a compiler mixin from a different compilation' do
+    a = nil
+    Sass.compile_string(
+      "
+      @use 'sass:meta';
+
+      @mixin a() {
+        a {
+          b: c;
+        }
+      }
+
+      @include meta.apply(foo(meta.get-mixin('a')));
+      ",
+      functions: {
+        'foo($arg)': ->(args) { a = args[0] }
+      }
+    )
+
+    b = nil
+    expect do
+      Sass.compile_string(
+        "
+        @use 'sass:meta';
+
+        @mixin b() {
+          c {
+            d: e;
+          }
+        }
+
+        @include meta.apply(foo(meta.get-mixin('b')));
+        ",
+        functions: {
+          'foo($arg)': lambda { |args|
+            b = args[0]
+            a
+          }
+        }
+      )
+    end.to raise_sass_compile_error.with_line(9)
+
+    expect(a).not_to eq(b)
+  end
 end
