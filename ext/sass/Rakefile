@@ -607,8 +607,6 @@ module SassConfig
          end
 
     cpu = case Platform::CPU
-          when 'i386'
-            'ia32'
           when 'x86_64'
             'x64'
           when 'aarch64'
