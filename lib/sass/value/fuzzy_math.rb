@@ -12,7 +12,7 @@ module Sass
 
       module_function
 
-      def equals(number1, number2)
+      def equals?(number1, number2)
         return true if number1 == number2
 
         (number1 - number2).abs <= EPSILON &&
@@ -20,7 +20,7 @@ module Sass
             (number2 * INVERSE_EPSILON).round
       end
 
-      def equals_nilable(number1, number2)
+      def equals_nilable?(number1, number2)
         return true if number1 == number2
         return false if number1.nil? || number2.nil?
 
@@ -29,26 +29,26 @@ module Sass
             (number2 * INVERSE_EPSILON).round
       end
 
-      def less_than(number1, number2)
-        number1 < number2 && !equals(number1, number2)
+      def less_than?(number1, number2)
+        number1 < number2 && !equals?(number1, number2)
       end
 
-      def less_than_or_equals(number1, number2)
-        number1 < number2 || equals(number1, number2)
+      def less_than_or_equals?(number1, number2)
+        number1 < number2 || equals?(number1, number2)
       end
 
-      def greater_than(number1, number2)
-        number1 > number2 && !equals(number1, number2)
+      def greater_than?(number1, number2)
+        number1 > number2 && !equals?(number1, number2)
       end
 
-      def greater_than_or_equals(number1, number2)
-        number1 > number2 || equals(number1, number2)
+      def greater_than_or_equals?(number1, number2)
+        number1 > number2 || equals?(number1, number2)
       end
 
       def integer?(number)
         return false unless number.finite?
 
-        equals(number, number.round)
+        equals?(number, number.round)
       end
 
       def to_i(number)
@@ -56,8 +56,8 @@ module Sass
       end
 
       def between(number, min, max)
-        return min if equals(number, min)
-        return max if equals(number, max)
+        return min if equals?(number, min)
+        return max if equals?(number, max)
         return number if number > min && number < max
 
         nil

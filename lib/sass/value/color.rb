@@ -318,21 +318,21 @@ module Sass
 
         if legacy?
           return false unless other.legacy?
-          return false unless FuzzyMath.equals_nilable(other.alpha_or_nil, alpha_or_nil)
+          return false unless FuzzyMath.equals_nilable?(other.alpha_or_nil, alpha_or_nil)
 
           if _space == other._space
-            FuzzyMath.equals_nilable(other.channel0_or_nil, channel0_or_nil) &&
-              FuzzyMath.equals_nilable(other.channel1_or_nil, channel1_or_nil) &&
-              FuzzyMath.equals_nilable(other.channel2_or_nil, channel2_or_nil)
+            FuzzyMath.equals_nilable?(other.channel0_or_nil, channel0_or_nil) &&
+              FuzzyMath.equals_nilable?(other.channel1_or_nil, channel1_or_nil) &&
+              FuzzyMath.equals_nilable?(other.channel2_or_nil, channel2_or_nil)
           else
             _to_space(Space::RGB) == other._to_space(Space::RGB)
           end
         else
           other._space == _space &&
-            FuzzyMath.equals_nilable(other.channel0_or_nil, channel0_or_nil) &&
-            FuzzyMath.equals_nilable(other.channel1_or_nil, channel1_or_nil) &&
-            FuzzyMath.equals_nilable(other.channel2_or_nil, channel2_or_nil) &&
-            FuzzyMath.equals_nilable(other.alpha_or_nil, alpha_or_nil)
+            FuzzyMath.equals_nilable?(other.channel0_or_nil, channel0_or_nil) &&
+            FuzzyMath.equals_nilable?(other.channel1_or_nil, channel1_or_nil) &&
+            FuzzyMath.equals_nilable?(other.channel2_or_nil, channel2_or_nil) &&
+            FuzzyMath.equals_nilable?(other.alpha_or_nil, alpha_or_nil)
         end
       end
 
@@ -367,9 +367,9 @@ module Sass
       def channel0_powerless?
         case _space
         when Space::HSL
-          FuzzyMath.equals(channel1, 0)
+          FuzzyMath.equals?(channel1, 0)
         when Space::HWB
-          FuzzyMath.greater_than_or_equals(channel1 + channel2, 100)
+          FuzzyMath.greater_than_or_equals?(channel1 + channel2, 100)
         else
           false
         end
@@ -398,7 +398,7 @@ module Sass
       def channel2_powerless?
         case _space
         when Space::LCH, Space::OKLCH
-          FuzzyMath.equals(channel1, 0)
+          FuzzyMath.equals?(channel1, 0)
         else
           false
         end
@@ -449,7 +449,7 @@ module Sass
         when Space::HSL
           _initialize_for_space(
             space,
-            _normalize_hue(channel0, invert: !channel1.nil? && FuzzyMath.less_than(channel1, 0)),
+            _normalize_hue(channel0, invert: !channel1.nil? && FuzzyMath.less_than?(channel1, 0)),
             channel1&.abs,
             channel2,
             alpha
@@ -461,7 +461,7 @@ module Sass
             space,
             channel0,
             channel1&.abs,
-            _normalize_hue(channel2, invert: !channel1.nil? && FuzzyMath.less_than(channel1, 0)),
+            _normalize_hue(channel2, invert: !channel1.nil? && FuzzyMath.less_than?(channel1, 0)),
             alpha
           )
         else
@@ -488,7 +488,7 @@ module Sass
       def _is_channel_in_gamut(value, channel)
         case channel
         when LinearChannel
-          FuzzyMath.less_than_or_equals(value, channel.max) && FuzzyMath.greater_than_or_equals(value, channel.min)
+          FuzzyMath.less_than_or_equals?(value, channel.max) && FuzzyMath.greater_than_or_equals?(value, channel.min)
         else
           true
         end
@@ -500,8 +500,8 @@ module Sass
           raise Sass::ScriptError.new("Expected #{wieght} to be within 0 and 1.", 'weight')
         end
 
-        return other if FuzzyMath.equals(weight, 0)
-        return self if FuzzyMath.equals(weight, 1)
+        return other if FuzzyMath.equals?(weight, 0)
+        return self if FuzzyMath.equals?(weight, 1)
 
         color1 = _to_space(method.space)
         color2 = other._to_space(method.space)

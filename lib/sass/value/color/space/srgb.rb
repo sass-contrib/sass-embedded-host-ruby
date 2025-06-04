@@ -55,7 +55,7 @@ module Sass
                 Color.send(
                   :for_space_internal,
                   dest,
-                  missing_hue || FuzzyMath.equals(saturation, 0) ? nil : hue % 360,
+                  missing_hue || FuzzyMath.equals?(saturation, 0) ? nil : hue % 360,
                   missing_chroma ? nil : saturation,
                   missing_lightness ? nil : lightness * 100,
                   alpha
@@ -67,7 +67,7 @@ module Sass
                 Color.send(
                   :for_space_internal,
                   dest,
-                  missing_hue || FuzzyMath.greater_than_or_equals(whiteness + blackness, 100) ? nil : hue % 360,
+                  missing_hue || FuzzyMath.greater_than_or_equals?(whiteness + blackness, 100) ? nil : hue % 360,
                   whiteness,
                   blackness,
                   alpha

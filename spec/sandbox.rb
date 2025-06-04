@@ -45,7 +45,7 @@ module Sandbox
     private
 
     def file_uri(path)
-      URI::File.build([nil, "#{path.start_with?('/') ? '' : '/'}#{URI::DEFAULT_PARSER.escape(path)}"])
+      URI::File.build([nil, "#{'/' unless path.start_with?('/')}#{URI::DEFAULT_PARSER.escape(path)}"])
     end
   end
 end

@@ -28,7 +28,7 @@ module Sass
             hue = original_oklch.send(:channel2_or_nil)
             alpha = original_oklch.send(:alpha_or_nil)
 
-            if FuzzyMath.greater_than_or_equals(lightness.nil? ? 0 : lightness, 1)
+            if FuzzyMath.greater_than_or_equals?(lightness.nil? ? 0 : lightness, 1)
               if color.legacy?
                 return Color.send(:_for_space,
                                   Space::RGB, 255, 255, 255, color.send(:alpha_or_nil))
@@ -37,7 +37,7 @@ module Sass
                 return Color.send(:for_space_internal,
                                   color.send(:_space), 1, 1, 1, color.send(:alpha_or_nil))
               end
-            elsif FuzzyMath.less_than_or_equals(lightness.nil? ? 0 : lightness, 0)
+            elsif FuzzyMath.less_than_or_equals?(lightness.nil? ? 0 : lightness, 0)
               return Color.send(:_for_space,
                                 Space::RGB, 0, 0, 0, color.send(:alpha_or_nil))
                           .send(:_to_space, color.send(:_space))

@@ -80,14 +80,14 @@ module Sass
         return false if numerator_units.length != other.numerator_units.length ||
                         denominator_units.length != other.denominator_units.length
 
-        return FuzzyMath.equals(value, other.value) if unitless?
+        return FuzzyMath.equals?(value, other.value) if unitless?
 
         if Unit.canonicalize_units(numerator_units) != Unit.canonicalize_units(other.numerator_units) &&
            Unit.canonicalize_units(denominator_units) != Unit.canonicalize_units(other.denominator_units)
           return false
         end
 
-        FuzzyMath.equals(
+        FuzzyMath.equals?(
           value *
           Unit.canonical_multiplier(numerator_units) /
           Unit.canonical_multiplier(denominator_units),
@@ -306,7 +306,7 @@ module Sass
 
           unit_length = new_numerator_units.length + new_denominator_units.length
           units = unit_string(new_numerator_units, new_denominator_units)
-          Sass::ScriptError.new("Expected #{self} to have unit#{unit_length > 1 ? 's' : ''} #{units}", name)
+          Sass::ScriptError.new("Expected #{self} to have unit#{'s' if unit_length > 1} #{units}", name)
         }
 
         result = value
