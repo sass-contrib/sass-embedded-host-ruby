@@ -24,7 +24,7 @@ module Sass
                       missing_chroma: false, missing_hue: false)
             case dest
             when LAB
-              powerless_ab = lightness.nil? || FuzzyMath.equals(lightness, 0)
+              powerless_ab = lightness.nil? || FuzzyMath.equals?(lightness, 0)
               Color.send(
                 :_for_space,
                 dest,

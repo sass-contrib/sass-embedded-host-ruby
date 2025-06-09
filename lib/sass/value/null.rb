@@ -31,7 +31,7 @@ module Sass
       end
 
       # @return [::Boolean]
-      def to_bool
+      def to_bool # rubocop:disable Naming/PredicateMethod
         false
       end
 

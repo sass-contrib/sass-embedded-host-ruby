@@ -62,7 +62,7 @@ module Sass
           def lab_to_lch(dest, lightness, a, b, alpha, # rubocop:disable Naming/MethodParameterName
                          missing_chroma: false, missing_hue: false)
             chroma = Math.sqrt(((a.nil? ? 0 : a)**2) + ((b.nil? ? 0 : b)**2))
-            hue = if missing_hue || FuzzyMath.equals(chroma, 0)
+            hue = if missing_hue || FuzzyMath.equals?(chroma, 0)
                     nil
                   else
                     Math.atan2(b.nil? ? 0 : b, a.nil? ? 0 : a) * 180 / Math::PI
