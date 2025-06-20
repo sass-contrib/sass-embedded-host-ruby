@@ -421,9 +421,9 @@ module Sass
       def _in_gamut?
         return true unless _space.bounded?
 
-        _is_channel_in_gamut(channel0, _space.channels[0]) &&
-          _is_channel_in_gamut(channel1, _space.channels[1]) &&
-          _is_channel_in_gamut(channel2, _space.channels[2])
+        _is_channel_in_gamut?(channel0, _space.channels[0]) &&
+          _is_channel_in_gamut?(channel1, _space.channels[1]) &&
+          _is_channel_in_gamut?(channel2, _space.channels[2])
       end
 
       def _to_gamut(method)
@@ -485,7 +485,7 @@ module Sass
         ((hue % 360) + 360 + (invert ? 180 : 0)) % 360
       end
 
-      def _is_channel_in_gamut(value, channel)
+      def _is_channel_in_gamut?(value, channel)
         case channel
         when LinearChannel
           FuzzyMath.less_than_or_equals?(value, channel.max) && FuzzyMath.greater_than_or_equals?(value, channel.min)
