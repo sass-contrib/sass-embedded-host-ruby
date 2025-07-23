@@ -288,59 +288,15 @@ end
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
-  # PowerShell quirks:
-  # - `powershell -Command -`:
-  #     Arguments must be part of command, thus cannot pass arguments safely without escaping.
-  # - `powershell -Command <script-block> [-args <arg-array>]`:
-  #     This only works when invoking powershell subshell in powershell.
-  # - `powershell -Command <string> [<CommandParameters>]`:
-  #     CommandParameters are joined with command and then parsed, thus cannot pass arguments safely without escaping.
-  # - `powershell -File -`:
-  #     Arguments must be part of file, thus cannot pass arguments safely without escaping.
-  # - `powershell -File <filePath> <args>`:
-  #     This is the only way to pass arguments safely without escaping.
-  def powershell(file, *args)
-    sh 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', file, *args
-  end
-
-  def junzip(archive, dest = '.')
-    require 'java'
-
-    Rake.rake_output_message "Archive:  #{archive}" if Rake::FileUtilsExt.verbose_flag
-
-    current_directory = java.nio.file.Paths.get(org.jruby.Ruby.getGlobalRuntime.getCurrentDirectory)
-    zip_file = java.util.zip.ZipFile.new(current_directory.resolve(archive).toFile)
-    dest_path = current_directory.resolve(dest).normalize
-    entries = zip_file.entries
-    while entries.hasMoreElements
-      entry = entries.nextElement
-      name = entry.getName
-      path = dest_path.resolve(name).normalize
-      raise SecurityError unless path.startsWith(dest_path)
-
-      Rake.rake_output_message "  inflating: #{name}" if Rake::FileUtilsExt.verbose_flag
-
-      if entry.isDirectory
-        java.nio.file.Files.createDirectories(path)
-      else
-        java.nio.file.Files.createDirectories(path.getParent)
-        java.nio.file.Files.copy(zip_file.getInputStream(entry), path)
-      end
-    end
-  ensure
-    zip_file&.close
-  end
-
   def unarchive(archive, dest = '.')
     case archive.downcase
     when ->(name) { name.include?('.tar.') || name.end_with?('.tar') }
       mkdir_p dest
       sh 'tar', '-vxC', dest, '-f', archive, '--no-same-owner', '--no-same-permissions'
     when ->(name) { name.end_with?('.zip') }
-      if RUBY_PLATFORM == 'java'
-        junzip archive, dest
-      elsif Gem.win_platform?
-        powershell 'expand-archive.ps1', '-Force', '-LiteralPath', archive, '-DestinationPath', dest
+      if Gem.win_platform?
+        mkdir_p dest
+        sh File.absolute_path('System32/tar.exe', ENV.fetch('SystemRoot', 'C:/Windows')), '-vxC', dest, '-f', archive
       else
         sh 'unzip', '-od', dest, archive
       end

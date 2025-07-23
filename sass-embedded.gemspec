@@ -28,7 +28,6 @@ Gem::Specification.new do |spec|
     spec.extensions = ['ext/sass/Rakefile']
     spec.files += [
       'ext/sass/Rakefile',
-      'ext/sass/expand-archive.ps1',
       'ext/sass/package.json'
     ]
     spec.add_dependency 'rake', '>= 13'
