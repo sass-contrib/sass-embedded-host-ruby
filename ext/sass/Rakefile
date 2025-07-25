@@ -289,19 +289,13 @@ end
 # added to the FileUtils utility functions.
 module FileUtils
   def unarchive(archive, dest = '.')
-    case archive.downcase
-    when ->(name) { name.include?('.tar.') || name.end_with?('.tar') }
-      mkdir_p dest
-      sh 'tar', '-vxC', dest, '-f', archive, '--no-same-owner', '--no-same-permissions'
-    when ->(name) { name.end_with?('.zip') }
-      if Gem.win_platform?
-        mkdir_p dest
-        sh File.absolute_path('System32/tar.exe', ENV.fetch('SystemRoot', 'C:/Windows')), '-vxC', dest, '-f', archive
-      else
-        sh 'unzip', '-od', dest, archive
-      end
+    mkdir_p dest
+    if Gem.win_platform?
+      sh File.absolute_path('tar.exe', SassConfig.windows_get_folder_path(:System)), '-vxC', dest, '-f', archive
+    elsif archive.downcase.end_with?('.zip')
+      sh 'unzip', '-od', dest, archive
     else
-      raise ArgumentError, "Unknown archive format #{archive}"
+      sh 'tar', '-vxC', dest, '-f', archive, '--no-same-owner', '--no-same-permissions'
     end
   end
 
@@ -698,5 +692,20 @@ module SassConfig
     else
       platform
     end
+  end
+
+  def windows_get_folder_path(folder)
+    require 'open3'
+
+    stdout, stderr, status = Open3.capture3('powershell.exe',
+                                            '-NoLogo',
+                                            '-NoProfile',
+                                            '-NonInteractive',
+                                            '-Command',
+                                            "[Environment]::GetFolderPath('#{folder}') | Write-Host -NoNewline")
+
+    raise stderr unless status.success?
+
+    File.absolute_path(stdout)
   end
 end
