@@ -288,14 +288,13 @@ end
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
-  def unarchive(archive, dest = '.')
-    mkdir_p dest
+  def unarchive(archive)
     if Gem.win_platform?
-      sh File.absolute_path('tar.exe', SassConfig.windows_get_folder_path(:System)), '-vxC', dest, '-f', archive
+      sh File.absolute_path('tar.exe', SassConfig.windows_system_directory), '-vxf', archive
     elsif archive.downcase.end_with?('.zip')
-      sh 'unzip', '-od', dest, archive
+      sh 'unzip', '-o', archive
     else
-      sh 'tar', '-vxC', dest, '-f', archive, '--no-same-owner', '--no-same-permissions'
+      sh 'tar', '-vxf', archive, '--no-same-owner', '--no-same-permissions'
     end
   end
 
@@ -694,7 +693,7 @@ module SassConfig
     end
   end
 
-  def windows_get_folder_path(folder)
+  def windows_system_directory
     require 'open3'
 
     stdout, stderr, status = Open3.capture3('powershell.exe',
@@ -702,7 +701,7 @@ module SassConfig
                                             '-NoProfile',
                                             '-NonInteractive',
                                             '-Command',
-                                            "[Environment]::GetFolderPath('#{folder}') | Write-Host -NoNewline")
+                                            "[Environment]::GetFolderPath('System') | Write-Host -NoNewline")
 
     raise stderr unless status.success?
 
