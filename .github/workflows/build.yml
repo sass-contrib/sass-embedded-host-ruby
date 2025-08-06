@@ -140,13 +140,13 @@ jobs:
             vm:
               os: openbsd
               run: |
-                pkg_add node protobuf ruby%3.3 ruby-shims
-                echo 3.3 | tee /etc/ruby-version
+                pkg_add node protobuf ruby%3.4 ruby-shims
+                echo 3.4 | tee /etc/ruby-version
           - os: ubuntu-latest
             vm:
               os: omnios
               run: |
-                pkg install build-essential node-22 protobuf ruby-33
+                pkg install build-essential node-22 protobuf ruby-34
                 pkg install "$(pkg search -HI -o pkg.name "$(ruby -e 'puts RbConfig::CONFIG["CC"]')")"
 
     steps:
