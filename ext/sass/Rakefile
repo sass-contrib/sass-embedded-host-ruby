@@ -696,12 +696,14 @@ module SassConfig
   def windows_system_directory
     require 'open3'
 
-    stdout, stderr, status = Open3.capture3('powershell.exe',
-                                            '-NoLogo',
-                                            '-NoProfile',
-                                            '-NonInteractive',
-                                            '-Command',
-                                            "[Environment]::GetFolderPath('System') | Write-Host -NoNewline")
+    stdout, stderr, status = Open3.capture3(
+      'powershell.exe',
+      '-NoLogo',
+      '-NoProfile',
+      '-NonInteractive',
+      '-Command',
+      '[Environment]::GetFolderPath([Environment+SpecialFolder]::System) | Write-Host -NoNewline'
+    )
 
     raise stderr unless status.success?
 
