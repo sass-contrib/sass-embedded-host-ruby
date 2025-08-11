@@ -612,16 +612,13 @@ module SassConfig
 
   def embedded_sass_protocol
     require 'json'
-    require 'open3'
 
-    stdout, stderr, status = Open3.capture3(RbConfig.ruby,
-                                            File.absolute_path('../../exe/sass', __dir__),
-                                            '--embedded',
-                                            '--version')
+    version = Utils.capture(RbConfig.ruby,
+                            File.absolute_path('../../exe/sass', __dir__),
+                            '--embedded',
+                            '--version')
 
-    raise stderr unless status.success?
-
-    tag_name = JSON.parse(stdout)['protocolVersion']
+    tag_name = JSON.parse(version)['protocolVersion']
 
     "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
   rescue StandardError # TODO: remove after https://github.com/sass/dart-sass/pull/2413
@@ -671,6 +668,16 @@ end
 module Utils
   module_function
 
+  def capture(...)
+    require 'open3'
+
+    stdout, stderr, status = Open3.capture3(...)
+
+    raise stderr unless status.success?
+
+    stdout
+  end
+
   def fetch_https(source_uri)
     require 'rubygems/remote_fetcher'
 
@@ -684,19 +691,13 @@ module Utils
   end
 
   def windows_system_directory
-    require 'open3'
+    path = capture('powershell.exe',
+                   '-NoLogo',
+                   '-NoProfile',
+                   '-NonInteractive',
+                   '-Command',
+                   '[Environment]::GetFolderPath([Environment+SpecialFolder]::System) | Write-Host -NoNewline')
 
-    stdout, stderr, status = Open3.capture3(
-      'powershell.exe',
-      '-NoLogo',
-      '-NoProfile',
-      '-NonInteractive',
-      '-Command',
-      '[Environment]::GetFolderPath([Environment+SpecialFolder]::System) | Write-Host -NoNewline'
-    )
-
-    raise stderr unless status.success?
-
-    File.absolute_path(stdout)
+    File.absolute_path(path)
   end
 end
