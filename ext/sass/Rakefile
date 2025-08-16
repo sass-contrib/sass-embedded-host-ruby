@@ -209,17 +209,6 @@ file 'true' do |t|
     #   40007a: b8 3c 00 00 00               	movl	$0x3c, %eax
     #   40007f: 0f 05                        	syscall
     entry_point = %w[31ffb83c0000000f05].pack('H*')
-  when 'i386'
-    ei_class  = ELF::ELFCLASS32
-    ei_data   = ELF::ELFDATA2LSB
-    e_machine = 0x03
-    e_flags   = 0
-
-    # 00400054 <PT_LOAD#0>:
-    #   400054: 31 db                        	xorl	%ebx, %ebx
-    #   400056: b8 01 00 00 00               	movl	$0x1, %eax
-    #   40005b: cd 80                        	int	$0x80
-    entry_point = %w[31dbb801000000cd80].pack('H*')
   else
     raise NotImplementedError
   end
@@ -388,9 +377,7 @@ module Platform
          (Platform::CPU == 'riscv64' &&
           File.exist?(File.absolute_path('lib/ld-linux-riscv64-lp64d.so.1', root))) ||
          (Platform::CPU == 'x86_64' &&
-          File.exist?(File.absolute_path('lib64/ld-linux-x86-64.so.2', root))) ||
-         (Platform::CPU == 'i386' &&
-          File.exist?(File.absolute_path('lib/ld-linux.so.2', root)))
+          File.exist?(File.absolute_path('lib64/ld-linux-x86-64.so.2', root)))
         return 'linux-gnu'
       end
 
@@ -399,7 +386,7 @@ module Platform
         return 'linux-gnueabihf'
       end
 
-      if %w[aarch64 riscv64 x86_64 i386].include?(Platform::CPU) &&
+      if %w[aarch64 riscv64 x86_64].include?(Platform::CPU) &&
          File.exist?(File.absolute_path("lib/ld-musl-#{Platform::CPU}.so.1", root))
         return 'linux-musl'
       end
@@ -409,10 +396,8 @@ module Platform
         return 'linux-musleabihf'
       end
 
-      if (%w[aarch64 riscv64 x86_64].include?(Platform::CPU) &&
-          File.exist?(File.absolute_path('system/bin/linker64', root))) ||
-         (Platform::CPU == 'i386' &&
-          File.exist?(File.absolute_path('system/bin/linker', root)))
+      if %w[aarch64 riscv64 x86_64].include?(Platform::CPU) &&
+         File.exist?(File.absolute_path('system/bin/linker64', root))
         return 'linux-android'
       end
 
