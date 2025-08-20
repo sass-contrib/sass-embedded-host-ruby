@@ -30,8 +30,6 @@ jobs:
           - os: windows-latest
             ruby-version: truffleruby+graalvm-head
           - os: windows-11-arm
-            ruby-version: jruby-head
-          - os: windows-11-arm
             ruby-version: truffleruby-head
           - os: windows-11-arm
             ruby-version: truffleruby+graalvm-head
