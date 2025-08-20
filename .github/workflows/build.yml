@@ -69,8 +69,6 @@ jobs:
           - os: windows-11-arm
             ruby-version: jruby-9
           - os: windows-11-arm
-            ruby-version: jruby-10
-          - os: windows-11-arm
             ruby-version: truffleruby
           - os: windows-11-arm
             ruby-version: truffleruby+graalvm
