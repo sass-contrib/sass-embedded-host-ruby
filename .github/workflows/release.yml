@@ -75,7 +75,7 @@ jobs:
         run: rake -f -r bundler/gem_tasks build gem_platform=${{ matrix.platform }}
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v3
         with:
           subject-path: pkg/*.gem
 
