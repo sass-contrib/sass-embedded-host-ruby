@@ -116,7 +116,7 @@ module Sass
 
         case version_response.implementation_name
         when 'dart-sass'
-          info << (CLI::COMMAND.first == 'node' ? '[JavaScript]' : '[Dart]')
+          info << (File.basename(CLI::COMMAND.first, '.exe') == 'node' ? '[JavaScript]' : '[Dart]')
         end
 
         info
