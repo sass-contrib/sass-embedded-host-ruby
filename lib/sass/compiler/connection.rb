@@ -17,7 +17,8 @@ module Sass
         @stdin.binmode
 
         # # https://dart.dev/tools/dart-devtools
-        # if 'dart' == File.basename(CLI::COMMAND.first, '.exe') && CLI::COMMAND.include?('--observe')
+        # if %w[dart dartvm].include?(File.basename(CLI::COMMAND.first, '.exe')) &&
+        #    %w[--enable-vm-service --observe].intersect?(CLI::COMMAND.map { |argument| argument.partition('=').first })
         #   Kernel.warn(@stdout.readline, uplevel: 0)
         #   Kernel.warn(@stdout.readline, uplevel: 0)
         # end
