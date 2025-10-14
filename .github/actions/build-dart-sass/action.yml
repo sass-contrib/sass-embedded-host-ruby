@@ -1,0 +1,55 @@
+# TODO: remove after https://github.com/sass/dart-sass/pull/2413
+name: Build dart-sass
+description: Build dart-sass from source with patch from https://github.com/sass/dart-sass/pull/2413
+runs:
+  using: composite
+  steps:
+    - uses: bufbuild/buf-setup-action@v1.50.0
+      with:
+        github_token: ${{ github.token }}
+
+    - uses: dart-lang/setup-dart@v1
+
+    - uses: actions/setup-node@v6
+
+    - id: version
+      run: node -e 'console.log(`version=${JSON.parse(fs.readFileSync("ext/sass/package.json"))["dependencies"]["sass"]}`)' | tee -a "$GITHUB_OUTPUT"
+      shell: bash
+
+    - uses: actions/checkout@v5
+      with:
+        repository: sass/dart-sass
+        ref: ${{ steps.version.outputs.version }}
+        path: dart-sass
+
+    - run: curl -fsSL -- https://github.com/sass/dart-sass/pull/2413.diff | git apply -
+      working-directory: dart-sass
+      shell: bash
+
+    - run: dart pub get
+      working-directory: dart-sass
+      shell: bash
+
+    - run: dart run grinder protobuf pkg-npm-release
+      working-directory: dart-sass
+      shell: bash
+
+    - run: npm pack
+      working-directory: dart-sass/build/npm
+      shell: bash
+
+    - run: mv dart-sass/build/npm/sass-${{ steps.version.outputs.version }}.tgz ext/sass
+      shell: bash
+
+    - run: npm install sass@file:sass-${{ steps.version.outputs.version }}.tgz
+      working-directory: ext/sass
+      shell: bash
+
+    - run: git add ext/sass/sass-${{ steps.version.outputs.version }}.tgz ext/sass/package.json
+      shell: bash
+
+    - run: git clean -dffx
+      shell: bash
+
+    - run: git diff HEAD
+      shell: bash

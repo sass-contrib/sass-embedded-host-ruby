@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
 
   if spec.platform == Gem::Platform::RUBY
     spec.extensions = ['ext/sass/Rakefile']
+    spec.files += Dir['ext/sass/sass-*.tgz'] # TODO: remove after https://github.com/sass/dart-sass/pull/2413
     spec.files += [
       'ext/sass/Rakefile',
       'ext/sass/package.json'

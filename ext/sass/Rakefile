@@ -488,6 +488,8 @@ module SassConfig
 
   def dart_sass_version
     package_json['dependencies']['sass']
+      # TODO: remove after https://github.com/sass/dart-sass/pull/2413
+      .delete_prefix('file:sass-').delete_suffix('.tgz')
   end
 
   def dart_sass
@@ -606,8 +608,6 @@ module SassConfig
     tag_name = JSON.parse(version)['protocolVersion']
 
     "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
-  rescue StandardError # TODO: remove after https://github.com/sass/dart-sass/pull/2413
-    'https://github.com/sass/sass/raw/HEAD/spec/embedded_sass.proto'
   end
 
   def development?

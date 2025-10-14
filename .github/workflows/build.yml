@@ -138,16 +138,15 @@ jobs:
               run: |
                 pkg_add node protobuf ruby%3.4 ruby-shims
                 echo 3.4 | tee /etc/ruby-version
-          - os: ubuntu-latest
-            vm:
-              os: omnios
-              run: |
-                pkg install build-essential node-22 protobuf ruby-34
-                pkg install "$(pkg search -HI -o pkg.name "$(ruby -e 'puts RbConfig::CONFIG["CC"]')")"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      # TODO: remove after https://github.com/sass/dart-sass/pull/2413
+      - name: Build dart-sass
+        if: matrix.vm
+        uses: ./.github/actions/build-dart-sass
 
       - name: Initialize vm
         if: matrix.vm
@@ -195,7 +194,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Spec
-        if: "!matrix.vm || contains(matrix.vm.run, 'linux_base') || contains(matrix.vm.run, '/proc')" # TODO: remove after https://github.com/sass/dart-sass/pull/2413
         run: bundle exec rake spec
 
       - name: Install
