@@ -5,7 +5,7 @@
 
 This is a Ruby library that implements the host side of the [Embedded Sass protocol](https://github.com/sass/sass/blob/HEAD/spec/embedded-protocol.md).
 
-It exposes a Ruby API for Sass that's backed by a native [Dart Sass](https://sass-lang.com/dart-sass) executable.
+It exposes a Ruby API for Sass that's backed by a native [Dart Sass](https://sass-lang.com/dart-sass) executable on [supported hardware architectures and platforms](https://dart.dev/get-dart#system-requirements) or a Node.js Dart Sass executable everywhere else.
 
 ## Install
 
