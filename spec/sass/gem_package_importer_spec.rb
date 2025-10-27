@@ -7,10 +7,16 @@ RSpec.describe Sass::GemPackageImporter do
     require 'bundler/inline'
 
     sandbox do |dir|
+      bytes = if Gem.win_platform?
+                [*32..127] - '<>:"/\|?*'.unpack('C*')
+              else
+                (1..127)
+              end
+      parent_dir = "#{bytes.map(&:chr).join}スタイル"
       dir.write({
-                  '_test.scss' => '/* test */',
-                  '_index.scss' => '@use "test";',
-                  'test.gemspec' => <<~GEMSPEC
+                  "#{parent_dir}/_test.scss" => '/* test */',
+                  "#{parent_dir}/_index.scss" => '@use "test";',
+                  "#{parent_dir}/test.gemspec" => <<~GEMSPEC
                     Gem::Specification.new do |spec|
                       spec.name = 'test'
                       spec.summary = 'test'
@@ -22,7 +28,7 @@ RSpec.describe Sass::GemPackageImporter do
                 })
 
       gemfile do
-        gem 'test', path: dir.path, require: false
+        gem 'test', path: dir.path(parent_dir), require: false
       end
 
       example.call
