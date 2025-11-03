@@ -64,15 +64,17 @@ file 'node_modules/sass' do
   # TODO: remove after https://github.com/sass/dart-sass/pull/2413
   cp File.absolute_path("sass-#{SassConfig.dart_sass_version}.tgz", __dir__), './'
 
-  sh 'npm', 'install'
-rescue StandardError
   begin
-    sh 'yarn', 'install'
+    sh 'npm', 'install'
   rescue StandardError
     begin
-      sh 'pnpm', 'install'
+      sh 'yarn', 'install'
     rescue StandardError
-      sh 'bun', 'install'
+      begin
+        sh 'pnpm', 'install'
+      rescue StandardError
+        sh 'bun', 'install'
+      end
     end
   end
 end
