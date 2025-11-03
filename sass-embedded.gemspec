@@ -21,19 +21,16 @@ Gem::Specification.new do |spec|
 
   spec.bindir      = 'exe'
   spec.executables = ['sass']
-  spec.files       = Dir['exe/**/*', 'ext/**/*_pb.rb', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
+  spec.files       = Dir['exe/**/*', 'lib/**/*.rb'] + ['LICENSE', 'README.md']
   spec.platform    = ENV.fetch('gem_platform', 'ruby')
 
   if spec.platform == Gem::Platform::RUBY
     spec.extensions = ['ext/sass/Rakefile']
-    spec.files += Dir['ext/sass/sass-*.tgz'] # TODO: remove after https://github.com/sass/dart-sass/pull/2413
-    spec.files += [
-      'ext/sass/Rakefile',
-      'ext/sass/package.json'
-    ]
+    spec.files += Dir['ext/**/*']
+    spec.files -= ['lib/sass/cli.rb']
     spec.add_dependency 'rake', '>= 13'
   else
-    spec.files += Dir['ext/sass/dart-sass/**/*'] + ['ext/sass/cli.rb']
+    spec.files += Dir['lib/sass/dart-sass/**/*']
   end
 
   spec.required_ruby_version = if spec.platform == Gem::Platform::RUBY || spec.platform.os != 'linux'

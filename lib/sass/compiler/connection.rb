@@ -2,7 +2,7 @@
 
 require 'open3'
 
-require_relative '../../../ext/sass/cli'
+require 'sass/cli'
 
 module Sass
   class Compiler
