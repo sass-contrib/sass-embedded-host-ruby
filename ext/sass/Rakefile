@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+dest = File.absolute_path('sass', ENV.fetch('RUBYARCHDIR', File.absolute_path('../../lib', __dir__)))
+FileUtils.mkdir_p(dest)
+Dir.chdir(dest)
+
 require 'rake/clean'
 
 require_relative '../../lib/sass/elf'
@@ -8,9 +12,7 @@ ELF = Sass.const_get(:ELF)
 
 task default: %i[install clean]
 
-task install: %w[cli.rb] do
-  Rake::Task['embedded_sass_pb.rb'].invoke unless File.exist?('embedded_sass_pb.rb')
-end
+task install: %w[cli.rb]
 
 CLEAN.include %w[
   protoc.exe
@@ -57,6 +59,11 @@ rescue StandardError
 end
 
 file 'node_modules/sass' do
+  cp File.absolute_path('package.json', __dir__), './'
+
+  # TODO: remove after https://github.com/sass/dart-sass/pull/2413
+  cp File.absolute_path("sass-#{SassConfig.dart_sass_version}.tgz", __dir__), './'
+
   sh 'npm', 'install'
 rescue StandardError
   begin
@@ -135,7 +142,7 @@ file 'cli.rb' => %w[dart-sass] do |t|
     File.write(t.name, <<~CLI_RB)
       # frozen_string_literal: true
 
-      require_relative '../../lib/sass/elf'
+      require 'sass/elf'
 
       module Sass
         module CLI
@@ -487,7 +494,7 @@ module SassConfig
   end
 
   def dart_sass_version
-    package_json['dependencies']['sass']
+    package_json(__dir__)['dependencies']['sass']
       # TODO: remove after https://github.com/sass/dart-sass/pull/2413
       .delete_prefix('file:sass-').delete_suffix('.tgz')
   end
