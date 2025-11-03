@@ -59,17 +59,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      # TODO: remove after https://github.com/sass/dart-sass/pull/2413
+      - name: Build dart-sass
+        if: matrix.platform == 'ruby'
+        uses: ./.github/actions/build-dart-sass
+
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby
           rubygems: latest
           bundler-cache: true
-
-      # TODO: remove after https://github.com/sass/dart-sass/pull/2413
-      - name: Build dart-sass
-        if: matrix.platform == 'ruby'
-        uses: ./.github/actions/build-dart-sass
 
       - name: Compile
         run: bundle exec rake compile ext_platform=${{ matrix.platform }}
