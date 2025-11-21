@@ -16,7 +16,7 @@ runs:
       run: node -e 'console.log(`version=${JSON.parse(fs.readFileSync("ext/sass/package.json"))["dependencies"]["sass"]}`)' | tee -a "$GITHUB_OUTPUT"
       shell: bash
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         repository: sass/dart-sass
         ref: ${{ steps.version.outputs.version }}
