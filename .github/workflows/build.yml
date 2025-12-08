@@ -70,6 +70,15 @@ jobs:
             ruby-version: truffleruby
           - os: windows-11-arm
             ruby-version: truffleruby+graalvm
+
+          # TODO: Revert https://github.com/sass-contrib/sass-embedded-host-ruby/pull/352
+          - os: windows-11-arm
+            ruby-version: '3.4'
+          - os: windows-11-arm
+            ruby-version: jruby-9
+          - os: windows-11-arm
+            ruby-version: jruby-10
+
         include:
           - os: ubuntu-latest
             container:
