@@ -45,7 +45,7 @@ module Sass
             case dest
             when A98_RGB
               Conversions::LINEAR_SRGB_TO_LINEAR_A98_RGB
-            when DISPLAY_P3
+            when DISPLAY_P3, DISPLAY_P3_LINEAR
               Conversions::LINEAR_SRGB_TO_LINEAR_DISPLAY_P3
             when PROPHOTO_RGB
               Conversions::LINEAR_SRGB_TO_LINEAR_PROPHOTO_RGB

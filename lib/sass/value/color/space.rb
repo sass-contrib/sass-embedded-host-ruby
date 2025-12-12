@@ -51,6 +51,8 @@ module Sass
               SRGB_LINEAR
             when 'display-p3'
               DISPLAY_P3
+            when 'display-p3-linear'
+              DISPLAY_P3_LINEAR
             when 'a98-rgb'
               A98_RGB
             when 'prophoto-rgb'
@@ -182,6 +184,7 @@ end
 require_relative 'space/utils'
 require_relative 'space/a98_rgb'
 require_relative 'space/display_p3'
+require_relative 'space/display_p3_linear'
 require_relative 'space/hsl'
 require_relative 'space/hwb'
 require_relative 'space/lab'
