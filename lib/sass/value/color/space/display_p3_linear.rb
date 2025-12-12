@@ -4,8 +4,8 @@ module Sass
   module Value
     class Color
       module Space
-        # @see https://github.com/sass/dart-sass/blob/main/lib/src/value/color/space/display_p3.dart
-        class DisplayP3
+        # @see https://github.com/sass/dart-sass/blob/main/lib/src/value/color/space/display_p3_linear.dart
+        class DisplayP3Linear
           include Space
 
           def bounded?
@@ -13,30 +13,30 @@ module Sass
           end
 
           def initialize
-            super('display-p3', Utils::RGB_CHANNELS)
+            super('display-p3-linear', Utils::RGB_CHANNELS)
           end
 
           def convert(dest, red, green, blue, alpha)
-            if dest == DISPLAY_P3_LINEAR
+            if dest == DISPLAY_P3
               Color.send(
                 :for_space_internal,
                 dest,
-                red.nil? ? nil : to_linear(red),
-                green.nil? ? nil : to_linear(green),
-                blue.nil? ? nil : to_linear(blue),
+                red.nil? ? nil : Utils.srgb_and_display_p3_from_linear(red),
+                green.nil? ? nil : Utils.srgb_and_display_p3_from_linear(green),
+                blue.nil? ? nil : Utils.srgb_and_display_p3_from_linear(blue),
                 alpha
               )
             else
-              convert_linear(dest, red, green, blue, alpha)
+              super
             end
           end
 
           def to_linear(channel)
-            Utils.srgb_and_display_p3_to_linear(channel)
+            channel
           end
 
           def from_linear(channel)
-            Utils.srgb_and_display_p3_from_linear(channel)
+            channel
           end
 
           private
@@ -63,9 +63,9 @@ module Sass
           end
         end
 
-        private_constant :DisplayP3
+        private_constant :DisplayP3Linear
 
-        DISPLAY_P3 = DisplayP3.new
+        DISPLAY_P3_LINEAR = DisplayP3Linear.new
       end
     end
   end

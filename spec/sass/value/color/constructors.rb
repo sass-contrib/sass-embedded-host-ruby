@@ -71,6 +71,10 @@ module ColorConstructors
     Sass::Value::Color.new(red:, green:, blue:, **_alpha_to_kwargs(*args), space: 'display-p3')
   end
 
+  def display_p3_linear(red, green, blue, *args)
+    Sass::Value::Color.new(red:, green:, blue:, **_alpha_to_kwargs(*args), space: 'display-p3-linear')
+  end
+
   def a98_rgb(red, green, blue, *args)
     Sass::Value::Color.new(red:, green:, blue:, **_alpha_to_kwargs(*args), space: 'a98-rgb')
   end
