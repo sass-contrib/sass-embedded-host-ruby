@@ -164,6 +164,24 @@ COLOR_SPACES = {
       [[0.5, 2, 2], { clip: [0.5, 1, 1], 'local-minde': [1, 1, 1] }]
     ]
   },
+  'display-p3-linear': {
+    constructor: :display_p3_linear,
+    name: 'display-p3-linear',
+    is_legacy: false,
+    is_polar: false,
+    pink: [0.8922032202231888, 0.41319596748178294, 0.5332670876259182],
+    blue: [0.038379047373520256, 0.12284965133685266, 0.18097273332077757],
+    channels: %w[red green blue],
+    ranges: [
+      [0, 1],
+      [0, 1],
+      [0, 1]
+    ],
+    has_out_of_gamut: true,
+    gamut_examples: [
+      [[0.5, 2, 2], { clip: [0.5, 1, 1], 'local-minde': [1, 1, 1] }]
+    ]
+  },
   'a98-rgb': {
     constructor: :a98_rgb,
     name: 'a98-rgb',

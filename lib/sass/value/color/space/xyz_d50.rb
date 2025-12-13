@@ -73,7 +73,7 @@ module Sass
             case dest
             when A98_RGB
               Conversions::XYZ_D50_TO_LINEAR_A98_RGB
-            when DISPLAY_P3
+            when DISPLAY_P3, DISPLAY_P3_LINEAR
               Conversions::XYZ_D50_TO_LINEAR_DISPLAY_P3
             when LMS
               Conversions::XYZ_D50_TO_LMS

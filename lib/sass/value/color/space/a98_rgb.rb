@@ -28,7 +28,7 @@ module Sass
 
           def transformation_matrix(dest)
             case dest
-            when DISPLAY_P3
+            when DISPLAY_P3, DISPLAY_P3_LINEAR
               Conversions::LINEAR_A98_RGB_TO_LINEAR_DISPLAY_P3
             when LMS
               Conversions::LINEAR_A98_RGB_TO_LMS
