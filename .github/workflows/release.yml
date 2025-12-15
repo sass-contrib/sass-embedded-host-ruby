@@ -85,7 +85,7 @@ jobs:
           subject-path: pkg/*.gem
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: pkg-${{ matrix.platform }}
           path: pkg/*.gem
