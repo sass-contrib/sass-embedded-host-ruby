@@ -111,7 +111,7 @@ jobs:
           rubygems: latest
 
       - name: Download Artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: pkg-*
           merge-multiple: true
