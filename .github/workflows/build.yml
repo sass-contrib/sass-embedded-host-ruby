@@ -51,6 +51,7 @@ jobs:
           - '3.2'
           - '3.3'
           - '3.4'
+          - '4.0'
           - jruby-9
           - jruby-10
           - truffleruby
@@ -92,6 +93,9 @@ jobs:
           - os: ubuntu-latest
             container:
               image: docker.io/library/ruby:3.4-alpine
+          - os: ubuntu-latest
+            container:
+              image: docker.io/library/ruby:4.0-alpine
           - os: ubuntu-latest
             container:
               image: docker.io/nixos/nix:latest
