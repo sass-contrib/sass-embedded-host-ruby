@@ -51,6 +51,7 @@ jobs:
           - '3.2'
           - '3.3'
           - '3.4'
+          - '4.0'
           - jruby-9
           - jruby-10
           - truffleruby
@@ -75,6 +76,8 @@ jobs:
           - os: windows-11-arm
             ruby-version: '3.4'
           - os: windows-11-arm
+            ruby-version: '4.0'
+          - os: windows-11-arm
             ruby-version: jruby-9
           - os: windows-11-arm
             ruby-version: jruby-10
@@ -92,6 +95,9 @@ jobs:
           - os: ubuntu-latest
             container:
               image: docker.io/library/ruby:3.4-alpine
+          - os: ubuntu-latest
+            container:
+              image: docker.io/library/ruby:4.0-alpine
           - os: ubuntu-latest
             container:
               image: docker.io/nixos/nix:latest
