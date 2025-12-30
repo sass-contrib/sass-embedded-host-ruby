@@ -76,6 +76,8 @@ jobs:
           - os: windows-11-arm
             ruby-version: '3.4'
           - os: windows-11-arm
+            ruby-version: '4.0'
+          - os: windows-11-arm
             ruby-version: jruby-9
           - os: windows-11-arm
             ruby-version: jruby-10
