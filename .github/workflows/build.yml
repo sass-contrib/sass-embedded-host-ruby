@@ -132,7 +132,7 @@ jobs:
                 sysrc linux_enable="YES"
                 service linux start
                 pkg install -y debootstrap
-                debootstrap jammy /compat/ubuntu
+                debootstrap jammy /compat/ubuntu http://azure.archive.ubuntu.com/ubuntu
                 ln -sf ../lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /compat/ubuntu/lib64/ld-linux-x86-64.so.2
                 sysctl compat.linux.emul_path=/compat/ubuntu
           - os: ubuntu-latest
@@ -143,7 +143,7 @@ jobs:
                 sysrc linux_enable="YES"
                 service linux start
                 pkg install -y debootstrap
-                debootstrap jammy /compat/ubuntu
+                debootstrap jammy /compat/ubuntu http://azure.archive.ubuntu.com/ubuntu
                 ln -sf ../lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /compat/ubuntu/lib64/ld-linux-x86-64.so.2
                 sysctl compat.linux.emul_path=/compat/ubuntu
                 mount -t linprocfs linproc /compat/ubuntu/proc
