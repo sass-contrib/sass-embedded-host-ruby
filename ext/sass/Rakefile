@@ -17,7 +17,6 @@ task install: %w[cli.rb]
 CLEAN.include %w[
   protoc.exe
   ruby
-  true
   *.proto
   *.tar.gz
   *.zip
@@ -172,117 +171,6 @@ rule '_pb.rb' => %w[.proto protoc.exe] do |t|
   sh './protoc.exe', '--proto_path=.', '--ruby_out=.', t.source
 end
 
-file 'true' do |t|
-  case Platform::CPU
-  when 'aarch64'
-    ei_class  = ELF::ELFCLASS64
-    ei_data   = ELF::ELFDATA2LSB
-    e_machine = 0xb7
-    e_flags   = 0
-
-    # 0000000000400078 <PT_LOAD#0>:
-    #   400078: d2800ba8     	mov	x8, #0x5d               // =93
-    #   40007c: d2800000     	mov	x0, #0x0                // =0
-    #   400080: d4000001     	svc	#0
-    entry_point = [0xd2800ba8, 0xd2800000, 0xd4000001].pack('L<3')
-  when 'arm'
-    ei_class  = ELF::ELFCLASS32
-    ei_data   = ELF::ELFDATA2LSB
-    e_machine = 0x28
-    e_flags   = 0x5000400
-
-    # 00400054 <PT_LOAD#0>:
-    #   400054: 2701         	movs	r7, #0x1
-    #   400056: 2000         	movs	r0, #0x0
-    #   400058: df00         	svc	#0x0
-    entry_point = [0x2701, 0x2000, 0xdf00].pack('S<3')
-  when 'riscv64'
-    ei_class  = ELF::ELFCLASS64
-    ei_data   = ELF::ELFDATA2LSB
-    e_machine = 0xf3
-    e_flags   = 0x5
-
-    # 0000000000400078 <PT_LOAD#0>:
-    #   400078: 05d00893     	li	a7, 0x5d
-    #   40007c: 4501         	li	a0, 0x0
-    #   40007e: 00000073     	ecall
-    entry_point = [0x05d00893, 0x4501, 0x00000073].pack('L<S<L<')
-  when 'x86_64'
-    ei_class  = ELF::ELFCLASS64
-    ei_data   = ELF::ELFDATA2LSB
-    e_machine = 0x3e
-    e_flags   = 0
-
-    # 0000000000400078 <PT_LOAD#0>:
-    #   400078: 31 ff                        	xorl	%edi, %edi
-    #   40007a: b8 3c 00 00 00               	movl	$0x3c, %eax
-    #   40007f: 0f 05                        	syscall
-    entry_point = %w[31ffb83c0000000f05].pack('H*')
-  else
-    raise NotImplementedError
-  end
-
-  case ei_class
-  when ELF::ELFCLASS32
-    e_ehsize    = ELF::Elf32_Ehdr.sizeof
-    e_phentsize = ELF::Elf32_Phdr.sizeof
-    e_shentsize = ELF::Elf32_Shdr.sizeof
-  when ELF::ELFCLASS64
-    e_ehsize    = ELF::Elf64_Ehdr.sizeof
-    e_phentsize = ELF::Elf64_Phdr.sizeof
-    e_shentsize = ELF::Elf64_Shdr.sizeof
-  else
-    raise EncodingError
-  end
-
-  e_phoff  = e_ehsize
-
-  p_offset = e_phoff + e_phentsize
-  p_vaddr  = (2**22) + p_offset
-  p_filesz = entry_point.length
-  p_memsz  = p_filesz
-
-  e_entry  = p_vaddr
-  e_entry += 1 if Platform::CPU == 'arm'
-
-  ELF.allocate.instance_eval do
-    @ehdr = {
-      e_ident: [127, 69, 76, 70, ei_class, ei_data, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      e_type: ELF::ET_EXEC,
-      e_machine:,
-      e_version: 1,
-      e_entry:,
-      e_phoff:,
-      e_shoff: 0,
-      e_flags:,
-      e_ehsize:,
-      e_phentsize:,
-      e_phnum: 1,
-      e_shentsize:,
-      e_shnum: 0,
-      e_shstrndx: 0
-    }
-    @phdrs = [
-      {
-        p_type: ELF::PT_LOAD,
-        p_flags: ELF::PF_R | ELF::PF_X,
-        p_offset:,
-        p_vaddr:,
-        p_paddr: 0,
-        p_filesz:,
-        p_memsz:,
-        p_align: 4096
-      }
-    ]
-    @shdrs = []
-
-    File.open(t.name, 'wb', 0o755) do |file|
-      dump(file)
-      file.write(entry_point)
-    end
-  end
-end
-
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils
@@ -359,91 +247,6 @@ end
 
 # The {Platform} module.
 module Platform
-  # @see https://docs.freebsd.org/en/articles/linux-emulation/
-  # @see https://docs.freebsd.org/en/books/handbook/linuxemu/
-  module Linuxulator
-    module_function
-
-    def enabled?
-      return false unless RbConfig::CONFIG['host_os'].include?('freebsd')
-
-      return true if defined?(Platform::OS) && Platform::OS.include?('linux')
-
-      begin
-        Rake::Task['true'].invoke unless File.exist?('true')
-      rescue NotImplementedError
-        return false
-      end
-
-      system('./true', %i[out err] => File::NULL) == true
-    end
-
-    def host_os(root = compat_linux_emul_path)
-      return 'linux-none' unless File.symlink?(File.absolute_path('proc/self/exe', root))
-
-      if (Platform::CPU == 'aarch64' &&
-          File.exist?(File.absolute_path('lib/ld-linux-aarch64.so.1', root))) ||
-         (Platform::CPU == 'riscv64' &&
-          File.exist?(File.absolute_path('lib/ld-linux-riscv64-lp64d.so.1', root))) ||
-         (Platform::CPU == 'x86_64' &&
-          File.exist?(File.absolute_path('lib64/ld-linux-x86-64.so.2', root)))
-        return 'linux-gnu'
-      end
-
-      if Platform::CPU == 'arm' &&
-         File.exist?(File.absolute_path('lib/ld-linux-armhf.so.3', root))
-        return 'linux-gnueabihf'
-      end
-
-      if %w[aarch64 riscv64 x86_64].include?(Platform::CPU) &&
-         File.exist?(File.absolute_path("lib/ld-musl-#{Platform::CPU}.so.1", root))
-        return 'linux-musl'
-      end
-
-      if Platform::CPU == 'arm' &&
-         File.exist?(File.absolute_path('lib/ld-musl-armhf.so.1', root))
-        return 'linux-musleabihf'
-      end
-
-      if %w[aarch64 riscv64 x86_64].include?(Platform::CPU) &&
-         File.exist?(File.absolute_path('system/bin/linker64', root))
-        return 'linux-android'
-      end
-
-      if Platform::CPU == 'arm' &&
-         File.exist?(File.absolute_path('system/bin/linker', root))
-        return 'linux-androideabi'
-      end
-
-      'linux-none'
-    end
-
-    def compat_linux_emul_path
-      require 'fiddle'
-
-      lib = Fiddle.dlopen(nil)
-      sysctlbyname = Fiddle::Function.new(
-        lib['sysctlbyname'],
-        [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_SIZE_T],
-        Fiddle::TYPE_INT
-      )
-
-      name = Fiddle::Pointer.to_ptr('compat.linux.emul_path')
-      oldp = Fiddle::NULL
-      oldlenp = Fiddle::Pointer.malloc(Fiddle::SIZEOF_SIZE_T, Fiddle::RUBY_FREE)
-      newp = Fiddle::NULL
-      newlen = 0
-      raise SystemCallError.new(nil, Fiddle.last_error) if sysctlbyname.call(name, oldp, oldlenp, newp, newlen) == -1
-
-      oldp = Fiddle::Pointer.malloc(oldlenp.ptr.to_i, Fiddle::RUBY_FREE)
-      raise SystemCallError.new(nil, Fiddle.last_error) if sysctlbyname.call(name, oldp, oldlenp, newp, newlen) == -1
-
-      oldp.to_s
-    rescue SystemCallError
-      nil
-    end
-  end
-
   HOST_CPU = RbConfig::CONFIG['host_cpu'].downcase
 
   CPU = case HOST_CPU
@@ -461,7 +264,7 @@ module Platform
           HOST_CPU
         end
 
-  HOST_OS = (Linuxulator.enabled? ? Linuxulator.host_os : RbConfig::CONFIG['host_os']).downcase
+  HOST_OS = RbConfig::CONFIG['host_os'].downcase
 
   OS = case HOST_OS
        when /darwin/
