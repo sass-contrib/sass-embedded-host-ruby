@@ -171,6 +171,10 @@ rule '_pb.rb' => %w[.proto protoc.exe] do |t|
   sh './protoc.exe', '--proto_path=.', '--ruby_out=.', t.source
 end
 
+rule '_pb.rbs' => %w[.proto protoc.exe] do |t|
+  sh './protoc.exe', '--proto_path=.', '--rbs_out=../../sig/sass', t.source
+end
+
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
 module FileUtils

@@ -1,3 +1,19 @@
+/lib/sass/*.tar.gz
+/lib/sass/*.zip
+/lib/sass/bun.lockb
+/lib/sass/cli.rb
+/lib/sass/dart-sass/
+/lib/sass/embedded_sass.proto
+/lib/sass/embedded_sass_pb.rb
+/lib/sass/node_modules/
+/lib/sass/package-lock.json
+/lib/sass/pnpm-lock.yaml
+/lib/sass/protoc.exe
+/lib/sass/ruby/
+/lib/sass/yarn.lock
+/sig/sass/embedded_sass_pb.rbs
+
+# Ruby
 *.gem
 *.rbc
 /.config
