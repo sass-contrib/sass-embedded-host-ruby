@@ -8,16 +8,6 @@ module Sass
         class Rec2020
           include Space
 
-          # A constant used in the rec2020 gamma encoding/decoding functions.
-          ALPHA = 1.09929682680944
-
-          private_constant :ALPHA
-
-          # A constant used in the rec2020 gamma encoding/decoding functions.
-          BETA = 0.018053968510807
-
-          private_constant :BETA
-
           def bounded?
             true
           end
@@ -27,13 +17,11 @@ module Sass
           end
 
           def to_linear(channel)
-            abs = channel.abs
-            abs < BETA * 4.5 ? channel / 4.5 : (channel <=> 0) * (((abs + ALPHA - 1) / ALPHA)**(1 / 0.45))
+            (channel <=> 0) * (channel.abs**2.4)
           end
 
           def from_linear(channel)
-            abs = channel.abs
-            abs > BETA ? (channel <=> 0) * ((ALPHA * (abs**0.45)) - (ALPHA - 1)) : 4.5 * channel
+            (channel <=> 0) * (channel.abs**(1 / 2.4))
           end
 
           private
