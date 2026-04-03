@@ -26,7 +26,8 @@ Gem::Specification.new do |spec|
 
   if spec.platform == Gem::Platform::RUBY
     spec.extensions = ['ext/sass/Rakefile']
-    spec.files += Dir['ext/**/*']
+    spec.files += Dir['ext/sass/{Rakefile,package.json,*.rb}']
+    spec.files += Dir['ext/sass/sass-*.tgz'] # TODO: remove after https://github.com/sass/dart-sass/pull/2413
     spec.files -= ['lib/sass/cli.rb']
     spec.add_dependency 'rake', '>= 13'
   else
