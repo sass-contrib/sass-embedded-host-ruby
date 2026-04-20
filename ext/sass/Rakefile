@@ -14,7 +14,7 @@ task default: %i[install clean]
 
 task install: %w[cli.rb] do
   unless File.exist?(File.absolute_path('../../lib/sass/embedded_sass_pb.rb', __dir__))
-    Rake::Task[File.absolute_path('embedded_sass_pb.rb', LIBDIR)].invoke
+    Rake::Task['embedded_sass_pb.rb'].invoke
   end
 end
 
@@ -197,7 +197,11 @@ file File.absolute_path('embedded_sass_pb.rb', LIBDIR) => %w[embedded_sass.proto
   sh './protoc.exe', '--proto_path=.', "--ruby_out=#{LIBDIR}", File.basename(task.source)
 end
 
+task 'embedded_sass_pb.rb' => File.absolute_path('embedded_sass_pb.rb', LIBDIR)
+
 file File.absolute_path('../../sig/_sass/embedded_sass_pb.rbs', __dir__) => %w[embedded_sass.proto protoc.exe] do |task|
   mkdir_p File.dirname(task.name)
   sh './protoc.exe', '--proto_path=.', '--rbs_out=../../sig/_sass', File.basename(task.source)
 end
+
+task 'embedded_sass_pb.rbs' => File.absolute_path('../../sig/_sass/embedded_sass_pb.rbs', __dir__)
