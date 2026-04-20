@@ -188,7 +188,7 @@ file 'protoc.exe' do |task|
   chmod 'a+x', task.name
 end
 
-file 'embedded_sass.proto' do |task|
+file 'embedded_sass.proto' => %w[cli.rb] do |task|
   fetch(SassConfig.embedded_sass_protocol, task.name)
 end
 
