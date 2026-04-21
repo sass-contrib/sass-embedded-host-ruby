@@ -126,7 +126,13 @@ module SassConfig
   def embedded_sass_protocol
     require 'json'
 
+    rubyarchdir = ENV.fetch('RUBYARCHDIR', nil)
+
+    rubylibdir = ENV.fetch('RUBYLIBDIR', nil)
+
     version = Utils.capture(RbConfig.ruby,
+                            *("-I#{rubyarchdir}" if rubyarchdir),
+                            *("-I#{rubylibdir}" if rubylibdir),
                             File.absolute_path('../../exe/sass', __dir__),
                             '--embedded',
                             '--version')
