@@ -165,11 +165,40 @@ jobs:
       - name: Install
         run: rake -f -r bundler/gem_tasks install
 
+  install-from-git:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - run: |
+          tee Gemfile <<'EOF'
+          source 'https://rubygems.org'
+          gem 'sass-embedded', github: '${{ github.repository }}', ref: '${{ github.sha }}'
+          EOF
+        shell: bash
+
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby
+          bundler-cache: true
+
+      - name: Test
+        run: bundle exec ruby -r sass-embedded -e 'puts Sass.info'
+
   release:
 
     if: github.event.repository.fork == false && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
-    needs: [lint, spec]
+    needs: [install-from-git, lint, spec]
 
     runs-on: ubuntu-latest
 
