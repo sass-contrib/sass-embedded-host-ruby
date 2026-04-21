@@ -131,6 +131,7 @@ module SassConfig
     rubylibdir = ENV.fetch('RUBYLIBDIR', nil)
 
     version = Utils.capture(RbConfig.ruby,
+                            "-I#{File.absolute_path('../../lib', __dir__)}",
                             *("-I#{rubyarchdir}" if rubyarchdir),
                             *("-I#{rubylibdir}" if rubylibdir),
                             File.absolute_path('../../exe/sass', __dir__),
