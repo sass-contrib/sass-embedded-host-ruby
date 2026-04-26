@@ -179,7 +179,8 @@ jobs:
 
     steps:
       - run: |
-          tee Gemfile <<'EOF'
+          mkdir install-from-git
+          tee install-from-git/Gemfile <<'EOF'
           source 'https://rubygems.org'
           gem 'sass-embedded', github: '${{ github.repository }}', ref: '${{ github.sha }}'
           EOF
@@ -190,9 +191,11 @@ jobs:
         with:
           ruby-version: ruby
           bundler-cache: true
+          working-directory: install-from-git
 
       - name: Test
         run: bundle exec ruby -r sass-embedded -e 'puts Sass.info'
+        working-directory: install-from-git
 
   release:
 
