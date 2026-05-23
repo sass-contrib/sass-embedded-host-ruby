@@ -12,6 +12,11 @@ module SassConfig
     JSON.parse(File.read(File.absolute_path('package.json', path)))
   end
 
+  def dart_support?
+    %w[darwin linux linux-android linux-musl windows].include?(Platform::OS) &&
+      %w[x86_64 aarch64 arm riscv64].include?(Platform::CPU)
+  end
+
   def dart_sass_version
     package_json(__dir__)['dependencies']['sass']
       # TODO: remove after https://github.com/sass/dart-sass/pull/2413

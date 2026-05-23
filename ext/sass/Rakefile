@@ -84,10 +84,9 @@ file File.absolute_path('node_modules/sass', ARCHDIR) do
 end
 
 task 'dart-sass' => (
-  begin
-    SassConfig.dart_sass
+  if SassConfig.dart_support?
     File.absolute_path('dart-sass/sass', ARCHDIR)
-  rescue NotImplementedError
+  else
     File.absolute_path('node_modules/sass', ARCHDIR)
   end
 )
