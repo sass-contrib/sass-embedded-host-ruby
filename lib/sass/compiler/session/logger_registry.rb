@@ -2,7 +2,7 @@
 
 module Sass
   class Compiler
-    class Host
+    class Session
       # The {LoggerRegistry} class.
       #
       # It stores logger and handles log events.

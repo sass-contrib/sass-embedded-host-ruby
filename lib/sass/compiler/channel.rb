@@ -29,24 +29,24 @@ module Sass
         end
       end
 
-      def stream(host)
+      def stream(session)
         @mutex.synchronize do
           raise IOError, 'closed compiler' if @dispatcher.nil?
 
-          Stream.new(@dispatcher, host)
+          Stream.new(@dispatcher, session)
         rescue Errno::EBUSY
           @dispatcher = Dispatcher.new(*@args, **@kwargs, &@block)
-          Stream.new(@dispatcher, host)
+          Stream.new(@dispatcher, session)
         end
       end
 
-      # The {Stream} between {Dispatcher} and {Host}.
+      # The {Stream} between {Dispatcher} and {Session}.
       class Stream
         attr_reader :id
 
-        def initialize(dispatcher, host)
+        def initialize(dispatcher, session)
           @dispatcher = dispatcher
-          @id = @dispatcher.subscribe(host)
+          @id = @dispatcher.subscribe(session)
         end
 
         def close

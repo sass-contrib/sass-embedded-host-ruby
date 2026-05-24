@@ -2,7 +2,7 @@
 
 module Sass
   class Compiler
-    class Host
+    class Session
       # The {FunctionRegistry} class.
       #
       # It stores sass custom functions and handles function calls.

@@ -2,7 +2,7 @@
 
 module Sass
   class Compiler
-    class Host
+    class Session
       # The {ImporterRegistry} class.
       #
       # It stores importers and handles import requests.

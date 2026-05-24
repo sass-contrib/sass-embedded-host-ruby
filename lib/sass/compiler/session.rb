@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-require_relative 'host/function_registry'
-require_relative 'host/importer_registry'
-require_relative 'host/logger_registry'
-require_relative 'host/protofier'
-require_relative 'host/struct'
+require_relative 'session/function_registry'
+require_relative 'session/importer_registry'
+require_relative 'session/logger_registry'
+require_relative 'session/protofier'
+require_relative 'session/struct'
 
 module Sass
   class Compiler
-    # The {Host} class.
+    # The {Session} class.
     #
     # It communicates with {Dispatcher} and handles the host logic.
-    class Host
+    class Session
       def initialize(channel)
         @channel = channel
       end
@@ -221,6 +221,6 @@ module Sass
       end
     end
 
-    private_constant :Host
+    private_constant :Session
   end
 end

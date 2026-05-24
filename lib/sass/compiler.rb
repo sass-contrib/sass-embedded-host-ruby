@@ -5,7 +5,7 @@ require_relative 'compile_result'
 require_relative 'compiler/channel'
 require_relative 'compiler/connection'
 require_relative 'compiler/dispatcher'
-require_relative 'compiler/host'
+require_relative 'compiler/session'
 require_relative 'compiler/varint'
 require_relative 'embedded/version'
 require_relative 'embedded_protocol'
@@ -86,7 +86,7 @@ module Sass
                 verbose: false)
       raise ArgumentError, 'path must be set' if path.nil?
 
-      Host.new(@channel).compile_request(
+      Session.new(@channel).compile_request(
         path:,
         source: nil,
         importer: nil,
@@ -169,7 +169,7 @@ module Sass
                        verbose: false)
       raise ArgumentError, 'source must be set' if source.nil?
 
-      Host.new(@channel).compile_request(
+      Session.new(@channel).compile_request(
         path: nil,
         source:,
         importer:,
@@ -198,7 +198,7 @@ module Sass
     def info
       @info ||= [
         ['sass-embedded', Embedded::VERSION, '(Embedded Host)', '[Ruby]'].join("\t"),
-        Host.new(@channel).version_request.join("\t")
+        Session.new(@channel).version_request.join("\t")
       ].join("\n").freeze
     end
 

@@ -2,7 +2,7 @@
 
 module Sass
   class Compiler
-    class Host
+    class Session
       # The {Struct} class.
       #
       # It creates {::Struct}-like objects from {::Hash}.

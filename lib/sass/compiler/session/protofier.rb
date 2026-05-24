@@ -2,7 +2,7 @@
 
 module Sass
   class Compiler
-    class Host
+    class Session
       # The {Protofier} class.
       #
       # It converts Pure Ruby types and Protobuf Ruby types.
