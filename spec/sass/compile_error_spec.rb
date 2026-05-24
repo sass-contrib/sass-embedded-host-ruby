@@ -8,8 +8,8 @@ RSpec.describe Sass::CompileError do
       it 'without quotes' do
         expect { Sass.compile_string('a { b:') }
           .to raise_error(described_class) do |error|
-            expect(error.full_message).not_to include('"')
-            expect(error.full_message).not_to include("'")
+            expect(error.detailed_message).not_to include('"')
+            expect(error.detailed_message).not_to include("'")
             expect(Sass.compile_string(error.to_css).css).to include(error.message)
           end
       end
@@ -17,8 +17,8 @@ RSpec.describe Sass::CompileError do
       it 'with double quote' do
         expect { Sass.compile_string('a { b: "') }
           .to raise_error(described_class) do |error|
-            expect(error.full_message).to include('"')
-            expect(error.full_message).not_to include("'")
+            expect(error.detailed_message).to include('"')
+            expect(error.detailed_message).not_to include("'")
             expect(Sass.compile_string(error.to_css).css).to include(error.message)
           end
       end
@@ -26,8 +26,8 @@ RSpec.describe Sass::CompileError do
       it 'with single quote' do
         expect { Sass.compile_string("a { b: '") }
           .to raise_error(described_class) do |error|
-            expect(error.full_message).to include("'")
-            expect(error.full_message).not_to include('"')
+            expect(error.detailed_message).to include("'")
+            expect(error.detailed_message).not_to include('"')
             expect(Sass.compile_string(error.to_css).css).to include(error.message)
           end
       end
@@ -35,8 +35,8 @@ RSpec.describe Sass::CompileError do
       it 'with double quote and single quote' do
         expect { Sass.compile_string("a { b: 'c'") }
           .to raise_error(described_class) do |error|
-            expect(error.full_message).to include("'")
-            expect(error.full_message).to include('"')
+            expect(error.detailed_message).to include("'")
+            expect(error.detailed_message).to include('"')
             expect(Sass.compile_string(error.to_css).css).to include(error.message)
           end
       end
@@ -44,7 +44,7 @@ RSpec.describe Sass::CompileError do
       it 'with css comment' do
         expect { Sass.compile_string('/* a */ b {') }
           .to raise_error(described_class) do |error|
-            expect(error.full_message).to include('/* a */')
+            expect(error.detailed_message).to include('/* a */')
             expect(Sass.compile_string(error.to_css).css).to include(error.message)
           end
       end
@@ -53,7 +53,7 @@ RSpec.describe Sass::CompileError do
     it 'generates css comment with UTF-8 character set' do
       expect { Sass.compile_string('/* コメント */ a {') }
         .to raise_error(described_class) do |error|
-          expect(error.full_message).to include('コメント')
+          expect(error.detailed_message).to include('コメント')
           comment = error.to_css[%r{/\*[^*]*\*+([^/*][^*]*\*+)*/}]
           expect(comment).to include('コメント')
         end
@@ -62,7 +62,7 @@ RSpec.describe Sass::CompileError do
     it 'generates css rule with US-ASCII character set' do
       expect { Sass.compile_string('/* コメント */ a {') }
         .to raise_error(described_class) do |error|
-          expect(error.full_message).to include('コメント')
+          expect(error.detailed_message).to include('コメント')
           rule = error.to_css.sub(%r{/\*[^*]*\*+([^/*][^*]*\*+)*/}, '')
           expect(rule).not_to include('コメント')
           expect(rule.codepoints).to all(be < 128)

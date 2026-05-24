@@ -9,7 +9,7 @@ module Sass
       class ImporterRegistry
         attr_reader :importers
 
-        def initialize(importers, load_paths, alert_color:)
+        def initialize(importers, load_paths, session:)
           @id = 0
           @importers_by_id = {}.compare_by_identity
           @importers = importers
@@ -22,7 +22,7 @@ module Sass
                          end
                        )
 
-          @highlight = alert_color
+          @session = session
         end
 
         IMPORTER_ATTRS = %i[non_canonical_scheme].freeze
@@ -79,9 +79,14 @@ module Sass
             containing_url_unused: canonicalize_context.instance_variable_get(:@containing_url_unused)
           )
         rescue StandardError => e
+          @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
-            error: e.full_message(highlight: @highlight, order: :top)
+            error: if e.respond_to?(:detailed_message)
+                     e.detailed_message(highlight: false)
+                   else # TODO: remove once ruby 3.1 support is dropped
+                     "#{e.message} (#{e.class.name})"
+                   end
           )
         end
 
@@ -103,9 +108,14 @@ module Sass
             )
           )
         rescue StandardError => e
+          @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,
-            error: e.full_message(highlight: @highlight, order: :top)
+            error: if e.respond_to?(:detailed_message)
+                     e.detailed_message(highlight: false)
+                   else # TODO: remove once ruby 3.1 support is dropped
+                     "#{e.message} (#{e.class.name})"
+                   end
           )
         end
 
@@ -121,9 +131,14 @@ module Sass
             containing_url_unused: canonicalize_context.instance_variable_get(:@containing_url_unused)
           )
         rescue StandardError => e
+          @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
-            error: e.full_message(highlight: @highlight, order: :top)
+            error: if e.respond_to?(:detailed_message)
+                     e.detailed_message(highlight: false)
+                   else # TODO: remove once ruby 3.1 support is dropped
+                     "#{e.message} (#{e.class.name})"
+                   end
           )
         end
 

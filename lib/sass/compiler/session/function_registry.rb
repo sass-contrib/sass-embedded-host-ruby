@@ -9,7 +9,7 @@ module Sass
       class FunctionRegistry
         attr_reader :compile_context, :global_functions
 
-        def initialize(functions, alert_color:)
+        def initialize(functions, session:)
           @compile_context = Object.new
           @global_functions = functions.keys.map!(&:to_s)
           @functions_by_name = functions.transform_keys do |signature|
@@ -26,7 +26,7 @@ module Sass
           @functions_by_id = {}.compare_by_identity
           @ids_by_function = {}.compare_by_identity
 
-          @highlight = alert_color
+          @session = session
         end
 
         def register(function)
@@ -68,9 +68,14 @@ module Sass
             accessed_argument_lists:
           )
         rescue StandardError => e
+          @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
             id: function_call_request.id,
-            error: e.full_message(highlight: @highlight, order: :top)
+            error: if e.respond_to?(:detailed_message)
+                     e.detailed_message(highlight: false)
+                   else # TODO: remove once ruby 3.1 support is dropped
+                     "#{e.message} (#{e.class.name})"
+                   end
           )
         end
 

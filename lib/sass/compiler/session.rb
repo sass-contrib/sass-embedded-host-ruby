@@ -12,8 +12,11 @@ module Sass
     #
     # It communicates with {Dispatcher} and handles the host logic.
     class Session
+      attr_writer :backtrace
+
       def initialize(channel)
         @channel = channel
+        @backtrace = nil
       end
 
       def compile_request(path:,
@@ -38,8 +41,8 @@ module Sass
                           verbose:)
         alert_color = Exception.to_tty? if alert_color.nil?
 
-        @function_registry = FunctionRegistry.new(functions, alert_color:)
-        @importer_registry = ImporterRegistry.new(importers, load_paths, alert_color:)
+        @function_registry = FunctionRegistry.new(functions, session: self)
+        @importer_registry = ImporterRegistry.new(importers, load_paths, session: self)
         @logger_registry = LoggerRegistry.new(logger)
 
         compile_request = EmbeddedProtocol::InboundMessage::CompileRequest.new(
@@ -83,13 +86,15 @@ module Sass
         result = compile_response.public_send(oneof)
         case oneof
         when :failure
-          raise CompileError.new(
+          compile_error = CompileError.new(
             result.message,
             result.formatted == '' ? nil : result.formatted,
             result.stack_trace == '' ? nil : result.stack_trace,
             result.span.nil? ? nil : Logger::SourceSpan.new(result.span),
             compile_response.loaded_urls.to_a
           )
+          compile_error.set_backtrace(@backtrace) unless @backtrace.nil?
+          raise compile_error
         when :success
           CompileResult.new(
             result.css,
