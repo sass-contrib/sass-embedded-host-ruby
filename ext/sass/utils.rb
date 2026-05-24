@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # The {Utils} module.
+#
+# @!visibility private
 module Utils
   module_function
 

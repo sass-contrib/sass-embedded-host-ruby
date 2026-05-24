@@ -3,6 +3,8 @@
 require_relative 'platform'
 
 # The {SassConfig} module.
+#
+# @!visibility private
 module SassConfig
   module_function
 

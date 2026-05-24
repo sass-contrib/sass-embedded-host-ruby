@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # The {Platform} module.
+#
+# @!visibility private
 module Platform
   HOST_CPU = RbConfig::CONFIG['host_cpu'].downcase
 

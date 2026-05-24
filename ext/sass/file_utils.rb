@@ -2,6 +2,8 @@
 
 # This is a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
+#
+# @!visibility private
 module FileUtils
   def unarchive(archive, chdir: '.')
     if Gem.win_platform?
