@@ -4,7 +4,9 @@ require_relative 'session/function_registry'
 require_relative 'session/importer_registry'
 require_relative 'session/logger_registry'
 require_relative 'session/protofier'
+require_relative 'session/stack_trace'
 require_relative 'session/struct'
+require_relative 'session/uri'
 
 module Sass
   class Compiler
@@ -88,7 +90,7 @@ module Sass
         when :failure
           compile_error = CompileError.new(
             result.message,
-            result.formatted == '' ? nil : result.formatted,
+            result.formatted == '' ? nil : StackTrace.pretty_formatted!(+result.formatted, result.stack_trace),
             result.stack_trace == '' ? nil : result.stack_trace,
             result.span.nil? ? nil : Logger::SourceSpan.new(result.span),
             compile_response.loaded_urls.to_a

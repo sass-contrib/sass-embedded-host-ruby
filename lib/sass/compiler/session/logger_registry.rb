@@ -24,13 +24,13 @@ module Sass
             if @logger_respond_to_debug
               @logger.debug(event.message, DebugContext.new(event))
             else
-              Kernel.warn(event.formatted)
+              Kernel.warn(Uri.pretty_formatted!(+event.formatted, event.span.url))
             end
           when :DEPRECATION_WARNING, :WARNING
             if @logger_respond_to_warn
               @logger.warn(event.message, WarnContext.new(event))
             else
-              Kernel.warn(event.formatted)
+              Kernel.warn(StackTrace.pretty_formatted!(+event.formatted, event.stack_trace))
             end
           else
             raise ArgumentError, "Unknown LogEvent.type #{event.type}"
