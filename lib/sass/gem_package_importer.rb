@@ -19,7 +19,7 @@ module Sass
       return unless url.start_with?('pkg:')
 
       library, _, path = url[4..].partition('/')
-      gem_dir = Gem::Dependency.new(library).to_spec.gem_dir
+      gem_dir = Gem::Dependency.new(Uri.decode_uri_component(library)).to_spec.gem_dir
       "#{Uri.path_to_file_uri(gem_dir)}/#{path}"
     rescue Gem::MissingSpecError
       nil
