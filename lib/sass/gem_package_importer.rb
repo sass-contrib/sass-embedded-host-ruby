@@ -2,6 +2,17 @@
 
 module Sass
   # The built-in RubyGems package importer. This loads pkg: URLs from gems.
+  #
+  # @example
+  #   require 'bundler/inline'
+  #
+  #   gemfile do
+  #     source 'https://rubygems.org'
+  #     gem 'bootstrap', require: false
+  #     gem 'sass-embedded'
+  #   end
+  #
+  #   puts Sass.compile_string('@use "pkg:bootstrap/assets/stylesheets/bootstrap";', importers: [Sass::GemPackageImporter.new]).css
   class GemPackageImporter
     # @!visibility private
     def find_file_url(url, _canonicalize_context)

@@ -33,7 +33,7 @@ module Sass
 
           # The algorithm for converting a single `srgb` or `display-p3` channel to
           # linear-light form.
-          # @param [Numeric]
+          # @param channel [Numeric]
           # @return [Numeric]
           def srgb_and_display_p3_to_linear(channel)
             abs = channel.abs
@@ -42,7 +42,7 @@ module Sass
 
           # The algorithm for converting a single `srgb` or `display-p3` channel to
           # gamma-corrected form.
-          # @param [Numeric]
+          # @param channel [Numeric]
           # @return [Numeric]
           def srgb_and_display_p3_from_linear(channel)
             abs = channel.abs
