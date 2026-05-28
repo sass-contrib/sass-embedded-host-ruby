@@ -29,8 +29,6 @@ module Sass
           str.b.gsub(%r{[^0-9A-Za-z\-._~!$&'()*+,;=:@/?]}n, ::URI::TBLENCURICOMP_).force_encoding(str.encoding)
         end
 
-        alias encode_uri_fragment_component encode_uri_query_component
-
         def file_uri_to_path(uri)
           path = decode_uri_component(::URI::RFC3986_PARSER.parse(uri).path)
           if path.start_with?('/')
