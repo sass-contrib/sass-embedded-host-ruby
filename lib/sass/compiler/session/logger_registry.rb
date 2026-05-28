@@ -24,7 +24,7 @@ module Sass
             if @logger_respond_to_debug
               @logger.debug(event.message, DebugContext.new(event))
             else
-              Kernel.warn(Uri.pretty_formatted!(+event.formatted, event.span.url))
+              Kernel.warn(Path.pretty_formatted!(+event.formatted, event.span.url))
             end
           when :DEPRECATION_WARNING, :WARNING
             if @logger_respond_to_warn

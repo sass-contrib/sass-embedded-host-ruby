@@ -3,10 +3,10 @@
 require_relative 'session/function_registry'
 require_relative 'session/importer_registry'
 require_relative 'session/logger_registry'
+require_relative 'session/path'
 require_relative 'session/protofier'
 require_relative 'session/stack_trace'
 require_relative 'session/struct'
-require_relative 'session/uri'
 
 module Sass
   class Compiler

@@ -15,7 +15,7 @@ module Sass
             location, member = frame.split(/  +/, 2)
             uri, line_column = location.split(' ', 2)
 
-            uri = Uri.pretty_uri(uri)
+            uri = Path.pretty_uri(uri)
             location = line_column.nil? ? uri : "#{uri} #{line_column}"
 
             longest = location.length if location.length > longest

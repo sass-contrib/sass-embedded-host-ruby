@@ -17,6 +17,7 @@ require_relative 'logger/source_location'
 require_relative 'logger/source_span'
 require_relative 'node_package_importer'
 require_relative 'serializer'
+require_relative 'uri'
 require_relative 'value'
 
 module Sass
