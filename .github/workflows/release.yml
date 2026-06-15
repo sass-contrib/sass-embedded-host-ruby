@@ -117,7 +117,7 @@ jobs:
           merge-multiple: true
 
       - name: Configure trusted publishing credentials
-        uses: rubygems/configure-rubygems-credentials@v2.0.0
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
 
       - name: Release
         run: find . -name '*.gem' -print0 | sort -rz | xargs -0 -n 1 -- gem push
