@@ -98,11 +98,6 @@ jobs:
               os: freebsd
               run: |
                 pkg install -y node npm protobuf ruby rubygem-bundler rubygem-rake
-                echo
-                echo "Workaround for https://github.com/ruby/rubygems/pull/9676"
-                echo
-                pkg install -y gmake
-                ln -sf "$(which gmake)" "$(which make)"
           - os: ubuntu-latest
             vm:
               os: openbsd
