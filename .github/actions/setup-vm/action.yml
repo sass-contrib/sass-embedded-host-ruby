@@ -25,7 +25,7 @@ runs:
         prepare: pkg_add bash && chsh -s `which bash` root
         run: set -e; ${{ inputs.run }}
 
-    - uses: vmactions/netbsd-vm@v1
+    - uses: vmactions/netbsd-vm@v1.4.4
       if: inputs.os == 'netbsd'
       with:
         copyback: false
