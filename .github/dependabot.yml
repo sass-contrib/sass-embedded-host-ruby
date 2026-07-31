@@ -5,7 +5,7 @@ updates:
       - "/"
       - "/.github/actions/*/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "bundler"
     directory: "/"
