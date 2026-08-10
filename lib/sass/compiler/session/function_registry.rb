@@ -71,11 +71,7 @@ module Sass
           @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::FunctionCallResponse.new(
             id: function_call_request.id,
-            error: if e.respond_to?(:detailed_message)
-                     e.detailed_message(highlight: false)
-                   else # TODO: remove once ruby 3.1 support is dropped
-                     "#{e.message} (#{e.class.name})"
-                   end
+            error: e.detailed_message(highlight: false)
           )
         end
 

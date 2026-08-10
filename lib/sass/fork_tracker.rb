@@ -8,9 +8,6 @@ module Sass
     module_function
 
     if Process.respond_to?(:_fork)
-      # TODO: remove next line once ruby 3.1 support is dropped
-      require 'set' unless defined?(::Set)
-
       SET = Set.new.compare_by_identity
 
       MUTEX = Mutex.new
