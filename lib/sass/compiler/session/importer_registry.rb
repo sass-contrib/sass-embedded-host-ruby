@@ -82,11 +82,7 @@ module Sass
           @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::CanonicalizeResponse.new(
             id: canonicalize_request.id,
-            error: if e.respond_to?(:detailed_message)
-                     e.detailed_message(highlight: false)
-                   else # TODO: remove once ruby 3.1 support is dropped
-                     "#{e.message} (#{e.class.name})"
-                   end
+            error: e.detailed_message(highlight: false)
           )
         end
 
@@ -111,11 +107,7 @@ module Sass
           @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,
-            error: if e.respond_to?(:detailed_message)
-                     e.detailed_message(highlight: false)
-                   else # TODO: remove once ruby 3.1 support is dropped
-                     "#{e.message} (#{e.class.name})"
-                   end
+            error: e.detailed_message(highlight: false)
           )
         end
 
@@ -134,11 +126,7 @@ module Sass
           @session.backtrace = e.backtrace
           EmbeddedProtocol::InboundMessage::FileImportResponse.new(
             id: file_import_request.id,
-            error: if e.respond_to?(:detailed_message)
-                     e.detailed_message(highlight: false)
-                   else # TODO: remove once ruby 3.1 support is dropped
-                     "#{e.message} (#{e.class.name})"
-                   end
+            error: e.detailed_message(highlight: false)
           )
         end
 
