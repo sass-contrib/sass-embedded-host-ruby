@@ -80,7 +80,7 @@ jobs:
         run: rake -f -r bundler/gem_tasks build gem_platform=${{ matrix.platform }}
 
       - name: Attest
-        uses: actions/attest@v4.2.0
+        uses: actions/attest@v4.2.2
         with:
           subject-path: pkg/*.gem
 
