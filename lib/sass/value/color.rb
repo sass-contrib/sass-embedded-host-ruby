@@ -508,37 +508,31 @@ module Sass
         color1 = _to_space(method.space)
         color2 = other._to_space(method.space)
 
-        c1_missing0 = _analogous_channel_missing?(self, color1, 0)
-        c1_missing1 = _analogous_channel_missing?(self, color1, 1)
-        c1_missing2 = _analogous_channel_missing?(self, color1, 2)
-        c2_missing0 = _analogous_channel_missing?(other, color2, 0)
-        c2_missing1 = _analogous_channel_missing?(other, color2, 1)
-        c2_missing2 = _analogous_channel_missing?(other, color2, 2)
-        c1_channel0 = (c1_missing0 ? color2 : color1).channel0
-        c1_channel1 = (c1_missing1 ? color2 : color1).channel1
-        c1_channel2 = (c1_missing2 ? color2 : color1).channel2
-        c2_channel0 = (c2_missing0 ? color1 : color2).channel0
-        c2_channel1 = (c2_missing1 ? color1 : color2).channel1
-        c2_channel2 = (c2_missing2 ? color1 : color2).channel2
+        c1_channel0 = color1.channel0_or_nil.nil? ? color2.channel0_or_nil : color1.channel0_or_nil
+        c1_channel1 = color1.channel1_or_nil.nil? ? color2.channel1_or_nil : color1.channel1_or_nil
+        c1_channel2 = color1.channel2_or_nil.nil? ? color2.channel2_or_nil : color1.channel2_or_nil
+        c2_channel0 = color2.channel0_or_nil.nil? ? color1.channel0_or_nil : color2.channel0_or_nil
+        c2_channel1 = color2.channel1_or_nil.nil? ? color1.channel1_or_nil : color2.channel1_or_nil
+        c2_channel2 = color2.channel2_or_nil.nil? ? color1.channel2_or_nil : color2.channel2_or_nil
         c1_alpha = alpha_or_nil.nil? ? other.alpha : alpha_or_nil
         c2_alpha = other.alpha_or_nil.nil? ? alpha : other.alpha_or_nil
 
         c1_multiplier = (alpha_or_nil.nil? ? 1 : alpha_or_nil) * weight
         c2_multiplier = (other.alpha_or_nil.nil? ? 1 : other.alpha_or_nil) * (1 - weight)
         mixed_alpha = alpha_missing? && other.alpha_missing? ? nil : (c1_alpha * weight) + (c2_alpha * (1 - weight))
-        mixed0 = if c1_missing0 && c2_missing0
+        mixed0 = if c1_channel0.nil?
                    nil
                  else
                    ((c1_channel0 * c1_multiplier) + (c2_channel0 * c2_multiplier)) /
                      (mixed_alpha.nil? ? 1 : mixed_alpha)
                  end
-        mixed1 = if c1_missing1 && c2_missing1
+        mixed1 = if c1_channel1.nil?
                    nil
                  else
                    ((c1_channel1 * c1_multiplier) + (c2_channel1 * c2_multiplier)) /
                      (mixed_alpha.nil? ? 1 : mixed_alpha)
                  end
-        mixed2 = if c1_missing2 && c2_missing2
+        mixed2 = if c1_channel2.nil?
                    nil
                  else
                    ((c1_channel2 * c1_multiplier) + (c2_channel2 * c2_multiplier)) /
@@ -549,7 +543,7 @@ module Sass
         when Space::HSL, Space::HWB
           Color.send(:for_space_internal,
                      method.space,
-                     c1_missing0 && c2_missing0 ? nil : _interpolate_hues(c1_channel0, c2_channel0, method.hue, weight),
+                     c1_channel0.nil? ? nil : _interpolate_hues(c1_channel0, c2_channel0, method.hue, weight),
                      mixed1,
                      mixed2,
                      mixed_alpha)
@@ -558,27 +552,12 @@ module Sass
                      method.space,
                      mixed0,
                      mixed1,
-                     c1_missing2 && c2_missing2 ? nil : _interpolate_hues(c1_channel2, c2_channel2, method.hue, weight),
+                     c1_channel2.nil? ? nil : _interpolate_hues(c1_channel2, c2_channel2, method.hue, weight),
                      mixed_alpha)
         else
           Color.send(:_for_space,
                      method.space, mixed0, mixed1, mixed2, mixed_alpha)
         end._to_space(_space)
-      end
-
-      def _analogous_channel_missing?(original, output, output_channel_index)
-        return true if output.channels_or_nil[output_channel_index].nil?
-
-        return false if original.equal?(output)
-
-        output_channel = output._space.channels[output_channel_index]
-        original_channel = original._space.channels.find do |channel|
-          output_channel.analogous?(channel)
-        end
-
-        return false if original_channel.nil?
-
-        original.channel_missing?(original_channel.name)
       end
 
       def _interpolate_hues(hue1, hue2, method, weight)

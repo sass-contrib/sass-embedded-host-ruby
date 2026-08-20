@@ -20,6 +20,11 @@ module Sass
                       missing_lightness: false,
                       missing_chroma: false,
                       missing_hue: false)
+            if (red.nil? && green.nil? && blue.nil?) ||
+               (missing_lightness && missing_chroma && missing_hue)
+              return Color.send(:for_space, dest, nil, nil, nil, alpha)
+            end
+
             case dest
             when HSL, HWB
               red = 0 if red.nil?
@@ -68,8 +73,8 @@ module Sass
                   :for_space_internal,
                   dest,
                   missing_hue || FuzzyMath.greater_than_or_equals?(whiteness + blackness, 100) ? nil : hue % 360,
-                  whiteness,
-                  blackness,
+                  missing_chroma && missing_lightness ? nil : whiteness,
+                  missing_chroma && missing_lightness ? nil : blackness,
                   alpha
                 )
               end

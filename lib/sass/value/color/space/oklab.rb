@@ -23,37 +23,42 @@ module Sass
 
           def convert(dest, lightness, a, b, alpha, # rubocop:disable Naming/MethodParameterName
                       missing_chroma: false, missing_hue: false)
-            case dest
-            when OKLCH
-              Utils.lab_to_lch(dest, lightness, a, b, alpha)
-            else
-              missing_lightness = lightness.nil?
-              missing_a = a.nil?
-              missing_b = b.nil?
+            return Utils.lab_to_lch(dest, lightness, a, b, alpha, missing_chroma:, missing_hue:) if dest == OKLCH
 
-              lightness = 0 if missing_lightness
-              a = 0 if missing_a
-              b = 0 if missing_b
-
-              LMS.convert(
-                dest,
-                ((Conversions::OKLAB_TO_LMS[0] * lightness) +
-                 (Conversions::OKLAB_TO_LMS[1] * a) +
-                 (Conversions::OKLAB_TO_LMS[2] * b))**3,
-                ((Conversions::OKLAB_TO_LMS[3] * lightness) +
-                 (Conversions::OKLAB_TO_LMS[4] * a) +
-                 (Conversions::OKLAB_TO_LMS[5] * b))**3,
-                ((Conversions::OKLAB_TO_LMS[6] * lightness) +
-                 (Conversions::OKLAB_TO_LMS[7] * a) +
-                 (Conversions::OKLAB_TO_LMS[8] * b))**3,
-                alpha,
-                missing_lightness:,
-                missing_chroma:,
-                missing_hue:,
-                missing_a:,
-                missing_b:
-              )
+            if a.nil? && b.nil?
+              missing_chroma = true
+              missing_hue = true
+            elsif missing_chroma && missing_hue
+              a = nil
+              b = nil
             end
+
+            missing_lightness = lightness.nil?
+            missing_a = a.nil?
+            missing_b = b.nil?
+
+            lightness = 0 if missing_lightness
+            a = 0 if missing_a
+            b = 0 if missing_b
+
+            LMS.convert(
+              dest,
+              ((Conversions::OKLAB_TO_LMS[0] * lightness) +
+               (Conversions::OKLAB_TO_LMS[1] * a) +
+               (Conversions::OKLAB_TO_LMS[2] * b))**3,
+              ((Conversions::OKLAB_TO_LMS[3] * lightness) +
+               (Conversions::OKLAB_TO_LMS[4] * a) +
+               (Conversions::OKLAB_TO_LMS[5] * b))**3,
+              ((Conversions::OKLAB_TO_LMS[6] * lightness) +
+               (Conversions::OKLAB_TO_LMS[7] * a) +
+               (Conversions::OKLAB_TO_LMS[8] * b))**3,
+              alpha,
+              missing_lightness:,
+              missing_chroma:,
+              missing_hue:,
+              missing_a:,
+              missing_b:
+            )
           end
         end
 

@@ -22,6 +22,19 @@ module Sass
                       missing_hue: false,
                       missing_a: false,
                       missing_b: false)
+            if missing_a && missing_b
+              missing_chroma = true
+              missing_hue = true
+            elsif missing_chroma && missing_hue
+              missing_a = true
+              missing_b = true
+            end
+
+            if (missing_lightness && missing_chroma && missing_hue) ||
+               (x.nil? && y.nil? && z.nil?)
+              return Color.send(:_for_space, dest, nil, nil, nil, alpha)
+            end
+
             case dest
             when LAB, LCH
               f0 = _convert_component_to_lab_f((x.nil? ? 0 : x) / Conversions::D50[0])

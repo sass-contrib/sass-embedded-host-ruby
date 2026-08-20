@@ -22,6 +22,14 @@ module Sass
 
           def convert(dest, lightness, a, b, alpha, # rubocop:disable Naming/MethodParameterName
                       missing_chroma: false, missing_hue: false)
+            if missing_chroma && missing_hue
+              a = nil
+              b = nil
+            elsif a.nil? && b.nil?
+              missing_chroma = true
+              missing_hue = true
+            end
+
             case dest
             when LAB
               powerless_ab = lightness.nil? || FuzzyMath.equals?(lightness, 0)
