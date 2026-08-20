@@ -16,3 +16,6 @@ updates:
     directory: "/ext/sass"
     schedule:
       interval: "daily"
+    cooldown:
+      exclude:
+        - sass
