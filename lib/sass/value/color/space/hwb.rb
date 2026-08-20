@@ -29,6 +29,30 @@ module Sass
           end
 
           def convert(dest, hue, whiteness, blackness, alpha)
+            if whiteness.nil? && blackness.nil?
+              return Color.send(:_for_space, dest, nil, nil, nil, alpha) if hue.nil?
+
+              converted = convert(dest, hue, 0, 0, alpha)
+              return case dest
+                     when HSL
+                       Color.send(:_for_space,
+                                  dest,
+                                  converted.channel0,
+                                  nil,
+                                  nil,
+                                  converted.alpha)
+                     when LCH, OKLCH
+                       Color.send(:_for_space,
+                                  dest,
+                                  nil,
+                                  nil,
+                                  converted.channel2,
+                                  converted.alpha)
+                     else
+                       converted
+                     end
+            end
+
             missing_hue = hue.nil?
 
             hue = ((hue.nil? ? 0 : hue) % 360) / 30.0

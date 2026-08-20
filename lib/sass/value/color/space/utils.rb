@@ -61,6 +61,9 @@ module Sass
           # @return [Color]
           def lab_to_lch(dest, lightness, a, b, alpha, # rubocop:disable Naming/MethodParameterName
                          missing_chroma: false, missing_hue: false)
+            missing_chroma ||= a.nil? && b.nil?
+            missing_hue ||= a.nil? && b.nil?
+
             chroma = Math.sqrt(((a.nil? ? 0 : a)**2) + ((b.nil? ? 0 : b)**2))
             hue = if missing_hue || FuzzyMath.equals?(chroma, 0)
                     nil
