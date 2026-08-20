@@ -2,6 +2,6 @@
 
 module Sass
   module Embedded
-    VERSION = '1.102.0'
+    VERSION = '1.103.0'
   end
 end
