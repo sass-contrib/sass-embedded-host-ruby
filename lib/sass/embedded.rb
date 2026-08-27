@@ -15,7 +15,7 @@ module Sass
   @compiler = nil
   @mutex = Mutex.new
 
-  # rubocop:disable Layout/LineLength
+  # rubocop:disable-next Layout/LineLength
   class << self
     # Compiles the Sass file at +path+ to CSS.
     # @overload compile(path, load_paths: [], charset: true, source_map: false, source_map_include_sources: false, style: :expanded, functions: {}, importers: [], alert_ascii: false, alert_color: nil, fatal_deprecations: [], future_deprecations: [], logger: nil, quiet_deps: false, silence_deprecations: [], verbose: false)
@@ -64,5 +64,4 @@ module Sass
       end
     end
   end
-  # rubocop:enable Layout/LineLength
 end
