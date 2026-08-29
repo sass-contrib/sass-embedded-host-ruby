@@ -8,7 +8,8 @@ runs:
       with:
         setup_only: true
 
-    - uses: dart-lang/setup-dart@v1
+    # TODO: Revert to setup-dart@v1 once https://github.com/dart-lang/setup-dart/issues/198 is fixed
+    - uses: dart-lang/setup-dart@v1.7.2
 
     - uses: actions/setup-node@v7
 
