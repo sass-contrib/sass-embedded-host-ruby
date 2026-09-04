@@ -452,22 +452,34 @@ module Sass
           _initialize_for_space(
             space,
             _normalize_hue(channel0, invert: !channel1.nil? && FuzzyMath.less_than?(channel1, 0)),
-            channel1&.abs,
-            channel2,
-            alpha
+            _normalize_linear(channel1&.abs),
+            _normalize_linear(channel2),
+            _normalize_linear(alpha)
           )
         when Space::HWB
-          _initialize_for_space(space, _normalize_hue(channel0, invert: false), channel1, channel2, alpha)
+          _initialize_for_space(
+            space,
+            _normalize_hue(channel0, invert: false),
+            _normalize_linear(channel1),
+            _normalize_linear(channel2),
+            _normalize_linear(alpha)
+          )
         when Space::LCH, Space::OKLCH
           _initialize_for_space(
             space,
-            channel0,
-            channel1&.abs,
+            _normalize_linear(channel0),
+            _normalize_linear(channel1&.abs),
             _normalize_hue(channel2, invert: !channel1.nil? && FuzzyMath.less_than?(channel1, 0)),
-            alpha
+            _normalize_linear(alpha)
           )
         else
-          _initialize_for_space(space, channel0, channel1, channel2, alpha)
+          _initialize_for_space(
+            space,
+            _normalize_linear(channel0),
+            _normalize_linear(channel1),
+            _normalize_linear(channel2),
+            _normalize_linear(alpha)
+          )
         end
       end
 
@@ -481,8 +493,18 @@ module Sass
         FuzzyMath.assert_between(@alpha_or_nil, 0, 1, 'alpha') unless @alpha_or_nil.nil?
       end
 
+      def _normalize_linear(value)
+        return value if value.nil?
+
+        return 0 if value.zero? || value.to_f.nan?
+
+        value
+      end
+
       def _normalize_hue(hue, invert:)
         return hue if hue.nil?
+
+        return 0 if hue.zero? || !hue.finite?
 
         ((hue % 360) + 360 + (invert ? 180 : 0)) % 360
       end
