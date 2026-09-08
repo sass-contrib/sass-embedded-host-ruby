@@ -98,6 +98,8 @@ jobs:
               run: |
                 pkg_add node protobuf ruby%3.4 ruby-shims
                 echo 3.4 | tee /etc/ruby-version
+          - os: windows-latest
+            ruby-version: mswin
 
     steps:
       - name: Checkout
