@@ -216,3 +216,24 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git config user.name github-actions[bot]
           rake -f -r bundler/gem_tasks release gem_push=no
+
+  dependabot:
+
+    if: github.event.repository.fork == false && github.event.pull_request.user.login == 'dependabot[bot]'
+
+    needs: [install-from-git, lint, spec]
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Fetch Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v3
+
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash ${{ github.event.pull_request.html_url }}
