@@ -33,7 +33,7 @@ RSpec.describe Sass::CompileError do
       end
 
       it 'with double quote and single quote' do
-        expect { Sass.compile_string("a { b: 'c'") }
+        expect { Sass.compile_string("a { b: '\"") }
           .to raise_error(described_class) do |error|
             expect(error.detailed_message).to include("'")
             expect(error.detailed_message).to include('"')
