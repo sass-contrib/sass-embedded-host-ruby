@@ -90,6 +90,12 @@ module Sass
                 id: assert_compiler_value(obj).instance_variable_get(:@id)
               )
             )
+          when Sass::Value::Module
+            EmbeddedProtocol::Value.new(
+              compiler_module: EmbeddedProtocol::Value::CompilerModule.new(
+                id: assert_compiler_value(obj).instance_variable_get(:@id)
+              )
+            )
           when Sass::Value::Calculation
             EmbeddedProtocol::Value.new(
               calculation: Calculation.to_proto(obj)
@@ -160,6 +166,8 @@ module Sass
             raise Sass::ScriptError, 'The compiler may not send Value.host_function to host'
           when :compiler_mixin
             compiler_value(Sass::Value::Mixin.allocate, obj.id)
+          when :compiler_module
+            compiler_value(Sass::Value::Module.allocate, obj.id)
           when :calculation
             Calculation.from_proto(obj)
           when :singleton

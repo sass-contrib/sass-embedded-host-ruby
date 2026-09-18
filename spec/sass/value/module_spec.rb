@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/mixin.test.ts
-describe Sass::Value::Mixin do
-  it 'can round-trip a mixin reference from Sass' do
+# @see https://github.com/sass/sass-spec/blob/main/js-api-spec/value/module.test.ts
+describe Sass::Value::Module do
+  it 'can round-trip a module reference from Sass' do
     fn = double
     allow(fn).to receive(:call) { |args|
       expect(args.length).to eq(1)
@@ -17,8 +17,8 @@ describe Sass::Value::Mixin do
       expect { value.assert_function }.to raise_error(Sass::ScriptError)
       expect { value.assert_map }.to raise_error(Sass::ScriptError)
       expect(value.to_map).to be_nil
-      expect(value.assert_mixin).to be(value)
-      expect { value.assert_module }.to raise_error(Sass::ScriptError)
+      expect { value.assert_mixin }.to raise_error(Sass::ScriptError)
+      expect(value.assert_module).to be(value)
       expect { value.assert_number }.to raise_error(Sass::ScriptError)
       expect { value.assert_string }.to raise_error(Sass::ScriptError)
 
@@ -29,37 +29,23 @@ describe Sass::Value::Mixin do
       Sass.compile_string(
         "
         @use 'sass:meta';
-
-        @mixin a() {
-          a {
-            b: c;
-          }
-        }
-
-        @include meta.apply(foo(meta.get-mixin('a')));
+        a {b: meta.function-exists('function-exists', foo(meta.get-module('meta')))}
         ",
         functions: {
           'foo($arg)': ->(args) { fn.call(args) }
         }
       ).css
-    ).to eq("a {\n  b: c;\n}")
+    ).to eq("a {\n  b: true;\n}")
 
     expect(fn).to have_received(:call)
   end
 
-  it 'rejects a compiler mixin from a different compilation' do
+  it 'rejects a compiler module from a different compilation' do
     a = nil
     Sass.compile_string(
       "
       @use 'sass:meta';
-
-      @mixin a() {
-        a {
-          b: c;
-        }
-      }
-
-      @include meta.apply(foo(meta.get-mixin('a')));
+      $_: foo(meta.get-module('meta'));
       ",
       functions: {
         'foo($arg)': ->(args) { a = args[0] }
@@ -71,14 +57,7 @@ describe Sass::Value::Mixin do
       Sass.compile_string(
         "
         @use 'sass:meta';
-
-        @mixin b() {
-          c {
-            d: e;
-          }
-        }
-
-        @include meta.apply(foo(meta.get-mixin('b')));
+        $_: meta.module-variables(foo(meta.get-module('meta')));
         ",
         functions: {
           'foo($arg)': lambda { |args|
@@ -87,7 +66,7 @@ describe Sass::Value::Mixin do
           }
         }
       )
-    end.to raise_sass_compile_error.with_line(9)
+    end.to raise_sass_compile_error.with_line(2)
 
     expect(a).not_to eq(b)
   end

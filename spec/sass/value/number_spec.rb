@@ -41,6 +41,7 @@ describe Sass::Value::Number do
           expect { number.assert_map }.to raise_error(Sass::ScriptError)
           expect(number.to_map).to be_nil
           expect { number.assert_mixin }.to raise_error(Sass::ScriptError)
+          expect { number.assert_module }.to raise_error(Sass::ScriptError)
           expect { number.assert_string }.to raise_error(Sass::ScriptError)
         end
       end

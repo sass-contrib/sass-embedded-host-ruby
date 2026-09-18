@@ -88,6 +88,12 @@ module Sass
       raise Sass::ScriptError.new("#{self} is not a mixin", name)
     end
 
+    # @return [Module]
+    # @raise [ScriptError]
+    def assert_module(name = nil)
+      raise Sass::ScriptError.new("#{self} is not a module", name)
+    end
+
     # @return [Number]
     # @raise [ScriptError]
     def assert_number(name = nil)
@@ -131,6 +137,7 @@ require_relative 'value/function'
 require_relative 'value/fuzzy_math'
 require_relative 'value/map'
 require_relative 'value/mixin'
+require_relative 'value/module'
 require_relative 'value/null'
 require_relative 'value/number'
 require_relative 'value/string'
