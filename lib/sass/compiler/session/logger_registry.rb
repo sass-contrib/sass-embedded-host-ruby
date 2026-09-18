@@ -29,13 +29,13 @@ module Sass
               path = event.span.url == '' ? '-' : Path.pretty_uri(event.span.url)
               line = event.span.start.line + 1
               type = @alert_color ? "\e[1m#{event.type.capitalize}\e[0m" : event.type
-              Kernel.warn("#{path}:#{line} #{type}: #{event.message}")
+              Warning.warn("#{path}:#{line} #{type}: #{event.message}\n")
             end
           when :DEPRECATION_WARNING, :WARNING
             if @logger_respond_to_warn
               @logger.warn(event.message, WarnContext.new(event))
             else
-              Kernel.warn(StackTrace.pretty_formatted!(+event.formatted, event.stack_trace))
+              Warning.warn(StackTrace.pretty_formatted!(+event.formatted, event.stack_trace))
             end
           else
             raise ArgumentError, "Unknown LogEvent.type #{event.type}"
