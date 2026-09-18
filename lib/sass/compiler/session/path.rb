@@ -15,17 +15,6 @@ module Sass
           relative_path = Uri.decode_uri_component(Uri.relative(uri, Uri.pwd))
           relative_path.count('/') > absolute_path.count('/') ? absolute_path : relative_path
         end
-
-        def pretty_formatted!(formatted, uri)
-          index = formatted.index(uri)
-          return formatted unless index
-
-          replacement = pretty_uri(uri)
-          return formatted if uri == replacement
-
-          formatted[index, uri.length] = replacement
-          formatted
-        end
       end
 
       private_constant :Path

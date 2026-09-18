@@ -11,7 +11,9 @@ module Sass
 
         private_constant :LOGGER_METHODS
 
-        def initialize(logger)
+        def initialize(logger, alert_color:)
+          @alert_color = alert_color
+
           logger = Struct.new(logger, methods: LOGGER_METHODS) if logger.is_a?(::Hash)
           @logger = logger
           @logger_respond_to_debug = logger.respond_to?(:debug)
@@ -24,7 +26,10 @@ module Sass
             if @logger_respond_to_debug
               @logger.debug(event.message, DebugContext.new(event))
             else
-              Kernel.warn(Path.pretty_formatted!(+event.formatted, event.span.url))
+              path = event.span.url == '' ? '-' : Path.pretty_uri(event.span.url)
+              line = event.span.start.line + 1
+              type = @alert_color ? "\e[1m#{event.type.capitalize}\e[0m" : event.type
+              Kernel.warn("#{path}:#{line} #{type}: #{event.message}")
             end
           when :DEPRECATION_WARNING, :WARNING
             if @logger_respond_to_warn

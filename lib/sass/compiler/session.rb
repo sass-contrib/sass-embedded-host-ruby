@@ -45,7 +45,7 @@ module Sass
 
         @function_registry = FunctionRegistry.new(functions, session: self)
         @importer_registry = ImporterRegistry.new(importers, load_paths, session: self)
-        @logger_registry = LoggerRegistry.new(logger)
+        @logger_registry = LoggerRegistry.new(logger, alert_color:)
 
         compile_request = EmbeddedProtocol::InboundMessage::CompileRequest.new(
           string: unless source.nil?
