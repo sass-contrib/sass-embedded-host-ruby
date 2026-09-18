@@ -110,7 +110,6 @@ jobs:
 
       - name: Initialize vm
         if: matrix.vm
-        timeout-minutes: 10
         uses: ./.github/actions/setup-vm
         with:
           os: ${{ matrix.vm.os }}
