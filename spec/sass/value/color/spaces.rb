@@ -2,7 +2,7 @@
 
 require_relative 'constructors'
 
-ColorSpace = Struct.new(
+ColorSpace = Data.define(
   :constructor,
   :name,
   :is_legacy,
@@ -15,8 +15,12 @@ ColorSpace = Struct.new(
   :has_out_of_gamut,
   :gamut_examples
 ) do
+  def initialize(has_powerless: false, **)
+    super
+  end
+
   def constructor(...)
-    ColorConstructors.send(self[:constructor], ...)
+    ColorConstructors.send(deconstruct_keys([:constructor])[:constructor], ...)
   end
 end
 
