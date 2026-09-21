@@ -43,7 +43,7 @@ runs:
         path: dart-sass/build/language
 
     - run: |
-        curl -fsSL -H "Authorization: Bearer ${{ github.token }}" -- https://github.com/sass/dart-sass/pull/2413.diff | git apply -
+        curl -fsSL -H 'Accept: application/vnd.github.diff' -H 'Authorization: Bearer ${{ github.token }}' -- https://api.github.com/repos/sass/dart-sass/pulls/2413 | git apply -
       working-directory: dart-sass
       shell: bash
 
