@@ -6,7 +6,6 @@ require_relative 'session/logger_registry'
 require_relative 'session/path'
 require_relative 'session/protofier'
 require_relative 'session/stack_trace'
-require_relative 'session/struct'
 
 module Sass
   class Compiler
