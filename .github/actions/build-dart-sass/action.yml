@@ -14,15 +14,33 @@ runs:
 
     - uses: actions/setup-node@v7
 
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+
+    - run: bundle exec rake compile
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+
     - id: version
-      run: node -e 'console.log(`version=${JSON.parse(fs.readFileSync("ext/sass/package.json"))["dependencies"]["sass"]}`)' | tee -a "$GITHUB_OUTPUT"
+      run: |
+        echo "implementation-version=$(bundle exec sass --embedded --version | yq .implementationVersion)" | tee -a "$GITHUB_OUTPUT"
+        echo "protocol-version=$(bundle exec sass --embedded --version | yq .protocolVersion)" | tee -a "$GITHUB_OUTPUT"
       shell: bash
 
     - uses: actions/checkout@v7
       with:
         repository: sass/dart-sass
-        ref: ${{ steps.version.outputs.version }}
+        ref: ${{ steps.version.outputs.implementation-version }}
         path: dart-sass
+
+    - uses: actions/checkout@v7
+      with:
+        repository: sass/sass
+        ref: embedded-protocol-${{ steps.version.outputs.protocol-version }}
+        path: dart-sass/build/language
 
     - run: curl -fsSL -- https://github.com/sass/dart-sass/pull/2413.diff | git apply -
       working-directory: dart-sass
@@ -33,6 +51,8 @@ runs:
       shell: bash
 
     - run: dart run grinder protobuf pkg-npm-release
+      env:
+        UPDATE_SASS_SASS_REPO: false
       working-directory: dart-sass
       shell: bash
 
@@ -40,14 +60,14 @@ runs:
       working-directory: dart-sass/build/npm
       shell: bash
 
-    - run: mv dart-sass/build/npm/sass-${{ steps.version.outputs.version }}.tgz ext/sass
+    - run: mv dart-sass/build/npm/sass-${{ steps.version.outputs.implementation-version }}.tgz ext/sass
       shell: bash
 
-    - run: npm install sass@file:sass-${{ steps.version.outputs.version }}.tgz
+    - run: npm install sass@file:sass-${{ steps.version.outputs.implementation-version }}.tgz
       working-directory: ext/sass
       shell: bash
 
-    - run: git add ext/sass/sass-${{ steps.version.outputs.version }}.tgz ext/sass/package.json
+    - run: git add ext/sass/sass-${{ steps.version.outputs.implementation-version }}.tgz ext/sass/package.json
       shell: bash
 
     - run: git clean -dffx
