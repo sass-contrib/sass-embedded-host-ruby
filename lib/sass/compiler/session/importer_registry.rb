@@ -25,12 +25,6 @@ module Sass
           @session = session
         end
 
-        IMPORTER_ATTRS = %i[non_canonical_scheme].freeze
-
-        IMPORTER_METHODS = %i[canonicalize load find_file_url].freeze
-
-        private_constant :IMPORTER_ATTRS, :IMPORTER_METHODS
-
         def register(importer)
           if importer.is_a?(Sass::NodePackageImporter)
             EmbeddedProtocol::InboundMessage::CompileRequest::Importer.new(
@@ -39,10 +33,18 @@ module Sass
               )
             )
           else
-            importer = Struct.new(importer, attrs: IMPORTER_ATTRS, methods: IMPORTER_METHODS) if importer.is_a?(::Hash)
-
-            is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
-            is_file_importer = importer.respond_to?(:find_file_url)
+            if importer.is_a?(::Hash)
+              is_importer = importer[:canonicalize].respond_to?(:call) && importer[:load].respond_to?(:call)
+              is_file_importer = importer[:find_file_url].respond_to?(:call)
+              if is_importer
+                importer = ImporterStruct.new(importer)
+              elsif is_file_importer
+                importer = FileImporterStruct.new(importer)
+              end
+            else
+              is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
+              is_file_importer = importer.respond_to?(:find_file_url)
+            end
 
             raise ArgumentError, 'importer must be an Importer or a FileImporter' if is_importer == is_file_importer
 
@@ -86,14 +88,10 @@ module Sass
           )
         end
 
-        IMPORTER_RESULT_ATTRS = %i[contents syntax source_map_url].freeze
-
-        private_constant :IMPORTER_RESULT_ATTRS
-
         def import(import_request)
           importer = @importers_by_id[import_request.importer_id]
           importer_result = importer.load(import_request.url)
-          importer_result = Struct.new(importer_result, attrs: IMPORTER_RESULT_ATTRS) if importer_result.is_a?(::Hash)
+          importer_result = ImporterResultStruct.new(importer_result) if importer_result.is_a?(::Hash)
 
           EmbeddedProtocol::InboundMessage::ImportResponse.new(
             id: import_request.id,
@@ -142,6 +140,61 @@ module Sass
             raise ArgumentError, 'syntax must be one of :scss, :indented, :css'
           end
         end
+
+        # The {FileImporterStruct} class.
+        class FileImporterStruct
+          def initialize(file_importer)
+            @file_importer = file_importer
+          end
+
+          def find_file_url(url, canonicalize_context)
+            @file_importer[:find_file_url].call(url, canonicalize_context)
+          end
+        end
+
+        private_constant :FileImporterStruct
+
+        # The {ImporterStruct} class.
+        class ImporterStruct
+          def initialize(importer)
+            @importer = importer
+          end
+
+          def canonicalize(url, canonicalize_context)
+            @importer[:canonicalize].call(url, canonicalize_context)
+          end
+
+          def load(url)
+            @importer[:load].call(url)
+          end
+
+          def non_canonical_scheme
+            @importer[:non_canonical_scheme]
+          end
+        end
+
+        private_constant :ImporterStruct
+
+        # The {ImporterResultStruct} class.
+        class ImporterResultStruct
+          def initialize(importer_result)
+            @importer_result = importer_result
+          end
+
+          def contents
+            @importer_result[:contents]
+          end
+
+          def syntax
+            @importer_result[:syntax]
+          end
+
+          def source_map_url
+            @importer_result[:source_map_url]
+          end
+        end
+
+        private_constant :ImporterResultStruct
       end
 
       private_constant :ImporterRegistry
