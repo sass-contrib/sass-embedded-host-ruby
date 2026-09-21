@@ -2,23 +2,21 @@
 
 require_relative 'constructors'
 
-class ColorSpace
-  def initialize(hash)
-    @hash = hash
-  end
-
-  def method_missing(symbol, ...)
-    return super unless @hash.key?(symbol)
-
-    if symbol == :constructor
-      ColorConstructors.send(@hash[symbol], ...)
-    else
-      @hash[symbol]
-    end
-  end
-
-  def respond_to_missing?(symbol, _include_all)
-    @hash.key?(symbol)
+ColorSpace = Struct.new(
+  :constructor,
+  :name,
+  :is_legacy,
+  :is_polar,
+  :pink,
+  :blue,
+  :channels,
+  :has_powerless,
+  :ranges,
+  :has_out_of_gamut,
+  :gamut_examples
+) do
+  def constructor(...)
+    ColorConstructors.send(self[:constructor], ...)
   end
 end
 
@@ -370,4 +368,4 @@ COLOR_SPACES = {
       ]
     ]
   }
-}.transform_values! { |value| ColorSpace.new(value) }.freeze
+}.transform_values! { |value| ColorSpace.new(**value) }.freeze
