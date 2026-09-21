@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
     spec.files += Dir['ext/sass/{Rakefile,package.json,*.rb}']
     spec.files += Dir['ext/sass/sass-*.tgz'] # TODO: remove after https://github.com/sass/dart-sass/pull/2413
     spec.files -= ['lib/sass/cli.rb']
-    spec.add_dependency 'rake', '>= 13'
+    spec.add_dependency 'rake', '~> 13.3'
   else
     spec.files += Dir['lib/sass/dart-sass/**/*']
   end
