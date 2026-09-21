@@ -42,7 +42,8 @@ runs:
         ref: embedded-protocol-${{ steps.version.outputs.protocol-version }}
         path: dart-sass/build/language
 
-    - run: curl -fsSL -- https://github.com/sass/dart-sass/pull/2413.diff | git apply -
+    - run: |
+        curl -fsSL -H "Authorization: Bearer ${{ github.token }}" -- https://github.com/sass/dart-sass/pull/2413.diff | git apply -
       working-directory: dart-sass
       shell: bash
 
