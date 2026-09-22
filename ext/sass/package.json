@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "sass": "1.104.1"
+    "sass": "1.105.0"
   },
   "allowScripts": {
     "@parcel/watcher": true
