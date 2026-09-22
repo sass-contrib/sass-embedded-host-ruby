@@ -143,20 +143,20 @@ module Sass
             @hash = hash
           end
 
-          def canonicalize(url, canonicalize_context)
-            @hash[:canonicalize].call(url, canonicalize_context)
+          def canonicalize(...)
+            @hash[:canonicalize].call(...)
           end
 
-          def load(url)
-            @hash[:load].call(url)
+          def load(...)
+            @hash[:load].call(...)
           end
 
           def non_canonical_scheme
             @hash[:non_canonical_scheme]
           end
 
-          def find_file_url(url, canonicalize_context)
-            @hash[:find_file_url].call(url, canonicalize_context)
+          def find_file_url(...)
+            @hash[:find_file_url].call(...)
           end
         end
 
