@@ -81,12 +81,12 @@ module Sass
             @hash = hash
           end
 
-          def debug(message, debug_context)
-            @hash[:debug].call(message, debug_context)
+          def debug(...)
+            @hash[:debug].call(...)
           end
 
-          def warn(message, warn_context)
-            @hash[:warn].call(message, warn_context)
+          def warn(...)
+            @hash[:warn].call(...)
           end
         end
 
