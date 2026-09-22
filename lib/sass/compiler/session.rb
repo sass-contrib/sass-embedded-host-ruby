@@ -149,14 +149,7 @@ module Sass
       end
 
       def log_event(message)
-        case message.type
-        when :DEBUG
-          @logger_registry.debug(message)
-        when :DEPRECATION_WARNING, :WARNING
-          @logger_registry.warn(message)
-        else
-          raise ArgumentError, "Unknown LogEvent.type #{message.type}"
-        end
+        @logger_registry.log(message)
       end
 
       def canonicalize_request(message)
