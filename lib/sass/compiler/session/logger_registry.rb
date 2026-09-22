@@ -3,34 +3,41 @@
 module Sass
   class Compiler
     class Session
-      # The {LoggerRegistry} module.
-      module LoggerRegistry
-        def self.new(logger, alert_color:)
+      # The {LoggerRegistry} class.
+      class LoggerRegistry
+        def initialize(logger, alert_color:)
           if logger.is_a?(::Hash)
-            respond_to_debug = logger[:debug].respond_to?(:call)
-            respond_to_warn = logger[:warn].respond_to?(:call)
-            if respond_to_debug && respond_to_warn
-              DebugWarnEventLoggerStruct
-            elsif respond_to_debug
-              DebugEventLoggerStruct
-            elsif respond_to_warn
-              WarnEventLoggerStruct
+            @respond_to_debug = logger[:debug].respond_to?(:call)
+            @respond_to_warn = logger[:warn].respond_to?(:call)
+            @logger = LoggerStruct.new(logger) if @respond_to_debug || @respond_to_warn
+          else
+            @respond_to_debug = logger.respond_to?(:debug)
+            @respond_to_warn = logger.respond_to?(:warn)
+            @logger = logger
+          end
+          @alert_color = alert_color
+        end
+
+        def log(event)
+          case event.type
+          when :DEBUG
+            if @respond_to_debug
+              @logger.debug(event.message, DebugContext.new(event))
             else
-              EventLogger
+              path = event.span.url == '' ? '-' : Path.pretty_uri(event.span.url)
+              line = event.span.start.line + 1
+              type = @alert_color ? "\e[1mDebug\e[0m" : 'DEBUG'
+              Warning.warn("#{path}:#{line} #{type}: #{event.message}\n")
+            end
+          when :DEPRECATION_WARNING, :WARNING
+            if @respond_to_warn
+              @logger.warn(event.message, WarnContext.new(event))
+            else
+              Warning.warn(StackTrace.pretty_formatted!(+event.formatted, event.stack_trace))
             end
           else
-            respond_to_debug = logger.respond_to?(:debug)
-            respond_to_warn = logger.respond_to?(:warn)
-            if respond_to_debug && respond_to_warn
-              DebugWarnEventLogger
-            elsif respond_to_debug
-              DebugEventLogger
-            elsif respond_to_warn
-              WarnEventLogger
-            else
-              EventLogger
-            end
-          end.new(logger, alert_color:)
+            raise ArgumentError, "Unknown LogEvent.type #{event.type}"
+          end
         end
 
         # Contextual information passed to `debug`.
@@ -66,88 +73,22 @@ module Sass
 
         private_constant :WarnContext
 
-        # The {EventLogger} class.
-        class EventLogger
-          def initialize(logger, alert_color:)
+        # The {LoggerStruct} class.
+        class LoggerStruct
+          def initialize(logger)
             @logger = logger
-            @alert_color = alert_color
           end
 
-          def debug(event)
-            path = event.span.url == '' ? '-' : Path.pretty_uri(event.span.url)
-            line = event.span.start.line + 1
-            type = @alert_color ? "\e[1mDebug\e[0m" : 'DEBUG'
-            Warning.warn("#{path}:#{line} #{type}: #{event.message}\n")
+          def debug(message, debug_context)
+            @logger[:debug].call(message, debug_context)
           end
 
-          def warn(event)
-            Warning.warn(StackTrace.pretty_formatted!(+event.formatted, event.stack_trace))
+          def warn(message, warn_context)
+            @logger[:warn].call(message, warn_context)
           end
         end
 
-        private_constant :EventLogger
-
-        # The {DebugEventLogger} class.
-        class DebugEventLogger < EventLogger
-          def debug(event)
-            @logger.debug(event.message, DebugContext.new(event))
-          end
-        end
-
-        private_constant :DebugEventLogger
-
-        # The {WarnEventLogger} class.
-        class WarnEventLogger < EventLogger
-          def warn(event)
-            @logger.warn(event.message, WarnContext.new(event))
-          end
-        end
-
-        private_constant :WarnEventLogger
-
-        # The {DebugWarnEventLogger} class.
-        class DebugWarnEventLogger < EventLogger
-          def debug(event)
-            @logger.debug(event.message, DebugContext.new(event))
-          end
-
-          def warn(event)
-            @logger.warn(event.message, WarnContext.new(event))
-          end
-        end
-
-        private_constant :DebugWarnEventLogger
-
-        # The {DebugEventLoggerStruct} class.
-        class DebugEventLoggerStruct < EventLogger
-          def debug(event)
-            @logger[:debug].call(event.message, DebugContext.new(event))
-          end
-        end
-
-        private_constant :DebugEventLoggerStruct
-
-        # The {WarnEventLoggerStruct} class.
-        class WarnEventLoggerStruct < EventLogger
-          def warn(event)
-            @logger[:warn].call(event.message, WarnContext.new(event))
-          end
-        end
-
-        private_constant :WarnEventLoggerStruct
-
-        # The {DebugWarnEventLoggerStruct} class.
-        class DebugWarnEventLoggerStruct < EventLogger
-          def debug(event)
-            @logger[:debug].call(event.message, DebugContext.new(event))
-          end
-
-          def warn(event)
-            @logger[:warn].call(event.message, WarnContext.new(event))
-          end
-        end
-
-        private_constant :DebugWarnEventLoggerStruct
+        private_constant :LoggerStruct
       end
 
       private_constant :LoggerRegistry
