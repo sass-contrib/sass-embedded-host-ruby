@@ -36,11 +36,7 @@ module Sass
             if importer.is_a?(::Hash)
               is_importer = importer[:canonicalize].respond_to?(:call) && importer[:load].respond_to?(:call)
               is_file_importer = importer[:find_file_url].respond_to?(:call)
-              if is_importer
-                importer = ImporterStruct.new(importer)
-              elsif is_file_importer
-                importer = FileImporterStruct.new(importer)
-              end
+              importer = ImporterStruct.new(importer) if is_importer || is_file_importer
             else
               is_importer = importer.respond_to?(:canonicalize) && importer.respond_to?(:load)
               is_file_importer = importer.respond_to?(:find_file_url)
@@ -141,35 +137,26 @@ module Sass
           end
         end
 
-        # The {FileImporterStruct} class.
-        class FileImporterStruct
-          def initialize(file_importer)
-            @file_importer = file_importer
-          end
-
-          def find_file_url(url, canonicalize_context)
-            @file_importer[:find_file_url].call(url, canonicalize_context)
-          end
-        end
-
-        private_constant :FileImporterStruct
-
         # The {ImporterStruct} class.
         class ImporterStruct
-          def initialize(importer)
-            @importer = importer
+          def initialize(hash)
+            @hash = hash
           end
 
           def canonicalize(url, canonicalize_context)
-            @importer[:canonicalize].call(url, canonicalize_context)
+            @hash[:canonicalize].call(url, canonicalize_context)
           end
 
           def load(url)
-            @importer[:load].call(url)
+            @hash[:load].call(url)
           end
 
           def non_canonical_scheme
-            @importer[:non_canonical_scheme]
+            @hash[:non_canonical_scheme]
+          end
+
+          def find_file_url(url, canonicalize_context)
+            @hash[:find_file_url].call(url, canonicalize_context)
           end
         end
 
@@ -177,20 +164,20 @@ module Sass
 
         # The {ImporterResultStruct} class.
         class ImporterResultStruct
-          def initialize(importer_result)
-            @importer_result = importer_result
+          def initialize(hash)
+            @hash = hash
           end
 
           def contents
-            @importer_result[:contents]
+            @hash[:contents]
           end
 
           def syntax
-            @importer_result[:syntax]
+            @hash[:syntax]
           end
 
           def source_map_url
-            @importer_result[:source_map_url]
+            @hash[:source_map_url]
           end
         end
 

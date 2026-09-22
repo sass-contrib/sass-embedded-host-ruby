@@ -7,15 +7,17 @@ module Sass
       class LoggerRegistry
         def initialize(logger, alert_color:)
           if logger.is_a?(::Hash)
-            @respond_to_debug = logger[:debug].respond_to?(:call)
-            @respond_to_warn = logger[:warn].respond_to?(:call)
-            @logger = LoggerStruct.new(logger) if @respond_to_debug || @respond_to_warn
+            respond_to_debug = logger[:debug].respond_to?(:call)
+            respond_to_warn = logger[:warn].respond_to?(:call)
+            logger = LoggerStruct.new(logger) if respond_to_debug || respond_to_warn
           else
-            @respond_to_debug = logger.respond_to?(:debug)
-            @respond_to_warn = logger.respond_to?(:warn)
-            @logger = logger
+            respond_to_debug = logger.respond_to?(:debug)
+            respond_to_warn = logger.respond_to?(:warn)
           end
+          @logger = logger
           @alert_color = alert_color
+          @respond_to_debug = respond_to_debug
+          @respond_to_warn = respond_to_warn
         end
 
         def log(event)
@@ -75,16 +77,16 @@ module Sass
 
         # The {LoggerStruct} class.
         class LoggerStruct
-          def initialize(logger)
-            @logger = logger
+          def initialize(hash)
+            @hash = hash
           end
 
           def debug(message, debug_context)
-            @logger[:debug].call(message, debug_context)
+            @hash[:debug].call(message, debug_context)
           end
 
           def warn(message, warn_context)
-            @logger[:warn].call(message, warn_context)
+            @hash[:warn].call(message, warn_context)
           end
         end
 
