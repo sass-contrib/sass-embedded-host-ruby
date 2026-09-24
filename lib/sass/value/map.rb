@@ -51,6 +51,12 @@ module Sass
         contents.map { |key, value| Sass::Value::List.new([key, value], separator: ' ') }
       end
 
+      # @return [Hash<Value, Value>]
+      # @raise [ScriptError, ArgumentError, TypeError]
+      def to_h(...)
+        contents.to_h(...)
+      end
+
       # @return [Map]
       def to_map
         self

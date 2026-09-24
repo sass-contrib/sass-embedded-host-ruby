@@ -39,6 +39,16 @@ describe Sass::Value::Map do
                  Sass::Value::String.new('a') => Sass::Value::String.new('b'),
                  Sass::Value::String.new('c') => Sass::Value::String.new('d')
                })
+      expect(map.to_h)
+        .to eq({
+                 Sass::Value::String.new('a') => Sass::Value::String.new('b'),
+                 Sass::Value::String.new('c') => Sass::Value::String.new('d')
+               })
+      expect(map.to_h { |key, value| [value, key] })
+        .to eq({
+                 Sass::Value::String.new('b') => Sass::Value::String.new('a'),
+                 Sass::Value::String.new('d') => Sass::Value::String.new('c')
+               })
     end
 
     it 'returns its contents as a list' do
@@ -53,6 +63,11 @@ describe Sass::Value::Map do
                    separator: ' '
                  )
                ])
+    end
+
+    it 'round-trips its countents to and from a list' do
+      expect(described_class.new(Sass::Value::List.new(map.to_a).to_h))
+        .to eq(map)
     end
 
     it 'has a comma separator' do
@@ -240,6 +255,11 @@ describe Sass::Value::Map do
 
     it 'returns its contents as a list' do
       expect(map.to_a).to be_empty
+    end
+
+    it 'round-trips its countents to and from a list' do
+      expect(described_class.new(Sass::Value::List.new(map.to_a).to_h))
+        .to eq(map)
     end
 
     it 'equals another empty map' do

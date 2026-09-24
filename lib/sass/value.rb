@@ -37,6 +37,12 @@ module Sass
       [self]
     end
 
+    # @return [Hash<Value, Value>]
+    # @raise [ScriptError, ArgumentError, TypeError]
+    def to_h(...)
+      to_a.to_h(...)
+    end
+
     # @return [::Boolean]
     def to_bool # rubocop:disable Naming/PredicateMethod
       true

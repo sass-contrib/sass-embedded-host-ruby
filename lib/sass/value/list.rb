@@ -58,6 +58,16 @@ module Sass
         @contents
       end
 
+      # @return [Hash<Value, Value>]
+      # @raise [ScriptError, ArgumentError, TypeError]
+      def to_h(...)
+        return super if block_given?
+
+        super do |element|
+          element.is_a?(Sass::Value::List) ? element.to_a : element
+        end
+      end
+
       # @return [Map, nil]
       def to_map
         to_a.empty? ? Sass::Value::Map.new({}) : nil
