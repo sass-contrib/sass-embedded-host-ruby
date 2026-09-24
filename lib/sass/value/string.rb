@@ -34,6 +34,13 @@ module Sass
         @hash ||= text.hash
       end
 
+      # @return [::String]
+      def to_s
+        @quoted ? Serializer.serialize_quoted_string(@text) : Serializer.serialize_unquoted_string(@text)
+      end
+
+      alias inspect to_s
+
       # @return [String]
       def assert_string(_name = nil)
         self
@@ -50,11 +57,6 @@ module Sass
         end
 
         index.negative? ? text.length + index : index - 1
-      end
-
-      # @return [::String]
-      def to_s
-        @quoted ? Serializer.serialize_quoted_string(@text) : Serializer.serialize_unquoted_string(@text)
       end
     end
   end

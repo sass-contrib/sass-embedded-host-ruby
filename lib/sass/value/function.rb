@@ -43,6 +43,20 @@ module Sass
         @hash ||= defined?(@id) ? [compile_context, id].hash : [signature, callback].hash
       end
 
+      # @raise [ScriptError]
+      def to_s
+        return super unless defined?(@id)
+
+        raise Sass::ScriptError, "#{inspect} isn't a valid CSS value."
+      end
+
+      # @return [::String]
+      def inspect
+        return super unless defined?(@id)
+
+        'get-function(<anonymous>)'
+      end
+
       # @return [Function]
       def assert_function(_name = nil)
         self

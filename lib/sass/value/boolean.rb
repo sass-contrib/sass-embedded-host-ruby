@@ -31,6 +31,13 @@ module Sass
         @hash ||= value.hash
       end
 
+      # @return [::String]
+      def to_s
+        value.to_s
+      end
+
+      alias inspect to_s
+
       alias to_bool value
 
       # @return [Boolean]

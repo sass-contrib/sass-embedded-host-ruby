@@ -109,7 +109,7 @@ module Sass
               singleton: :NULL
             )
           else
-            raise Sass::ScriptError, "Unknown Sass::Value #{obj}"
+            raise Sass::ScriptError, "Unknown Sass::Value #{obj.inspect}"
           end
         end
 
@@ -190,7 +190,7 @@ module Sass
 
         def assert_compiler_value(value)
           unless value.instance_variable_get(:@compile_context) == @function_registry.compile_context
-            raise Sass::ScriptError, "Value #{value} does not belong to this compilation"
+            raise Sass::ScriptError, "Value #{value.inspect} does not belong to this compilation"
           end
 
           value
@@ -275,7 +275,7 @@ module Sass
                 )
               )
             else
-              raise Sass::ScriptError, "Unknown CalculationValue #{value}"
+              raise Sass::ScriptError, "Unknown CalculationValue #{value.inspect}"
             end
           end
 
@@ -318,7 +318,7 @@ module Sass
             when '/'
               :DIVIDE
             else
-              raise Sass::ScriptError, "Unknown CalculationOperator #{separator}"
+              raise Sass::ScriptError, "Unknown CalculationOperator #{separator.inspect}"
             end
           end
 
@@ -355,7 +355,7 @@ module Sass
             when nil
               :UNDECIDED
             else
-              raise Sass::ScriptError, "Unknown ListSeparator #{separator}"
+              raise Sass::ScriptError, "Unknown ListSeparator #{separator.inspect}"
             end
           end
 

@@ -110,7 +110,7 @@ module Sass
       # @return [Number]
       # @raise [ScriptError]
       def assert_unitless(name = nil)
-        raise Sass::ScriptError.new("Expected #{self} to have no units", name) unless unitless?
+        raise Sass::ScriptError.new("Expected #{inspect} to have no units", name) unless unitless?
 
         self
       end
@@ -130,7 +130,7 @@ module Sass
       # @return [Number]
       # @raise [ScriptError]
       def assert_unit(unit, name = nil)
-        raise Sass::ScriptError.new("Expected #{self} to have unit #{unit.inspect}", name) unless unit?(unit)
+        raise Sass::ScriptError.new("Expected #{inspect} to have unit #{unit.inspect}", name) unless unit?(unit)
 
         self
       end
@@ -143,7 +143,7 @@ module Sass
       # @return [Integer]
       # @raise [ScriptError]
       def assert_integer(name = nil)
-        raise Sass::ScriptError.new("#{self} is not an integer", name) unless integer?
+        raise Sass::ScriptError.new("#{inspect} is not an integer", name) unless integer?
 
         to_i
       end
@@ -288,25 +288,25 @@ module Sass
 
         compatibility_error = lambda {
           unless other.nil?
-            message = "#{self} and"
+            message = "#{inspect} and"
             message << " $#{other_name}:" unless other_name.nil?
             message << " #{other} have incompatible units"
             message << " (one has units and the other doesn't)" if unitless? || other_unitless
             return Sass::ScriptError.new(message, name)
           end
 
-          return Sass::ScriptError.new("Expected #{self} to have no units", name) unless other_unitless
+          return Sass::ScriptError.new("Expected #{inspect} to have no units", name) unless other_unitless
 
           if new_numerator_units.length == 1 && new_denominator_units.empty?
             type = Unit::TYPES_BY_UNIT[new_numerator_units.first]
             return Sass::ScriptError.new(
-              "Expected #{self} to have a #{type} unit (#{Unit::UNITS_BY_TYPE[type].join(', ')})", name
+              "Expected #{inspect} to have a #{type} unit (#{Unit::UNITS_BY_TYPE[type].join(', ')})", name
             )
           end
 
           unit_length = new_numerator_units.length + new_denominator_units.length
           units = unit_string(new_numerator_units, new_denominator_units)
-          Sass::ScriptError.new("Expected #{self} to have unit#{'s' if unit_length > 1} #{units}", name)
+          Sass::ScriptError.new("Expected #{inspect} to have unit#{'s' if unit_length > 1} #{units}", name)
         }
 
         result = value

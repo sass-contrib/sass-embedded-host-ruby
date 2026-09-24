@@ -28,6 +28,16 @@ module Sass
         @hash ||= [compile_context, id].hash
       end
 
+      # @raise [ScriptError]
+      def to_s
+        raise Sass::ScriptError, "#{inspect} isn't a valid CSS value."
+      end
+
+      # @return [::String]
+      def inspect
+        'get-module(<anonymous>)'
+      end
+
       # @return [Module]
       def assert_module(_name = nil)
         self

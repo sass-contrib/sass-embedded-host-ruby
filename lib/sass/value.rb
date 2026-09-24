@@ -43,6 +43,31 @@ module Sass
       to_a.to_h(...)
     end
 
+    # @return [::String]
+    # @raise [ScriptError]
+    def to_s
+      s = nil
+      Sass.compile_string('$_:o(#{i()});', functions: { # rubocop:disable Lint/InterpolationCheck
+                            'i()' => ->(_) { self },
+                            'o($s)' => ->(args) { s = args[0].assert_string }
+                          })
+      s.text
+    rescue Sass::CompileError => e
+      raise Sass::ScriptError.new(e.message), cause: nil
+    end
+
+    # @return [::String]
+    def inspect
+      s = nil
+      Sass.compile_string('@use "sass:meta";$_:o(meta.inspect(i()));', functions: {
+                            'i()' => ->(_) { self },
+                            'o($s)' => ->(args) { s = args[0].assert_string }
+                          })
+      s.text
+    rescue StandardError
+      super
+    end
+
     # @return [::Boolean]
     def to_bool # rubocop:disable Naming/PredicateMethod
       true
@@ -61,55 +86,55 @@ module Sass
     # @return [Boolean]
     # @raise [ScriptError]
     def assert_boolean(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a boolean", name)
+      raise Sass::ScriptError.new("#{inspect} is not a boolean", name)
     end
 
     # @return [Calculation]
     # @raise [ScriptError]
     def assert_calculation(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a calculation", name)
+      raise Sass::ScriptError.new("#{inspect} is not a calculation", name)
     end
 
     # @return [Color]
     # @raise [ScriptError]
     def assert_color(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a color", name)
+      raise Sass::ScriptError.new("#{inspect} is not a color", name)
     end
 
     # @return [Function]
     # @raise [ScriptError]
     def assert_function(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a function", name)
+      raise Sass::ScriptError.new("#{inspect} is not a function", name)
     end
 
     # @return [Map]
     # @raise [ScriptError]
     def assert_map(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a map", name)
+      raise Sass::ScriptError.new("#{inspect} is not a map", name)
     end
 
     # @return [Mixin]
     # @raise [ScriptError]
     def assert_mixin(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a mixin", name)
+      raise Sass::ScriptError.new("#{inspect} is not a mixin", name)
     end
 
     # @return [Module]
     # @raise [ScriptError]
     def assert_module(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a module", name)
+      raise Sass::ScriptError.new("#{inspect} is not a module", name)
     end
 
     # @return [Number]
     # @raise [ScriptError]
     def assert_number(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a number", name)
+      raise Sass::ScriptError.new("#{inspect} is not a number", name)
     end
 
     # @return [String]
     # @raise [ScriptError]
     def assert_string(name = nil)
-      raise Sass::ScriptError.new("#{self} is not a string", name)
+      raise Sass::ScriptError.new("#{inspect} is not a string", name)
     end
 
     # @param sass_index [Number]
