@@ -29,6 +29,16 @@ describe Sass::Value::List do
       expect { list.assert_string }.to raise_error(Sass::ScriptError)
     end
 
+    it 'returns its contents as a map' do
+      expect { list.to_h }.to raise_error(TypeError)
+      expect(list.to_h { |element| [element, element] })
+        .to eq({
+                 Sass::Value::String.new('a') => Sass::Value::String.new('a'),
+                 Sass::Value::String.new('b') => Sass::Value::String.new('b'),
+                 Sass::Value::String.new('c') => Sass::Value::String.new('c')
+               })
+    end
+
     it 'returns its contents as a list' do
       expect(list.to_a)
         .to eq([Sass::Value::String.new('a'), Sass::Value::String.new('b'), Sass::Value::String.new('c')])
@@ -310,6 +320,10 @@ describe Sass::Value::List do
 
     it 'has no brackets' do
       expect(list.bracketed?).to be(false)
+    end
+
+    it 'returns its contents as a map' do
+      expect(list.to_h).to eq({})
     end
 
     it 'returns its contents as a list' do
