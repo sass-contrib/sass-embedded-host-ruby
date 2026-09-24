@@ -30,6 +30,16 @@ module Sass
         @hash ||= value.hash
       end
 
+      # @return [::String]
+      def to_s
+        ''
+      end
+
+      # @return [::String]
+      def inspect
+        'null'
+      end
+
       # @return [::Boolean]
       def to_bool # rubocop:disable Naming/PredicateMethod
         false

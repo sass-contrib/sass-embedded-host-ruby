@@ -124,7 +124,7 @@ module Sass
         return channel2 if channel == channels[2].name
         return alpha if channel == 'alpha'
 
-        raise Sass::ScriptError.new("Color #{self} doesn't have a channel named \"#{channel}\".", channel)
+        raise Sass::ScriptError.new("Color #{inspect} doesn't have a channel named \"#{channel}\".", channel)
       end
 
       # @param channel [::String]
@@ -136,7 +136,7 @@ module Sass
         return channel2_missing? if channel == channels[2].name
         return alpha_missing? if channel == 'alpha'
 
-        raise Sass::ScriptError.new("Color #{self} doesn't have a channel named \"#{channel}\".", channel)
+        raise Sass::ScriptError.new("Color #{inspect} doesn't have a channel named \"#{channel}\".", channel)
       end
 
       # @param channel [::String]
@@ -151,7 +151,7 @@ module Sass
         return channel2_powerless? if channel == channels[2].name
         return false if channel == 'alpha'
 
-        raise Sass::ScriptError.new("Color #{self} doesn't have a channel named \"#{channel}\".", channel)
+        raise Sass::ScriptError.new("Color #{inspect} doesn't have a channel named \"#{channel}\".", channel)
       end
 
       # @param other [Color]
