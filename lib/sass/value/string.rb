@@ -27,9 +27,11 @@ module Sass
       # @return [String]
       # @raise [TypeError]
       def +(other)
-        raise TypeError, "no implicit conversion of #{other.class} into String" unless other.respond_to?(:to_str)
+        unless other.respond_to?(:to_str)
+          raise TypeError, "no implicit conversion of #{other&.class.inspect} into String"
+        end
 
-        String.new(to_str + other.to_str, quoted: quoted?)
+        Sass::Value::String.new(to_str + other.to_str, quoted: quoted?)
       end
 
       # @return [::Boolean]
