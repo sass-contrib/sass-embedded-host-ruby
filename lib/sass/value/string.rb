@@ -24,6 +24,14 @@ module Sass
         @quoted
       end
 
+      # @return [String]
+      # @raise [TypeError]
+      def +(other)
+        raise TypeError, "no implicit conversion of #{other.class} into String" unless other.respond_to?(:to_str)
+
+        String.new(to_str + other.to_str, quoted: quoted?)
+      end
+
       # @return [::Boolean]
       def ==(other)
         other.is_a?(Sass::Value::String) && other.text == text
@@ -40,6 +48,11 @@ module Sass
       end
 
       alias inspect to_s
+
+      # @return [::String]
+      def to_str
+        text.to_str
+      end
 
       # @return [String]
       def assert_string(_name = nil)
