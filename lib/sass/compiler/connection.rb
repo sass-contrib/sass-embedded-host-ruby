@@ -75,12 +75,31 @@ module Sass
         end
       end
 
-      def write(id, proto)
-        buffer = []
-        Varint.write(buffer, Varint.length(id) + proto.length)
-        Varint.write(buffer, id)
-        @mutex.synchronize do
-          @stdin.write(buffer.pack('C*'), proto)
+      respond_to_pack_r = begin
+        old_verbose = $VERBOSE
+        $VERBOSE = nil
+        [0].pack('R') == "\0"
+      rescue ArgumentError
+        false
+      ensure
+        $VERBOSE = old_verbose
+      end
+
+      if respond_to_pack_r
+        def write(id, proto)
+          buffer = [Varint.length(id) + proto.length, id].pack('R*')
+          @mutex.synchronize do
+            @stdin.write(buffer, proto)
+          end
+        end
+      else
+        def write(id, proto)
+          buffer = []
+          Varint.write(buffer, Varint.length(id) + proto.length)
+          Varint.write(buffer, id)
+          @mutex.synchronize do
+            @stdin.write(buffer.pack('C*'), proto)
+          end
         end
       end
     end
