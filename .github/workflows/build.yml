@@ -39,7 +39,7 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - ubuntu-24.04-arm
+          - ubuntu-26.04-arm
           - windows-latest
           - windows-11-arm
         container:
@@ -84,7 +84,7 @@ jobs:
           - os: ubuntu-latest
             container:
               image: docker.io/nixos/nix:latest
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-26.04-arm
             container:
               image: docker.io/nixos/nix:latest
           - os: ubuntu-latest
