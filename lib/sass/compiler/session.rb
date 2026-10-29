@@ -41,6 +41,15 @@ module Sass
                           silence_deprecations:,
                           verbose:)
         alert_color = Exception.to_tty? if alert_color.nil?
+        if fatal_deprecations.is_a?(::Hash)
+          fatal_deprecation = Array(fatal_deprecations[:include]).map(&:to_s)
+          fatal_deprecation_except = Array(fatal_deprecations[:exclude]).map(&:to_s)
+        else
+          fatal_deprecation = Array(fatal_deprecations).map(&:to_s)
+          fatal_deprecation_except = []
+        end
+        future_deprecation = Array(future_deprecations).map(&:to_s)
+        silence_deprecation = Array(silence_deprecations).map(&:to_s)
 
         @function_registry = FunctionRegistry.new(functions, session: self)
         @importer_registry = ImporterRegistry.new(importers, load_paths, session: self)
@@ -71,11 +80,12 @@ module Sass
           global_functions: @function_registry.global_functions,
           alert_ascii:,
           alert_color:,
-          fatal_deprecation: fatal_deprecations.map(&:to_s),
-          future_deprecation: future_deprecations.map(&:to_s),
+          fatal_deprecation:,
+          fatal_deprecation_except:,
+          future_deprecation:,
           quiet_deps:,
           silent: logger == Logger.silent,
-          silence_deprecation: silence_deprecations.map(&:to_s),
+          silence_deprecation:,
           verbose:
         )
 
