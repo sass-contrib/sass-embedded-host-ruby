@@ -150,11 +150,6 @@ module SassConfig
     "https://github.com/sass/sass/raw/embedded-protocol-#{tag_name}/spec/embedded_sass.proto"
   end
 
-  # TODO: remove this override: https://github.com/sass/sass/issues/4263
-  def embedded_sass_protocol # rubocop:disable Lint/DuplicateMethods
-    'https://github.com/sass/sass/raw/53e8d7548be7dc56b13e6914a82eedd69f0bd719/spec/embedded_sass.proto'
-  end
-
   def development?
     File.exist?('../../Gemfile')
   end

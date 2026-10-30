@@ -39,8 +39,7 @@ runs:
     - uses: actions/checkout@v7
       with:
         repository: sass/sass
-        # TODO: uncomment the next line: https://github.com/sass/sass/issues/4263
-        # ref: embedded-protocol-${{ steps.version.outputs.protocol-version }}
+        ref: embedded-protocol-${{ steps.version.outputs.protocol-version }}
         path: dart-sass/build/language
 
     - run: |
