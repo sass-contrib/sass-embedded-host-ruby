@@ -50,6 +50,10 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
+        # TODO: remove after https://github.com/protocolbuffers/protobuf/pull/30941 lands in a stable release.
+        # NOTE: the extra `--` is intentional. It prevents `rake` from parsing subsequent arugments as invalid options.
+        env:
+          BUNDLE_BUILD__GOOGLE___PROTOBUF: ${{ matrix.ruby-version == 'ruby-head' && '-- --with-cflags=-Wno-error=incompatible-pointer-types' || '' }}
 
       - name: Compile
         run: bundle exec rake compile
@@ -58,6 +62,12 @@ jobs:
 
       - name: Spec
         run: bundle exec rake spec
+
+      # TODO: remove after https://github.com/protocolbuffers/protobuf/pull/30941 lands in a stable release.
+      # NOTE: the double extra `--` is intentional.
+      - name: Workaround protobuf issue on ruby-head
+        if: matrix.ruby-version == 'ruby-head'
+        run: gem install google-protobuf -- -- --with-cflags=-Wno-error=incompatible-pointer-types
 
       - name: Install
         run: rake -f -r bundler/gem_tasks install
